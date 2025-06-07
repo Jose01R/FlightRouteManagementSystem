@@ -16,7 +16,7 @@ public class User {
     public User(int id, String name, String password, String email, UserRole role) {
         this.id = id;
         this.name = name;
-        this.hashedPassword = hashPassword(password); // <--- CAMBIO CLAVE: Hashea la contraseña de entrada
+        this.hashedPassword = hashPassword(password); //Hashea la contraseña de entrada
         this.email = email;
         this.role = role;
     }
