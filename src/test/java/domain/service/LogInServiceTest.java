@@ -3,7 +3,7 @@ package domain.service;
 import data.UserData;
 import domain.common.User;
 import domain.common.UserRole;
-import domain.linkedlist.ListException; // Aunque no usemos asserts, el método login aún declara throws ListException
+import domain.linkedlist.ListException;
 import org.junit.jupiter.api.Test;
 
 public class LogInServiceTest {
