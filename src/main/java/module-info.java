@@ -2,6 +2,7 @@ module ucr.flightroutemanagementsystem {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.fasterxml.jackson.databind;
+    requires com.google.gson;
     //requires com.fasterxml.jackson.datatype.jsr310;
 
     opens controller to javafx.fxml;
