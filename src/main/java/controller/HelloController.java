@@ -35,7 +35,7 @@ public class HelloController {
 
     @FXML
     void Home(ActionEvent event) {
-        this.txtMessage.setText("Laboratory No. 10");
+        this.txtMessage.setText("Airport Operations System");
         this.bp.setCenter(ap);
     }
 

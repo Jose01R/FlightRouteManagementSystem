@@ -43,6 +43,16 @@ public class FXUtility {
         return alert;
     }
 
+    public static Alert alertWarning(String title, String header){
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setAlertType(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.showAndWait();
+
+        return alert;
+    }
+
 
     public static TextInputDialog dialog(String title, String header){
         TextInputDialog dialog = new TextInputDialog(title);
