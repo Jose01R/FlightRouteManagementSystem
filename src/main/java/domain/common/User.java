@@ -74,16 +74,16 @@ public class User {
     }
 
     /**
-     * Verifica si la contraseña en texto plano proporcionada coincide con la contraseña hasheada almacenada.
-     * @param password La contraseña en texto plano para verificar.
-     * @return true si las contraseñas coinciden, false en caso contrario.
+     * Verifica si la contraseña en sin hasheo proporcionada coincide
+     * con contraseña hasheada guardada
+     * Se pasa la password en sin hasheo para verificar.
      */
     public boolean checkPassword(String password) {
-        // Asegúrate de que hashedPassword no sea null antes de comparar
+        //HashedPassword no debe ser null antes de comparar
         if (this.hashedPassword == null || password == null) {
-            return false;
+            return false; //false passwords no coinciden
         }
-        return this.hashedPassword.equals(hashPassword(password));
+        return this.hashedPassword.equals(hashPassword(password)); //true si passwords coinciden
     }
 
 }
