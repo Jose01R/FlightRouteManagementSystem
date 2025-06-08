@@ -62,7 +62,7 @@ public class User {
         return "User [id=" + id + ", name=" + name + ", email=" + email + ", role=" + role + "]";
     }
 
-    private String hashPassword(String password) {
+    public String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes());
@@ -85,5 +85,7 @@ public class User {
         }
         return this.hashedPassword.equals(hashPassword(password)); //true si passwords coinciden
     }
+
+
 
 }
