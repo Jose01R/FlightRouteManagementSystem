@@ -63,7 +63,7 @@ public class LogInService {
         }
 
         int size = userCLL.size();
-        domain.linkedlist.Node current = userCLL.getNode(1);
+        Node current = userCLL.getNode(1);
 
         for (int i = 0; i < size; i++) {
             User currentUser = (User) current.data;
