@@ -8,7 +8,8 @@ public class Passenger {
     private String nationality;
     private SinglyLinkedList flightHistory;
 
-    public Passenger(int id, String name, String nationality) {
+
+    public Passenger(int id,String name, String nationality) {
         this.id = id;
         this.name = name;
         this.nationality = nationality;
@@ -17,6 +18,14 @@ public class Passenger {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setFlightHistory(SinglyLinkedList flightHistory) {
+        this.flightHistory = flightHistory;
     }
 
     public String getName() {

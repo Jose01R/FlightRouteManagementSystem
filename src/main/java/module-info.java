@@ -11,5 +11,10 @@ module ucr.flightroutemanagementsystem {
     exports ucr.flightroutemanagementsystem;
     exports domain.common;
 
+
+    opens domain.common to com.google.gson;
+    opens domain.btree to com.google.gson;
+    opens domain.linkedlist to com.google.gson;
+
     opens ucr.flightroutemanagementsystem to javafx.fxml;
 }

@@ -19,9 +19,11 @@ public class JsonHandler {
         }
     }
     public <T> T load(Type type) throws IOException {
-        try(FileReader fileReader= new FileReader(filePath)){
-            return gson.fromJson(fileReader,type);
+        File file = new File(filePath);
+        if (!file.exists()) return null;
+        try (FileReader fileReader = new FileReader(file)) {
+            return gson.fromJson(fileReader, type);
         }
-
     }
+
 }
