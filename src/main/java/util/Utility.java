@@ -1,6 +1,7 @@
 package util;
 
 import domain.btree.*;
+import domain.common.Passenger;
 import domain.linkedlist.*;
 import domain.linkedqueue.*;
 import  domain.linkedstack.*;
@@ -138,6 +139,33 @@ public class Utility {
 //                    String inOrderAVL2 = avl2.inOrder();
 //                    return inOrderAVL1.compareTo(inOrderAVL2);
 
+                case "Passenger":
+                    Passenger p1 = (Passenger) a;
+                    Passenger p2 = (Passenger) b;
+
+                    // Comparar por ID primero (clave principal)
+                    if (p1.getId() != p2.getId())
+                        return Integer.compare(p1.getId(), p2.getId());
+
+                    // Comparar por nombre
+                    int nameComparison = p1.getName().compareToIgnoreCase(p2.getName());
+                    if (nameComparison != 0)
+                        return nameComparison;
+
+                    // Comparar por nacionalidad
+                    int natComparison = p1.getNationality().compareToIgnoreCase(p2.getNationality());
+                    if (natComparison != 0)
+                        return natComparison;
+
+                    // Comparar por tamaño del historial de vuelos (si quieres)
+                    try {
+                        int size1 = p1.getFlightHistory().size();
+                        int size2 = p2.getFlightHistory().size();
+                        return Integer.compare(size1, size2);
+                    } catch (Exception e) {
+                        return 0; // Si no se puede comparar vuelo, se ignora
+                    }
+
             }
 
         } catch (TreeException e) {
@@ -154,6 +182,7 @@ public class Utility {
         if (a instanceof BST && b instanceof BST) return "BST";
         if (a instanceof BTree && b instanceof BTree) return "BTree";
         if (a instanceof AVL && b instanceof AVL) return "AVL";
+        if (a instanceof Passenger && b instanceof Passenger) return "Passenger";
 
         return "Unknown";
     }

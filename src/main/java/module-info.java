@@ -15,5 +15,6 @@ module ucr.flightroutemanagementsystem {
 
     opens domain.common to com.fasterxml.jackson.databind;
 
+    opens domain.linkedlist to com.fasterxml.jackson.databind;
     opens ucr.flightroutemanagementsystem to javafx.fxml;
 }

@@ -8,10 +8,12 @@ public class SinglyLinkedList implements List {
         this.first = null;
     }
 
+    public void setFirst(Node first) {
+        this.first = first;
+    }
+
     @Override
     public int size() throws ListException {
-        if(isEmpty())
-            throw new ListException("Singly Linked List is empty");
         int counter = 0; //contador de nodos
         Node aux = first; //aux para moverme por la lista y no perder el puntero al inicio
         while(aux!=null){
