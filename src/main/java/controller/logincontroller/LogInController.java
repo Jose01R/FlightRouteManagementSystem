@@ -2,7 +2,7 @@ package controller.logincontroller;
 
 import data.UserData;
 import domain.common.User;
-import domain.linkedlist.ListException; // Import ListException from your CircularLinkedList
+import domain.linkedlist.ListException;
 import domain.service.LogInService;
 
 import javafx.event.ActionEvent;

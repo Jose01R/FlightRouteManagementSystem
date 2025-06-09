@@ -285,15 +285,14 @@ public class Utility {
         }
 
 
+    public static int[] copyArray (int[] arregloOriginal){
+        int[] copyArray = new int[arregloOriginal.length];
 
-        public static int[] copyArray (int[] arregloOriginal){
-            int[] copyArray = new int[arregloOriginal.length];
-
-            for (int i = 0; i < arregloOriginal.length; i++) {
-                copyArray[i] = arregloOriginal[i];
-            }
-            return copyArray;
+        for (int i = 0; i < arregloOriginal.length; i++) {
+            copyArray[i] = arregloOriginal[i];
         }
+        return copyArray;
+    }
 
     public static String arrayToString(int[] array) {
         if (array == null || array.length == 0) return "[]";
@@ -307,6 +306,69 @@ public class Utility {
 
         return result;
     }
+
+    public static Object[] toArray(LinkedQueue queue) throws ListException {
+        if (queue == null || queue.isEmpty()) {
+            return new Object[0]; //Retorna arreglo vacío si la cola es null o vacía
+        }
+
+        // Creamos una cola temporal para extraer elementos
+        LinkedQueue tempQueue = new LinkedQueue();
+        Object[] array = null;
+        try {
+            array = new Object[queue.size()];
+        } catch (QueueException e) {
+            throw new RuntimeException(e);
+        }
+        int originalSize = queue.size(); //Guardamos tamanno
+
+        try {
+            for (int i = 0; i < originalSize; i++) {
+                Object element = queue.deQueue();
+                tempQueue.enQueue(element);
+            }
+
+            for (int i = 0; i < originalSize; i++) {
+                Object element = tempQueue.deQueue();
+                array[i] = element; //Annadimos al array
+                queue.enQueue(element); //Devuelve elementos a la cola original
+            }
+
+        } catch (Exception e) {
+            throw new ListException("Error converting queue to array or restoring original queue: " + e.getMessage());
+        }
+        return array;
+    }
+
+    public static Object[] toArray(LinkedStack stack) throws ListException {
+        if (stack == null || stack.isEmpty()) {
+            return new Object[0]; //Retorna un arreglo vacío si la pila es nula o está vacía
+        }
+
+        //Pila temporal para invertir el orden
+        LinkedStack tempStack = new LinkedStack();
+        try {
+            while (!stack.isEmpty()) {
+                tempStack.push(stack.pop()); //Apilamos en la temporal
+            }
+        } catch (Exception e) {
+            throw new ListException("Error cloning stack for toArray: " + e.getMessage());
+        }
+
+        Object[] array = new Object[tempStack.size()];
+        int i = 0;
+        try {
+            while (!tempStack.isEmpty()) {
+                Object element = tempStack.pop();
+                array[i++] = element; //Annadimos al array
+                stack.push(element); //Delvovemos a la pila original
+            }
+        } catch (Exception e) {
+            throw new ListException("Error converting stack to array: " + e.getMessage());
+        }
+        return array;
+    }
+
 
 }
 
