@@ -168,4 +168,21 @@ class AirportsTest {
 
     }
 
+    @Test
+    void crear(){
+        Airport airport1 = new Airport(11, "Aeropuerto de Dortmund", "Alemania", "Active");
+        Airport airport2 = new Airport(12, "Aeropuerto de Aalborg", "Dinamarca", "Active");
+        Airport airport3 = new Airport(13, "Aeropuerto de La Coruña", "España", "Inactive");
+        airport1.departuresBoard.add("hola");
+        airport1.departuresBoard.add("adios");
+
+        try {
+            createAirport(airport1);
+            createAirport(airport2);
+            createAirport(airport3);
+        } catch (IOException | ListException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
