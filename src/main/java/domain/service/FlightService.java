@@ -61,8 +61,9 @@ public class FlightService {
         return null; // Vuelo no encontrado
     }
 
-    // Asigna un pasajero a un vuelo, opera sobre la lista enlazada del vuelo
-    public boolean assignPassengerToFlight(int flightNumber, Passenger passenger) throws ListException { // Declara que puede lanzar ListException
+    // Dentro de domain.service.FlightService.java
+
+    public boolean assignPassengerToFlight(int flightNumber, Passenger passenger) throws ListException {
         Flight flight = findFlightByNumber(flightNumber);
         if (flight != null) { // Verifica si el vuelo existe
             if (flight.getOccupancy() < flight.getCapacity()) { // Verifica si el vuelo tiene capacidad
@@ -73,10 +74,20 @@ public class FlightService {
                 }
 
                 // Intenta añadir el pasajero a la lista enlazada del vuelo
-                // Si add() lanza ListException, este método también la lanzará
                 flight.getPasajeros().add(passenger);
-                // Solo incrementa la ocupación si el pasajero fue añadido exitosamente a la lista
                 flight.incrementOccupancy();
+
+                // --- AÑADE ESTA LÓGICA AQUÍ ---
+                // Asegura que la lista de historial de vuelos del pasajero esté inicializada
+                if (passenger.getFlightHistory() == null) {
+                    // Asumo que el Passenger tiene un método setFlightHistory(SinglyLinkedList)
+                    passenger.setFlightHistory(new SinglyLinkedList());
+                }
+                // Añade el VUELO actual al historial de vuelos del pasajero
+                // ¡Es crucial que el historial del pasajero guarde el objeto Flight, no el Passenger!
+                passenger.getFlightHistory().add(flight);
+                // -----------------------------
+
                 return true; // Retorna true si todo fue exitoso
 
             } else {

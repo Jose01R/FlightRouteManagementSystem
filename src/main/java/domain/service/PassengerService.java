@@ -54,11 +54,12 @@ public class PassengerService {
         // *** ¡QUITAR LA LLAMADA A passengerData.writePassengers() AQUÍ! ***
     }
 
+    // Dentro de domain.service.PassengerService.java
+
     public Passenger findPassengerById(int passengerId) {
-
+        // Asumiendo que avlTree es una instancia de tu clase AVLTree que tiene el método getPassengerById
+        // y que getPassengerById en AVLTree retorna null si no encuentra el pasajero.
         return (Passenger) avlTree.getPassengerById(passengerId);
-
-        //return null; // Pasajero no encontrado o árbol vacío
     }
 
     public void saveData() {

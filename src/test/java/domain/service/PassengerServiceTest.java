@@ -42,9 +42,9 @@ class PassengerServiceTest {
         singlyLinkedList.add(flight1);
         //p1.setFlightHistory(singlyLinkedList);
         // Registrar pasajeros
-        //assertTrue(passengerService.registerPassenger(p1));
-       // assertTrue(passengerService.registerPassenger(p2));
-
+        passengerService.registerPassenger(p1);
+        passengerService.registerPassenger(p2);
+        passengerService.saveData();
         // Buscar por ID
        // Passenger result1 = passengerService.findPassengerById(101);
        // Passenger result2 = passengerService.findPassengerById(102);

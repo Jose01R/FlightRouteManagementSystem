@@ -13,7 +13,7 @@ module ucr.flightroutemanagementsystem {
     exports controller.flightcontroller;
     exports ucr.flightroutemanagementsystem;
     exports domain.common;
-
+    exports  domain.linkedlist;
     opens domain.common to com.fasterxml.jackson.databind;
     opens controller.flightcontroller to javafx.fxml;
     opens domain.linkedlist to com.fasterxml.jackson.databind;

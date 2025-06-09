@@ -213,10 +213,11 @@ public class FlightController {
                 passenger.setNationality(nationality);
             }
 
-            if (passenger.getFlightHistory() == null) {
-                passenger.setFlightHistory(new SinglyLinkedList());
-            }
-            passenger.getFlightHistory().add(flightFound);
+           // if (passenger.getFlightHistory() == null) {
+              //  passenger.setFlightHistory(new SinglyLinkedList());
+            //}
+
+            //passenger.getFlightHistory().add(flightFound);
 
             passengerService.updatePassenger(passenger); // Persiste los cambios en el pasajero
 

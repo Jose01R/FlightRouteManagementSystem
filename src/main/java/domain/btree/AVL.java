@@ -587,16 +587,18 @@ public class AVL implements Tree {
     }
 
     private Passenger getPassengerById(BTreeNode node, int id){
-        if (node==null)return null;
+        if (node == null) {
+            return null; // Si el nodo es nulo, el pasajero no se encontró en esta rama
+        }
+        Passenger currentPassenger = (Passenger) node.data;
+        int currentId = currentPassenger.getId();
 
-        Passenger currentPassenger=(Passenger) node.data;
-        int currentId=currentPassenger.getId();
-        if(Utility.compare(id,currentId)==0){
+        if (Utility.compare(id, currentId) == 0) { // Si los IDs son iguales, hemos encontrado el pasajero
             return currentPassenger;
-        }else if (Utility.compare(currentId,id)<0)
-            return getPassengerById(node.left,id);
-        else return getPassengerById(node.right,id);
-
-
+        } else if (Utility.compare(id, currentId) < 0) { // Si el ID buscado es MENOR que el ID del nodo actual, ve a la IZQUIERDA
+            return getPassengerById(node.left, id);
+        } else { // Si el ID buscado es MAYOR que el ID del nodo actual, ve a la DERECHA
+            return getPassengerById(node.right, id);
+        }
     }
 }
