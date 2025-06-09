@@ -66,12 +66,28 @@ public class LogInController {
                 String fxmlPath = "";
                 switch (authenticatedUser.getRole()) {
                     case ADMINISTRATOR:
-                        HelloApplication.loadMainApplicationScene(stage);
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+                        //HelloApplication.loadMainApplicationScene(stage);
+                        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+
+
                         break;
 
                     case USER:
-                        fxmlPath = "/view/user/UserDashboard.fxml";
+                        //fxmlPath = "/view/user/UserDashboard.fxml";
+                        FXMLLoader helloFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+                        Scene helloScene = new Scene(helloFxmlLoader.load());
+
+                        String css = HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/stylesheet.css").toExternalForm();
+                        helloScene.getStylesheets().add(css);
+
+                        String alertCss = HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/alert_styles.css").toExternalForm();
+                        helloScene.getStylesheets().add(alertCss);
+
+                        stage.setTitle("Airport Operations System");
+                        stage.setScene(helloScene);
+                        stage.setResizable(false);
+                        stage.show();
+
                         break;
 
                     default:

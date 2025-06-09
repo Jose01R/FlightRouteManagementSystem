@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="477.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AirportsController">
+   <center>
+      <Pane prefHeight="73.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <Pane prefHeight="79.0" prefWidth="713.0" style="-fx-background-color: #0aabba;">
+               <children>
+                  <Text fx:id="txtMessage" fill="#f7f7f7" layoutX="240.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Airports" textAlignment="CENTER" wrappingWidth="231.54925537109375">
+                     <font>
+                        <Font name="Arial Bold" size="35.0" />
+                     </font>
+                  </Text>
+               </children>
+            </Pane>
+            <Pane layoutY="75.0" prefHeight="405.0" prefWidth="713.0">
+               <children>
+                  <TableView fx:id="tableview" layoutX="25.0" layoutY="80.0" prefHeight="311.0" prefWidth="515.0">
+                    <columns>
+                      <TableColumn fx:id="codeColumn" prefWidth="75.0" text="Code" />
+                      <TableColumn fx:id="nameColumn" prefWidth="189.6000213623047" text="Name" />
+                        <TableColumn fx:id="countryColumn" minWidth="0.0" prefWidth="109.5999755859375" text="Country" />
+                        <TableColumn fx:id="statusColumn" prefWidth="139.0" text="Status" />
+                    </columns>
+                  </TableView>
+                  <Text layoutX="25.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Code: ">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="id" layoutX="80.0" layoutY="15.0" prefHeight="27.0" prefWidth="85.0">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </TextField>
+                  <Text layoutX="25.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Status:">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="status" layoutX="80.0" layoutY="46.0" prefHeight="27.0" prefWidth="85.0">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </TextField>
+                  <Text layoutX="172.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name:">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="nameAirport" layoutX="227.0" layoutY="13.0" prefHeight="27.0" prefWidth="134.0">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </TextField>
+                  <Text layoutX="172.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Contry:">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="country" layoutX="227.0" layoutY="44.0" prefHeight="27.0" prefWidth="134.0">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="add" layoutX="377.0" layoutY="29.0" mnemonicParsing="false" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Add Airport">
+                     <font>
+                        <Font name="Arial Bold" size="18.0" />
+                     </font>
+                  </Button>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </center>
+</BorderPane>

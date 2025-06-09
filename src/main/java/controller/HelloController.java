@@ -39,18 +39,35 @@ public class HelloController {
         this.bp.setCenter(ap);
     }
 
+
     @FXML
-    public void BST_AVL_Tour_OnAction(ActionEvent actionEvent) {
-        loadPage("bst_avl_tour.fxml");
+    public void simulaciónVuelosOcupaciónOnAction(ActionEvent actionEvent) {
+        loadPage("fxml.");
     }
 
     @FXML
-    public void BST_AVL_Operations_OnAction(ActionEvent actionEvent) {
-        loadPage("bst_avl_operations.fxml");
+    public void pasajerosOnAction(ActionEvent actionEvent) {
+        loadPage("fxml.");
     }
 
     @FXML
-    public void graphic_BST_AVL_OnAction(ActionEvent actionEvent) {
-        loadPage("graphic_bst_avl.fxml");
+    public void aeropuertosOnAction(ActionEvent actionEvent) {
+        loadPage("fxml.");
+    }
+
+
+    @FXML
+    public void reportesOnAction(ActionEvent actionEvent) {
+        loadPage("fxml.");
+    }
+
+    @FXML
+    public void vuelosOnAction(ActionEvent actionEvent) {
+        loadPage("fxml.");
+    }
+
+    @FXML
+    public void rutasEntreAeropuertosOnAction(ActionEvent actionEvent) {
+        loadPage("fxml.");
     }
 }
