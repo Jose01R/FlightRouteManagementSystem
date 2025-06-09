@@ -1,9 +1,10 @@
 package data;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule; // Asegúrate de que esta dependencia esté bien configurada
 import domain.common.Flight;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -12,85 +13,46 @@ import java.util.Map;
 
 public class FlightData {
 
-    private static final String FLIGHT_FILE="flight.json";
-    private Map<Integer, Flight>flightMap;
+    private static final String FLIGHT_FILE = "flight.json";
     private ObjectMapper objectMapper;
 
     public FlightData() {
-        this.flightMap = new HashMap<>();
         this.objectMapper = new ObjectMapper();
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        this.objectMapper.findAndRegisterModules();
-
-        loadFlightFromFile();
+        // Asegúrate de que JavaTimeModule esté registrado para LocalDateTime
+        this.objectMapper.registerModule(new JavaTimeModule());
+        // findAndRegisterModules() es un método más general, registerModule es específico
+        // this.objectMapper.findAndRegisterModules(); // Si no funciona registerModule, prueba este
     }
 
-
-    private void loadFlightFromFile() {
-
+    // Método para cargar vuelos del archivo en un Map
+    public Map<Integer, Flight> loadFlightsToMap() {
         File file = new File(FLIGHT_FILE);
         if (file.exists() && file.length() > 0) {
             try {
-                this.flightMap = objectMapper.readValue(
+                // Deserializa directamente a un HashMap<Integer, Flight>
+                return objectMapper.readValue(
                         file,
-                        objectMapper.getTypeFactory().constructMapType(HashMap.class, Integer.class, Flight.class)
+                        new TypeReference<HashMap<Integer, Flight>>() {}
                 );
-                System.out.println("Pasajeros cargados exitosamente desde " + FLIGHT_FILE);
             } catch (IOException e) {
-                System.err.println("Error al cargar pasajeros: " + e.getMessage());
+                System.err.println("Error al cargar vuelos desde el archivo: " + e.getMessage());
+                e.printStackTrace();
             }
         } else {
-            System.out.println("Archivo de pasajeros no encontrado o vacío. Se inicia una colección nueva.");
+            System.out.println("Archivo de vuelos no encontrado o vacío. Se inicia una colección nueva.");
         }
+        return new HashMap<>(); // Retorna un mapa vacío si no hay archivo o hay error
     }
-    public void saveFlightToFile() {
+
+    // Método para guardar un Map de vuelos en el archivo
+    public void saveFlightsFromMap(Map<Integer, Flight> flightsToSave) {
         try {
-            objectMapper.writeValue(new File(FLIGHT_FILE), flightMap);
-            System.out.println("Pasajeros guardados exitosamente en " + FLIGHT_FILE);
+            objectMapper.writeValue(new File(FLIGHT_FILE), flightsToSave);
+            System.out.println("Vuelos guardados exitosamente en " + FLIGHT_FILE);
         } catch (IOException e) {
-            System.err.println("Error al guardar pasajeros: " + e.getMessage());
+            System.err.println("Error al guardar vuelos en el archivo: " + e.getMessage());
+            e.printStackTrace();
         }
-    }
-
-    public boolean registerFlight(Flight flight) {
-        if (flightMap.containsKey(flight.getNumber())) {
-            System.out.println("Ya existe un pasajero con el ID " + flight.getNumber());
-            return false;
-        }
-
-        flightMap.put(flight.getNumber(),flight);
-        saveFlightToFile();
-        return true;
-    }
-
-    public boolean updateFlight(Flight updatedFlight) {
-        if (!flightMap.containsKey(updatedFlight.getNumber())) {
-            System.out.println("No se encontró un pasajero con el ID " + updatedFlight.getNumber());
-            return false;
-        }
-
-        flightMap.put(updatedFlight.getNumber(), updatedFlight);
-        saveFlightToFile();
-        System.out.println("Pasajero actualizado correctamente.");
-        return true;
-    }
-
-    public boolean deleteFlight(int flightNumber) {
-        if (!flightMap.containsKey(flightNumber)) {
-            System.out.println("No se encontró un pasajero con el ID " + flightNumber);
-            return false;
-        }
-
-        flightMap.remove(flightNumber);
-        saveFlightToFile();
-        return true;
-    }
-
-    public Flight getFlightByNumber(int flightNumber) {
-        return flightMap.get(flightNumber);
-    }
-
-    public Map<Integer, Flight> getAllFlights() {
-        return new HashMap<>(flightMap);
     }
 }

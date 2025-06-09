@@ -1,94 +1,66 @@
 package data;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import domain.btree.AVL;
+import domain.btree.TreeException;
 import domain.common.Passenger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PassengerData {
-    private static final String PASSENGERS_FILE = "passengers.json";
-    private Map<Integer, Passenger> passengers;
+    private final String PASSENGERS_FILE = "passengers.json";
     private ObjectMapper objectMapper;
 
     public PassengerData() {
-        this.passengers = new HashMap<>();
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        this.objectMapper.findAndRegisterModules();
-
-        loadPassengersFromFile();
     }
 
-    private void loadPassengersFromFile() {
-        File file = new File(PASSENGERS_FILE);
-        if (file.exists() && file.length() > 0) {
-            try {
-                this.passengers = objectMapper.readValue(
-                        file,
-                        objectMapper.getTypeFactory().constructMapType(HashMap.class, Integer.class, Passenger.class)
-                );
-                System.out.println("Pasajeros cargados exitosamente desde " + PASSENGERS_FILE);
-            } catch (IOException e) {
-                System.err.println("Error al cargar pasajeros: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Archivo de pasajeros no encontrado o vacío. Se inicia una colección nueva.");
-        }
-    }
-
-    public void savePassengersToFile() {
+    // Método para leer pasajeros del archivo al inicio
+    public AVL readPassengers() {
+        AVL avlPassengers = new AVL();
         try {
-            objectMapper.writeValue(new File(PASSENGERS_FILE), passengers);
+            File file = new File(PASSENGERS_FILE);
+            if (file.exists() && file.length() > 0) {
+                List<Passenger> passengerList = objectMapper.readValue(file, new TypeReference<List<Passenger>>() {});
+                for (Passenger passenger : passengerList) {
+                    avlPassengers.add(passenger); // Asume que add() del AVL funciona con objetos Passenger
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer pasajeros del archivo: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("Error al añadir pasajeros deserializados al AVL: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return avlPassengers;
+    }
+
+    // *** ¡NUEVO MÉTODO PARA GUARDAR TODOS LOS PASAJEROS A LA VEZ! ***
+    public void saveAllPassengers(AVL passengersToSave) {
+        try {
+            // Convierte tu AVL a una List<Passenger>
+            List<Passenger> passengerList = new ArrayList<>();
+            if (passengersToSave != null && !passengersToSave.isEmpty()) {
+                for (Object obj : passengersToSave.inOrderNodes1()) { // Asume inOrderNodes1() devuelve una lista de objetos
+                    passengerList.add((Passenger) obj);
+                }
+            }
+            objectMapper.writeValue(new File(PASSENGERS_FILE), passengerList);
             System.out.println("Pasajeros guardados exitosamente en " + PASSENGERS_FILE);
         } catch (IOException e) {
-            System.err.println("Error al guardar pasajeros: " + e.getMessage());
+            System.err.println("Error al guardar pasajeros en el archivo: " + e.getMessage());
+            e.printStackTrace();
+        } catch (TreeException e) {
+            System.err.println("Error al iterar el árbol de pasajeros para guardar: " + e.getMessage());
+            e.printStackTrace();
         }
-    }
-
-    public boolean registerPassenger(Passenger passenger) {
-        if (passengers.containsKey(passenger.getId())) {
-            System.out.println("Ya existe un pasajero con el ID " + passenger.getId());
-            return false;
-        }
-
-        passengers.put(passenger.getId(), passenger);
-        savePassengersToFile();
-        return true;
-    }
-
-    public boolean updatePassenger(Passenger updatedPassenger) {
-        if (!passengers.containsKey(updatedPassenger.getId())) {
-            System.out.println("No se encontró un pasajero con el ID " + updatedPassenger.getId());
-            return false;
-        }
-
-        passengers.put(updatedPassenger.getId(), updatedPassenger);
-        savePassengersToFile();
-        System.out.println("Pasajero actualizado correctamente.");
-        return true;
-    }
-
-    public boolean deletePassenger(int id) {
-        if (!passengers.containsKey(id)) {
-            System.out.println("No se encontró un pasajero con el ID " + id);
-            return false;
-        }
-
-        passengers.remove(id);
-        savePassengersToFile();
-        return true;
-    }
-
-    public Passenger getPassengerById(int id) {
-        return passengers.get(id);
-    }
-
-    public Map<Integer, Passenger> getAllPassengers() {
-        return new HashMap<>(passengers);
     }
 }
-

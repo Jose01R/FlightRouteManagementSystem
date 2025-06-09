@@ -82,11 +82,11 @@ public class Passenger {
 
     @Override
     public String toString() {
+        // ¡IMPORTANTE! No incluyas 'flightHistory' directamente aquí para evitar recursión infinita
         return "Passenger{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", nationality='" + nationality + '\'' +
-                ", flightHistory=" + flightHistory +
                 '}';
     }
 }

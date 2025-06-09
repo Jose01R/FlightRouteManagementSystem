@@ -519,6 +519,29 @@ public class AVL implements Tree {
         }
     }
 
+
+
+
+    public List<Object> inOrderNodes1() throws TreeException {
+        List<Object> list = new ArrayList<>();
+        inOrder1(root, list);
+        return list;
+    }
+
+    private void inOrder1(BTreeNode node, List<Object> list) {
+        if (node != null) {
+            inOrder1(node.left, list);
+            list.add(node.data); // donde data es un Passenger
+            inOrder1(node.right, list);
+        }
+    }
+
+
+
+
+
+
+
     @Override
     public List<BTreeNode> postOrderNodes() throws TreeException {
         if(isEmpty())

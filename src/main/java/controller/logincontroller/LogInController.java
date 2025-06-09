@@ -55,48 +55,43 @@ public class LogInController {
             User authenticatedUser = logInService.login(email, password);
 
             if (authenticatedUser != null) {
-                util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
+                util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName() + "!");
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//                HelloApplication.loadMainApplicationScene(stage);
-//                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
 
+                String fxmlPath;
 
-                //Se carga la vista dependiendo del rol
-                String fxmlPath = "";
                 switch (authenticatedUser.getRole()) {
                     case ADMINISTRATOR:
-                        HelloApplication.loadMainApplicationScene(stage);
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+                        fxmlPath = "/ucr/flightroutemanagementsystem/hello-view.fxml";
                         break;
-
                     case USER:
-                        fxmlPath = "/view/user/UserDashboard.fxml";
+                        fxmlPath = "/ucr/flightroutemanagementsystem/flightinterface/flight.fxml";
                         break;
-
                     default:
-                        fxmlPath = "/view/GeneralDashboard.fxml";
+                        fxmlPath = "/view/GeneralDashboard.fxml"; // fallback
                         break;
                 }
 
-                // OPCION 2
-                //Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                //Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));  //ACA SE USA EL FXML PATH
-                //Scene scene = new Scene(root);
-               // stage.setScene(scene);
-                //stage.show();
+                // Cargar la nueva escena
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.show();
 
             } else {
                 util.FXUtility.alert("Inicio de Sesión Fallido", "Correo electrónico o contraseña inválidos.");
             }
         } catch (ListException e) {
-            util.FXUtility.alert("Error del Sistema", "Ocurrió un error interno del sistema durante el inicio de sesión: " + e.getMessage());
-            System.err.println("ListException durante el inicio de sesión: " + e.getMessage());
+            util.FXUtility.alert("Error del Sistema", "Error durante el inicio de sesión: " + e.getMessage());
+            e.printStackTrace();
         } catch (IOException e) {
             util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
-            System.err.println("IOException durante la carga de la escena: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
     @FXML
     private void forgotPasswordOnAction(ActionEvent event) {
