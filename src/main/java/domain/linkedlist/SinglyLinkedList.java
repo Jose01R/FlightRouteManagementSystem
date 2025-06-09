@@ -200,18 +200,32 @@ public class SinglyLinkedList implements List {
 
     @Override
     public Node getNode(int index) throws ListException {
-        if(isEmpty())
-            throw new ListException("Singly Linked List is empty");
+        if(isEmpty()){
+            throw new ListException("Singly Linked List is Empty");
+        }
         Node aux = first;
-        int i = 1; //posicion del primer nodo
+        int i = 1; // pos del primer nodo
         while(aux!=null){
-            if(util.Utility.compare(i, index)==0){
+            if(util.Utility.compare(i, index)==0) {  //ya encontro el indice
                 return aux;
             }
-            i++;
-            aux = aux.next; //lo movemos al sgte nodo
+            i++; //incremento la var local
+            aux = aux.next; //muevo aux al sgte nodo
         }
-        return null;
+        return null; //si llega aqui es xq no encontro el index
+    }
+    public Node getNode(Object element) throws ListException {
+        if(isEmpty()){
+            throw new ListException("Singly Linked List is Empty");
+        }
+        Node aux = first;
+        while(aux!=null){
+            if(util.Utility.compare(aux.data, element)==0) {  //ya encontro el elemento
+                return aux;
+            }
+            aux = aux.next; //muevo aux al sgte nodo
+        }
+        return null; //si llega aqui es xq no encontro el index
     }
 
     @Override
