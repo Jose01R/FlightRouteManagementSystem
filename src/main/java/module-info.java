@@ -2,6 +2,7 @@ module ucr.flightroutemanagementsystem {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.fasterxml.jackson.databind;
+    requires com.google.gson;
     //requires com.fasterxml.jackson.datatype.jsr310;
 
     opens controller.logincontroller to javafx.fxml;
@@ -12,7 +13,12 @@ module ucr.flightroutemanagementsystem {
     exports ucr.flightroutemanagementsystem;
     exports domain.common;
 
-    opens domain.common to com.fasterxml.jackson.databind;
+    //opens domain.common to com.fasterxml.jackson.databind;
+
+    opens domain.common to com.fasterxml.jackson.databind, com.google.gson;
 
     opens ucr.flightroutemanagementsystem to javafx.fxml;
+
+    opens domain.linkedlist to com.google.gson;
+
 }

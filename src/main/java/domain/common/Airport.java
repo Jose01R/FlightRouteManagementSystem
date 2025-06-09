@@ -2,12 +2,14 @@ package domain.common;
 
 import domain.linkedlist.SinglyLinkedList;
 
+import java.util.Objects;
+
 public class Airport {
     private int code;
     private String name;
     private String country;
     private String status; // "active = 1" o "inactive = 0"
-    private SinglyLinkedList departuresBoard;
+    public SinglyLinkedList departuresBoard; //para poder usarlo sino hay set
 
     public Airport(int code, String name, String country, String status) {
         this.code = code;
@@ -17,6 +19,9 @@ public class Airport {
         this.departuresBoard = new SinglyLinkedList();
     }
 
+    public Airport(int code) {
+        this.code = code;
+    }
 
     public int getCode() {
         return code;
@@ -50,7 +55,6 @@ public class Airport {
     public void setStatus(String status) {
         this.status = status;
     }
-
 
     @Override
     public String toString() {

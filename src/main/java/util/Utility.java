@@ -1,6 +1,7 @@
 package util;
 
 import domain.btree.*;
+import domain.common.Airport;
 import domain.linkedlist.*;
 import domain.linkedqueue.*;
 import  domain.linkedstack.*;
@@ -138,6 +139,11 @@ public class Utility {
 //                    String inOrderAVL2 = avl2.inOrder();
 //                    return inOrderAVL1.compareTo(inOrderAVL2);
 
+                case "Airport":
+                    Airport a1 = (Airport) a;
+                    Airport a2 = (Airport) b;
+                    return a1.getCode() < a2.getCode() ? -1
+                            :  a1.getCode() > a2.getCode() ? 1 : 0;
             }
 
         } catch (TreeException e) {
@@ -154,6 +160,7 @@ public class Utility {
         if (a instanceof BST && b instanceof BST) return "BST";
         if (a instanceof BTree && b instanceof BTree) return "BTree";
         if (a instanceof AVL && b instanceof AVL) return "AVL";
+        if (a instanceof Airport && b instanceof Airport) return "Airport";
 
         return "Unknown";
     }
