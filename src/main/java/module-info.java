@@ -13,7 +13,12 @@ module ucr.flightroutemanagementsystem {
     exports ucr.flightroutemanagementsystem;
     exports domain.common;
 
-    opens domain.common to com.fasterxml.jackson.databind;
+    //opens domain.common to com.fasterxml.jackson.databind;
+
+    opens domain.common to com.fasterxml.jackson.databind, com.google.gson;
 
     opens ucr.flightroutemanagementsystem to javafx.fxml;
+
+    opens domain.linkedlist to com.google.gson;
+
 }

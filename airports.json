@@ -1,0 +1,23 @@
+[
+  {
+    "code": 12,
+    "name": "Aeropuerto de Aalborg",
+    "country": "Dinamarca",
+    "status": "Active",
+    "departuresBoard": {
+      "first": {
+        "data": "chao",
+        "next": {
+          "data": "goodbye"
+        }
+      }
+    }
+  },
+  {
+    "code": 13,
+    "name": "Aeropuerto de Agen-La Garenne",
+    "country": "Francia",
+    "status": "Inactive",
+    "departuresBoard": {}
+  }
+]

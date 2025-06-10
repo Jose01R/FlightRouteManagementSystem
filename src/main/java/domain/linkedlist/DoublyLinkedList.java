@@ -8,6 +8,10 @@ public class DoublyLinkedList implements List {
         this.first = null;
     }
 
+    public Node getFirstNode(){
+        return first;
+    }
+
     @Override
     public int size() throws ListException {
         if(isEmpty())
