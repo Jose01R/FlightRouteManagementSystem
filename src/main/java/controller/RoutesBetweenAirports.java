@@ -1,5 +1,7 @@
 package controller;
 
+import domain.graph.GraphException;
+import domain.graph.SinglyLinkedListGraph;
 import domain.linkedlist.ListException;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -22,7 +24,13 @@ public class RoutesBetweenAirports
 
     @javafx.fxml.FXML
     public void initialize() {
-        generateGraph();
+        try {
+            generateGraph();
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        } catch (GraphException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
