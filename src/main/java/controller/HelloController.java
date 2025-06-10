@@ -52,7 +52,7 @@ public class HelloController {
 
     @FXML
     public void aeropuertosOnAction(ActionEvent actionEvent) {
-        loadPage("fxml.");
+        loadPage("airports.fxml");
     }
 
 

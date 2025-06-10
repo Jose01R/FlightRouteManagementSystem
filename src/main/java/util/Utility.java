@@ -307,7 +307,7 @@ public class Utility {
         return result;
     }
 
-    public static Object[] toArray(LinkedQueue queue) throws ListException {
+    public static Object[] toArray(LinkedQueue queue) throws ListException, QueueException {
         if (queue == null || queue.isEmpty()) {
             return new Object[0]; //Retorna arreglo vacío si la cola es null o vacía
         }
@@ -368,6 +368,61 @@ public class Utility {
         }
         return array;
     }
+
+    public static boolean randomBoolean() {
+        return random.nextBoolean();
+    }
+
+    public static String getAirport() {
+        String[] airportsArray = {
+                // Costa Rica
+                "Aeropuerto Internacional Juan Santamaría (Costa Rica)",
+                "Aeropuerto Internacional Daniel Oduber Quirós (Costa Rica)",
+                "Aeropuerto de Limón (Costa Rica)",
+
+                // Estados Unidos
+                "Los Angeles International Airport (LAX - USA)",
+                "John F. Kennedy International Airport (JFK - USA)",
+                "Hartsfield–Jackson Atlanta International Airport (ATL - USA)",
+
+                // México
+                "Aeropuerto Internacional de la Ciudad de México (CDMX - México)",
+                "Aeropuerto Internacional de Cancún (México)",
+
+                // España
+                "Aeropuerto Adolfo Suárez Madrid-Barajas (España)",
+                "Aeropuerto de Barcelona-El Prat (España)",
+
+                // Francia
+                "Aeropuerto Charles de Gaulle (París - Francia)",
+                "Aeropuerto de Orly (París - Francia)",
+
+                // Alemania
+                "Aeropuerto de Frankfurt (Alemania)",
+                "Aeropuerto de Múnich (Alemania)",
+
+                // Reino Unido
+                "London Heathrow Airport (Reino Unido)",
+                "Gatwick Airport (Reino Unido)",
+
+                // Japón
+                "Tokyo Haneda Airport (Japón)",
+                "Narita International Airport (Japón)",
+
+                // Brasil
+                "Aeroporto Internacional de São Paulo/Guarulhos (Brasil)",
+                "Aeroporto do Galeão (Río de Janeiro - Brasil)",
+
+                // Argentina
+                "Aeropuerto Internacional Ministro Pistarini (Ezeiza - Argentina)",
+
+                // Canadá
+                "Toronto Pearson International Airport (Canadá)",
+                "Vancouver International Airport (Canadá)"
+        };
+        return airportsArray[random(airportsArray.length - 1)];
+    }
+
 
 
 }

@@ -53,8 +53,12 @@ public class AirportsData {
             }
         }
 
-        //Añadir el nuevo aeropuerto en la "Lista Enlazada Doble"
         airportsDoublyList.add(airport);
+
+        //Añadir el nuevo aeropuerto en la "Lista Enlazada Doble"
+        if(airportsDoublyList.contains(airport.getCode())){
+            throw new ListException("The airport already exists");
+        }
 
         //Convertir la "Lista Enlazada Doble" a una lista estandar para serializar en en formato Json
         List<Airport> airportsToSave = new ArrayList<>();
@@ -100,7 +104,7 @@ public class AirportsData {
                     for (Airport a : tempJavaList) {
                         airportsDoublyList.add(a);
                     }
-                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -340,6 +344,34 @@ public class AirportsData {
             }
 
             return list;
+        }
+
+        // Me da lo que esta en el json registrado, para actualizar el tableView
+        public static DoublyLinkedList getElements(){
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
+
+            Path filePath = Paths.get(FILE_NAME);
+
+            //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
+            if (Files.exists(filePath)) {
+                try (Reader reader = Files.newBufferedReader(filePath)) {
+                    Type listType = new TypeToken<List<Airport>>() {}.getType();
+                    List<Airport> tempJavaList = gson.fromJson(reader, listType);
+
+                    //Añade elemento de la lista de "airports.json" a la "Lista Enlazada Doble"
+                    if (tempJavaList != null) {
+                        for (Airport a : tempJavaList) {
+                            airportsDoublyList.add(a);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return airportsDoublyList;
         }
 
 }
