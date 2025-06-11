@@ -19,13 +19,13 @@ public class FlightData {
     public FlightData() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        // Asegúrate de que JavaTimeModule esté registrado para LocalDateTime
+
         this.objectMapper.registerModule(new JavaTimeModule());
-        // findAndRegisterModules() es un método más general, registerModule es específico
-        // this.objectMapper.findAndRegisterModules(); // Si no funciona registerModule, prueba este
+
+
     }
 
-    // Método para cargar vuelos del archivo en un Map
+    //Método para cargar vuelos del archivo en un Map
     public Map<Integer, Flight> loadFlightsToMap() {
         File file = new File(FLIGHT_FILE);
         if (file.exists() && file.length() > 0) {
@@ -42,7 +42,7 @@ public class FlightData {
         } else {
             System.out.println("Archivo de vuelos no encontrado o vacío. Se inicia una colección nueva.");
         }
-        return new HashMap<>(); // Retorna un mapa vacío si no hay archivo o hay error
+        return new HashMap<>(); //Retorna un mapa vacío si no hay archivo
     }
 
     // Método para guardar un Map de vuelos en el archivo

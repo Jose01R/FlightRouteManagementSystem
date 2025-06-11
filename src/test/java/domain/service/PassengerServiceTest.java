@@ -40,26 +40,19 @@ class PassengerServiceTest {
         SinglyLinkedList singlyLinkedList= new SinglyLinkedList();
         singlyLinkedList.add(flight);
         singlyLinkedList.add(flight1);
-        //p1.setFlightHistory(singlyLinkedList);
-        // Registrar pasajeros
+
         passengerService.registerPassenger(p1);
         passengerService.registerPassenger(p2);
         passengerService.saveData();
-        // Buscar por ID
-       // Passenger result1 = passengerService.findPassengerById(101);
-       // Passenger result2 = passengerService.findPassengerById(102);
 
-
-        //assertEquals("Carlos", result1.getName());
-        //assertEquals("Ana", result2.getName());
     }
 
     @Test
     void testDuplicatePassenger() throws TreeException {
         Passenger p = new Passenger(200, "Luis", "Salvadoreño");
 
-       // assertTrue(passengerService.registerPassenger(p));
-       // assertFalse(passengerService.registerPassenger(p)); // Mismo ID, debe fallar
+        assertTrue(passengerService.registerPassenger(p));
+        assertFalse(passengerService.registerPassenger(p)); // Mismo ID, debe fallar
     }
 
     @Test
@@ -106,5 +99,8 @@ class PassengerServiceTest {
         System.out.println("Cargado correctamente: " + loaded.getName());
     }
 
-
+    @Test
+    void loadRandomPassengersTest(){
+        passengerService.loadRandomPassengersIntoFile(10);
+    }
 }

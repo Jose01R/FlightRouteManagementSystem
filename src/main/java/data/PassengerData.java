@@ -31,7 +31,7 @@ public class PassengerData {
             if (file.exists() && file.length() > 0) {
                 List<Passenger> passengerList = objectMapper.readValue(file, new TypeReference<List<Passenger>>() {});
                 for (Passenger passenger : passengerList) {
-                    avlPassengers.add(passenger); // Asume que add() del AVL funciona con objetos Passenger
+                    avlPassengers.add(passenger);
                 }
             }
         } catch (IOException e) {
@@ -43,13 +43,13 @@ public class PassengerData {
         return avlPassengers;
     }
 
-    // *** ¡NUEVO MÉTODO PARA GUARDAR TODOS LOS PASAJEROS A LA VEZ! ***
+
     public void saveAllPassengers(AVL passengersToSave) {
         try {
-            // Convierte tu AVL a una List<Passenger>
+
             List<Passenger> passengerList = new ArrayList<>();
             if (passengersToSave != null && !passengersToSave.isEmpty()) {
-                for (Object obj : passengersToSave.inOrderNodes1()) { // Asume inOrderNodes1() devuelve una lista de objetos
+                for (Object obj : passengersToSave.inOrderNodes1()) {
                     passengerList.add((Passenger) obj);
                 }
             }
@@ -62,5 +62,37 @@ public class PassengerData {
             System.err.println("Error al iterar el árbol de pasajeros para guardar: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    public void generateAndSaveInitialRandomPassengers(int count) {
+        List<Passenger> passengers = new ArrayList<>();
+
+        String[] names = {"Juan", "Maria", "Pedro", "Ana", "Luis", "Sofía", "Diego", "Valeria"};
+        String[] nationalities = {"Costarricense", "Nicaragüense", "Panameño", "Guatemalteco", "Salvadoreño", "Hondureño"};
+
+        for (int i = 0; i < count; i++) {
+            // Genera una cédula de 9 dígitos, donde el primero no es cero
+            int id = 100_000_000 + util.Utility.random(900_000_000);
+
+            String name = names[util.Utility.random(names.length)];
+            String nationality = nationalities[util.Utility.random(nationalities.length)];
+
+            passengers.add(new Passenger(id, name, nationality));
+        }
+
+        try {
+            saveInitialRandomPassengersToJson(passengers);
+            System.out.println("Se generaron y guardaron " + count + " pasajeros aleatorios en " + PASSENGERS_FILE);
+        } catch (IOException e) {
+            System.err.println("Error al generar y guardar pasajeros iniciales: " + e.getMessage());
+        }
+    }
+
+
+    private void saveInitialRandomPassengersToJson(List<Passenger> passengers) throws IOException {
+        if (passengers != null && !passengers.isEmpty()) {
+            objectMapper.writeValue(new File(PASSENGERS_FILE), passengers);
+            System.out.println("Pasajeros guardados exitosamente en " + PASSENGERS_FILE);
+        }
+
     }
 }

@@ -8,9 +8,10 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="663.0" prefWidth="1185.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.flightcontroller.FlightController">
+<BorderPane prefHeight="1023.0" prefWidth="1298.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.flightcontroller.FlightController">
 
     <!-- Top: Encabezado -->
     <top>
@@ -19,7 +20,7 @@
 
     <!-- Formulario de Vuelos -->
     <left>
-        <VBox spacing="15" style="-fx-padding: 25px;">
+        <VBox prefHeight="540.0" prefWidth="224.0" spacing="15" style="-fx-padding: 25px;">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Registro de Vuelo" />
             <Label text="Número de vuelo:" />
             <TextField fx:id="flightNumberField" promptText="Ej: 101" style="-fx-background-radius: 8;" />
@@ -40,33 +41,38 @@
 
     <!-- Formulario de Pasajeros -->
     <right>
-        <VBox spacing="15" style="-fx-padding: 25px;">
+        <VBox prefHeight="571.0" prefWidth="335.0" spacing="15" style="-fx-padding: 25px;">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Registro de Pasajero" />
             <Label text="ID:" />
-            <TextField fx:id="passengerIdField" promptText="Ej: 202" style="-fx-background-radius: 8;" />
+            <TextField fx:id="passengerIdField" promptText="Ej: 305630386" style="-fx-background-radius: 8;" />
             <Label text="Nombre:" />
             <TextField fx:id="passengerNameField" promptText="Ej: María" style="-fx-background-radius: 8;" />
             <Label text="Nacionalidad:" />
-            <TextField fx:id="nationalityField" promptText="Ej: Costarricense" style="-fx-background-radius: 8;" />
+            <TextField fx:id="nationalityField" prefHeight="25.0" prefWidth="245.0" promptText="Ej: Costarricense" style="-fx-background-radius: 8;" />
             <Label text="Vuelo asignado:" />
             <ComboBox fx:id="assignedFlightComboBox" prefWidth="150.0" style="-fx-background-radius: 8;" />
-
-            <Button fx:id="registerPassengerButton" maxWidth="Infinity" onAction="#handleRegisterPassenger" style="-fx-background-color: #9575cd; -fx-text-fill: white;                            -fx-font-weight: bold; -fx-background-radius: 10;" text="Registrar Pasajero" />
+         <Pane prefHeight="68.0" prefWidth="285.0">
+            <children>
+      
+                  <Button fx:id="registerPassengerButton" layoutY="2.0" maxWidth="Infinity" onAction="#handleRegisterPassenger" prefHeight="25.0" prefWidth="154.0" style="-fx-background-color: #9575cd; -fx-text-fill: white;                            -fx-font-weight: bold; -fx-background-radius: 10;" text="Registrar Pasajero" />
+               <Button layoutY="34.0" maxWidth="Infinity" onAction="#handleAssignedFlightToExistingPassenger" prefHeight="25.0" prefWidth="278.0" style="-fx-background-color: #9575cd; -fx-text-fill: white;                            -fx-font-weight: bold; -fx-background-radius: 10;" text="Asignar vuelo a pasajero ya registrado" />
+            </children>
+         </Pane>
         </VBox>
     </right>
 
     <!-- Tabla central -->
     <center>
-        <VBox spacing="10" style="-fx-padding: 25px;">
+        <VBox prefHeight="571.0" prefWidth="804.0" spacing="10" style="-fx-padding: 25px;">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Vuelos Registrados" />
-            <TableView fx:id="flightTable" prefHeight="400">
+            <TableView fx:id="flightTable" prefHeight="400" prefWidth="667.0">
                 <columns>
-                    <TableColumn fx:id="flightTableNumberColumn" prefWidth="55.0" text="N°" />
-                    <TableColumn fx:id="flightTableOriginColumn" prefWidth="95.0" text="Origen" />
+                    <TableColumn fx:id="flightTableNumberColumn" prefWidth="64.0" text="N°" />
+                    <TableColumn fx:id="flightTableOriginColumn" prefWidth="86.0" text="Origen" />
                     <TableColumn fx:id="flightTableDestinationColumn" prefWidth="100" text="Destino" />
                     <TableColumn fx:id="flightTableDepartureTimeColumn" prefWidth="150" text="Fecha/Hora" />
-                    <TableColumn fx:id="flightTableCapacityColumn" prefWidth="80" text="Capacidad" />
-                    <TableColumn fx:id="flightTableOccupancyColumn" prefWidth="80" text="Ocupación" />
+                    <TableColumn fx:id="flightTableCapacityColumn" prefWidth="87.0" text="Capacidad" />
+                    <TableColumn fx:id="flightTableOccupancyColumn" prefWidth="73.0" text="Ocupación" />
                 </columns>
             </TableView>
         </VBox>
@@ -74,8 +80,14 @@
 
     <!-- Bottom: Tabla de Pasajeros Registrados -->
     <bottom>
-        <VBox spacing="10" style="-fx-padding: 20px;">
-            <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Pasajeros Registrados" />
+        <VBox prefWidth="1185.0" spacing="10" style="-fx-padding: 20px;">
+         <Pane prefHeight="72.0" prefWidth="1258.0">
+            <children>
+                  <Label layoutX="6.0" layoutY="-1.0" style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Pasajeros Registrados" />
+               <TextField fx:id="searchPassengerTf" layoutX="155.0" layoutY="36.0" prefHeight="25.0" prefWidth="111.0" />
+               <Label layoutX="14.0" layoutY="37.0" prefHeight="23.0" prefWidth="141.0" text="search passanger by id" />
+            </children>
+         </Pane>
             <TableView fx:id="passengerTable" prefHeight="250">
                 <columns>
                     <TableColumn fx:id="idColumn" prefWidth="60" text="ID" />

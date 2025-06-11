@@ -11,6 +11,7 @@ import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
 import domain.service.FlightService;
 import domain.service.PassengerService;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,12 +26,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
-
+import javafx.util.StringConverter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class FlightController {
 
@@ -94,7 +98,8 @@ public class FlightController {
 
     @FXML
     private TableView<Passenger> passengerTable;
-
+    @FXML
+    private TextField searchPassengerTf;
 
     private AVL avlPassengers;
     private PassengerService passengerService;
@@ -102,31 +107,29 @@ public class FlightController {
     private FlightData flightData;
     private FlightService flightService;
     private CircularDoublyLinkedList circularDoublyLinkedList;
+    private ScheduledExecutorService scheduler;
 
     @FXML
     public void initialize() {
-        // Servicios y estructuras
-        passengerData = new PassengerData();
-        passengerService = new PassengerService(passengerData);
-        avlPassengers = passengerService.getAvlTree();
 
-        flightData = new FlightData();
-        flightService = new FlightService(flightData);
-        circularDoublyLinkedList = flightService.getFlightList(); // Carga la lista de vuelos desde el servicio
+        passengerService = new PassengerService(new PassengerData());
+        flightService = new FlightService(new FlightData());
 
-        // Configuración de las columnas de la tabla de PASAJEROS
+
         idColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getId()).asObject());
         nameColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
         nationalityColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNationality()));
 
-        // Columna para el ÚLTIMO VUELO (si aún la necesitas)
+
         flightColumn.setCellValueFactory(cell -> {
             Passenger p = cell.getValue();
             if (p != null && p.getFlightHistory() != null && !p.getFlightHistory().isEmpty()) {
                 try {
+
                     Flight lastFlight = (Flight) p.getFlightHistory().getNode(p.getFlightHistory().size()).data;
                     return new SimpleStringProperty(String.valueOf(lastFlight.getNumber()));
                 } catch (Exception e) {
+
                     return new SimpleStringProperty("N/A");
                 }
             } else {
@@ -134,7 +137,7 @@ public class FlightController {
             }
         });
 
-        // Configuración de COLUMNA: HISTORIAL DE VUELOS
+
         flightHistoryColumn.setCellValueFactory(cell -> {
             Passenger p = cell.getValue();
             if (p != null && p.getFlightHistory() != null && !p.getFlightHistory().isEmpty()) {
@@ -160,7 +163,6 @@ public class FlightController {
         });
 
 
-        // Configuración de las columnas de la tabla de vuelos (EXISTENTE)
         flightTableNumberColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getNumber()).asObject());
         flightTableOriginColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getOrigin()));
         flightTableDestinationColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDestination()));
@@ -168,9 +170,24 @@ public class FlightController {
         flightTableCapacityColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getCapacity()).asObject());
         flightTableOccupancyColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getOccupancy()).asObject());
 
-        updatePassengerTable();
-        updateFlightTable(); // Llama a este método que ahora tendrá la verificación
-        populateAssignedFlightComboBox(); // Llama a este método que ahora tendrá la verificación
+
+        passengerTable.setItems(passengerService.getObservablePassengers());
+        flightTable.setItems(flightService.getObservableFlights());
+        assignedFlightComboBox.setItems(flightService.getObservableFlights());
+
+
+        assignedFlightComboBox.setConverter(new StringConverter<Flight>() {
+            @Override
+            public String toString(Flight flight) {
+                return flight != null ? "Vuelo #" + flight.getNumber() + " (" + flight.getOrigin() + " -> " + flight.getDestination() + ")" : "";
+            }
+            @Override
+            public Flight fromString(String string) {
+                // Este método no es necesario para un ComboBox que solo se usa para selección (no para ingresar texto)
+                return null;
+            }
+        });
+
     }
 
 
@@ -213,13 +230,8 @@ public class FlightController {
                 passenger.setNationality(nationality);
             }
 
-           // if (passenger.getFlightHistory() == null) {
-              //  passenger.setFlightHistory(new SinglyLinkedList());
-            //}
 
-            //passenger.getFlightHistory().add(flightFound);
-
-            passengerService.updatePassenger(passenger); // Persiste los cambios en el pasajero
+            passengerService.updatePassenger(passenger);
 
             boolean assignedSuccessfully = flightService.assignPassengerToFlight(flightFound.getNumber(), passenger);
 
@@ -230,8 +242,7 @@ public class FlightController {
                 return;
             }
 
-            updatePassengerTable();
-            updateFlightTable();
+
             passengerIdField.clear();
             passengerNameField.clear();
             nationalityField.clear();
@@ -281,12 +292,10 @@ public class FlightController {
 
             Flight flight = new Flight(flightNumber, origin, destination, departureDateTime, capacity);
 
-            // Asegúrate que flightService.createFlight() gestiona la adición a la lista en memoria
-            // y la persistencia en FlightData.
-            flightService.createFlight(flight); // Esto debería añadirlo también a circularDoublyLinkedList a través del servicio
 
-            updateFlightTable();
-            populateAssignedFlightComboBox();
+            flightService.createFlight(flight);
+
+
             showAlert(Alert.AlertType.INFORMATION, "Éxito", "Vuelo " + flightNumber + " registrado correctamente.");
 
             flightNumberField.clear();
@@ -307,58 +316,6 @@ public class FlightController {
         }
     }
 
-    private void updatePassengerTable() {
-        ObservableList<Passenger> data = FXCollections.observableArrayList();
-        try {
-            for (Object obj : avlPassengers.inOrderNodes1()) {
-                data.add((Passenger) obj);
-            }
-        } catch (TreeException e) {
-            e.printStackTrace();
-        }
-        passengerTable.setItems(data);
-    }
-
-    private void updateFlightTable() {
-        ObservableList<Flight> data = FXCollections.observableArrayList();
-        try {
-            // ¡VERIFICACIÓN AÑADIDA AQUÍ!
-            if (circularDoublyLinkedList.isEmpty()) {
-                flightTable.setItems(data); // Establece una lista vacía
-                return; // Sale del método
-            }
-
-            // Itera sobre la CircularDoublyLinkedList de vuelos
-            for (int i = 1; i <= circularDoublyLinkedList.size(); i++) {
-                data.add((Flight) Objects.requireNonNull(circularDoublyLinkedList.getNode(i)).data);
-            }
-        } catch (ListException e) {
-            // Captura la excepción si ocurre por otra razón, por ejemplo, getNode(i) falla
-            e.printStackTrace();
-            // Opcional: mostrar una alerta si ocurre un error inesperado al cargar la tabla
-            showAlert(Alert.AlertType.ERROR, "Error al cargar vuelos", "No se pudieron cargar los vuelos: " + e.getMessage());
-        }
-        flightTable.setItems(data);
-    }
-
-    private void populateAssignedFlightComboBox() {
-        ObservableList<Flight> flights = FXCollections.observableArrayList();
-        try {
-            // ¡VERIFICACIÓN AÑADIDA AQUÍ!
-            if (circularDoublyLinkedList.isEmpty()) {
-                assignedFlightComboBox.setItems(flights); // Establece una lista vacía
-                return; // Sale del método
-            }
-
-            for (int i = 1; i <= circularDoublyLinkedList.size(); i++) {
-                flights.add((Flight) Objects.requireNonNull(circularDoublyLinkedList.getNode(i)).data);
-            }
-        } catch (ListException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error al cargar vuelos", "No se pudieron cargar los vuelos en el ComboBox: " + e.getMessage());
-        }
-        assignedFlightComboBox.setItems(flights);
-    }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
@@ -367,4 +324,96 @@ public class FlightController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public void handleAssignedFlightToExistingPassenger(ActionEvent event) {
+
+        String passengerIdText = passengerIdField.getText();
+        if (passengerIdText.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Advertencia", "Por favor, ingrese el ID del pasajero en el campo 'ID' para asignarle un vuelo.");
+            return;
+        }
+
+        int passengerId;
+        try {
+            passengerId = Integer.parseInt(passengerIdText);
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Error de Formato", "El ID del pasajero debe ser un número válido.");
+            return;
+        }
+
+        Flight assignedFlight = assignedFlightComboBox.getValue();
+        if (assignedFlight == null) {
+            showAlert(Alert.AlertType.WARNING, "Advertencia", "Por favor, seleccione un vuelo para asignar al pasajero.");
+            return;
+        }
+
+        try {
+
+            Passenger foundPassenger = passengerService.findPassengerById(passengerId);
+            if (foundPassenger == null) {
+                showAlert(Alert.AlertType.ERROR, "Pasajero No Encontrado", "No se encontró un pasajero con el ID: " + passengerId + ". Por favor, regístrelo primero.");
+                return;
+            }
+
+
+            boolean flightAlreadyInHistory = false;
+            if (foundPassenger.getFlightHistory() != null) {
+                try {
+                    for (int i = 1; i <= foundPassenger.getFlightHistory().size(); i++) {
+                        Object obj = foundPassenger.getFlightHistory().getNode(i).data;
+                        if (obj instanceof Flight && ((Flight) obj).getNumber() == assignedFlight.getNumber()) {
+                            flightAlreadyInHistory = true;
+                            break;
+                        }
+                    }
+                } catch (ListException e) {
+                    System.err.println("Error al verificar historial de vuelos para pasajero existente: " + e.getMessage());
+                }
+            }
+
+            Flight flightInSystem = flightService.findFlightByNumber(assignedFlight.getNumber());
+            if (flightInSystem == null) {
+                showAlert(Alert.AlertType.ERROR, "Error Interno", "El vuelo seleccionado no fue encontrado en el sistema.");
+                return;
+            }
+
+            if (flightInSystem.getOccupancy() >= flightInSystem.getCapacity()) {
+                showAlert(Alert.AlertType.INFORMATION, "Vuelo Lleno", "El vuelo " + flightInSystem.getNumber() + " está lleno. El pasajero no puede ser asignado.");
+                return;
+            }
+
+
+            if (!flightAlreadyInHistory) {
+
+                if (foundPassenger.getFlightHistory() == null) {
+                    foundPassenger.setFlightHistory(new SinglyLinkedList());
+                }
+                foundPassenger.getFlightHistory().add(flightInSystem);
+                passengerService.updatePassenger(foundPassenger);
+
+
+                boolean assignedSuccessfully = flightService.assignPassengerToFlight(flightInSystem.getNumber(), foundPassenger);
+
+                if (assignedSuccessfully) {
+                    showAlert(Alert.AlertType.INFORMATION, "Éxito", "Vuelo " + flightInSystem.getNumber() + " asignado a pasajero ID: " + foundPassenger.getId() + " correctamente.");
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Error de Asignación", "No se pudo asignar el pasajero al vuelo. (Error interno)");
+                }
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Vuelo ya Asignado", "El pasajero ID: " + foundPassenger.getId() + " ya tiene el vuelo " + flightInSystem.getNumber() + " en su historial.");
+            }
+
+
+        } catch (TreeException e) {
+            showAlert(Alert.AlertType.ERROR, "Error de Sistema (Árbol AVL)", "Error al buscar o actualizar pasajero: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ListException e) {
+            showAlert(Alert.AlertType.ERROR, "Error de Sistema (Lista Enlazada)", "Error al asignar vuelo: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Error Inesperado", "Ocurrió un error al asignar el vuelo al pasajero existente: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FlightServiceTest {
     FlightService flightService;
-    PassengerService passengerService; // También necesitamos el servicio de pasajeros
+    PassengerService passengerService;
     FlightData flightData;
     PassengerData passengerData;
 
@@ -31,8 +31,7 @@ class FlightServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Limpia los archivos de persistencia antes de cada test
-        // Esto asegura que cada test se ejecute en un estado inicial limpio
+
         File flightFile = new File(FLIGHT_FILE);
         if (flightFile.exists()) {
             flightFile.delete();
@@ -42,7 +41,7 @@ class FlightServiceTest {
             passengerFile.delete();
         }
 
-        // 2. Inicializa las instancias de Data y Service
+
         this.flightData = new FlightData();
         this.flightService = new FlightService(flightData);
 
@@ -52,7 +51,7 @@ class FlightServiceTest {
 
     @Test
     void createFlightWithPassengersAndCheckPersistence() throws ListException, TreeException {
-        // --- Paso 1: Registrar Pasajeros ---
+        // --- Registrar Pasajeros ---
         Passenger p1 = new Passenger(201, "Carlos", "Costarricense");
         Passenger p2 = new Passenger(202, "Ana", "Nicaragüense");
         Passenger p3 = new Passenger(203, "Luis", "Panameño");
@@ -61,17 +60,18 @@ class FlightServiceTest {
         assertTrue(passengerService.registerPassenger(p2), "Debería registrar p2 exitosamente.");
         assertTrue(passengerService.registerPassenger(p3), "Debería registrar p3 exitosamente.");
 
-        // --- Paso 2: Crear Vuelo ---
+        // --- Crear Vuelo ---
         LocalDateTime now = LocalDateTime.now();
         Flight flight = new Flight(99, "San José", "Ciudad de Panamá", now, 30);
+        Flight flight2 = new Flight(100, "Canada", "Ciudad de Panamá", now, 30);
         assertTrue(flightService.createFlight(flight), "Debería crear el vuelo 99 exitosamente.");
-
-        // --- Paso 3: Asignar Pasajeros al Vuelo ---
+        assertTrue(flightService.createFlight(flight2), "Debería crear el vuelo 99 exitosamente.");
+        // ---  Asignar Pasajeros al Vuelo ---
         assertTrue(flightService.assignPassengerToFlight(99, p1), "Debería asignar p1 al vuelo 99.");
         assertTrue(flightService.assignPassengerToFlight(99, p2), "Debería asignar p2 al vuelo 99.");
         assertTrue(flightService.assignPassengerToFlight(99, p3), "Debería asignar p3 al vuelo 99.");
 
-        // --- Paso 4: Verificar el Estado del Vuelo en Memoria ---
+        // --- Verificar el Estado del Vuelo en Memoria ---
         Flight assignedFlight = flightService.findFlightByNumber(99);
         assertNotNull(assignedFlight, "El vuelo asignado no debe ser nulo.");
         assertEquals(3, assignedFlight.getPasajeros().size(), "El vuelo debe tener 3 pasajeros.");
@@ -82,13 +82,13 @@ class FlightServiceTest {
             System.out.println(" - " + assignedFlight.getPasajeros().getNode(i).data);
         }
 
-        // --- Paso 5: Guardar Datos en Archivos (simulando el cierre de la aplicación) ---
-        // En una aplicación real, esto se llamaría en el método stop() de tu clase Main/App
+        // --- Guardar Datos en Archivos (simulando el cierre de la aplicación) ---
+
         flightService.saveData();
         passengerService.saveData();
 
-        // --- Paso 6: Verificar la Persistencia Cargando Nuevas Instancias de Servicio ---
-        // Simulamos un nuevo inicio de la aplicación cargando los datos desde cero.
+
+        // Simula un nuevo inicio de la aplicación cargando los datos desde cero.
         FlightData newFlightData = new FlightData();
         FlightService newFlightService = new FlightService(newFlightData);
 
@@ -114,8 +114,7 @@ class FlightServiceTest {
         assertEquals(1, loadedP1.getFlightHistory().size(), "El historial de vuelos de p1 debe contener 1 vuelo.");
         assertEquals(99, ((Flight)loadedP1.getFlightHistory().getNode(1).data).getNumber(), "El vuelo en el historial de p1 debe ser el 99.");
 
-        // Puedes añadir más aserciones para p2, p3 y otros escenarios
     }
 
-    // Puedes añadir más métodos de prueba aquí para otros casos (e.g., actualizar, eliminar, casos límite, etc.)
+
 }

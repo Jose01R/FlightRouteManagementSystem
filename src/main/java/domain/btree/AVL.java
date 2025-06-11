@@ -536,12 +536,6 @@ public class AVL implements Tree {
         }
     }
 
-
-
-
-
-
-
     @Override
     public List<BTreeNode> postOrderNodes() throws TreeException {
         if(isEmpty())
@@ -600,6 +594,18 @@ public class AVL implements Tree {
         } else {
             return getPassengerById(node.right, id);
         }
+    }
+
+    public void updatePassenger(Passenger updatedPassenger) throws TreeException {
+        if (isEmpty())
+            throw new TreeException("El árbol está vacío");
+
+        Passenger existing = getPassengerById(root, updatedPassenger.getId());
+        if (existing == null)
+            throw new TreeException("El pasajero a actualizar no existe");
+
+        remove(existing);
+        add(updatedPassenger);
     }
 
 }

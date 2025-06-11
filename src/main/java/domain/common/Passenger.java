@@ -12,7 +12,7 @@ import java.util.List;
 
 // Añadir JsonIdentityInfo para manejar referencias circulares de Passenger
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Passenger {
+public class Passenger{
     private int id;
     private String name;
     private String nationality;

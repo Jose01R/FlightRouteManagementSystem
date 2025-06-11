@@ -39,7 +39,7 @@ public class SinglyLinkedList implements List {
     @Override
     public boolean contains(Object element) throws ListException {
         if(isEmpty())
-            throw new ListException("Singly Linked List is empty");
+            return false;
         Node aux = first;
         while(aux!=null){
             if(util.Utility.compare(aux.data, element)==0) return true; //ya lo encontro

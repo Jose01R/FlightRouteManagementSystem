@@ -6,101 +6,58 @@ import domain.common.Passenger;
 import domain.linkedlist.CircularDoublyLinkedList;
 import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
+import javafx.collections.FXCollections; // Importación necesaria
+import javafx.collections.ObservableList; // Importación necesaria
 
-import java.util.Collection;
+import java.util.Collection; // Sigue siendo útil
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.List; // Necesario para la conversión a Collection
 
 public class FlightService {
-    private FlightData flightData; // Actúa como una utilidad de E/S
-    private CircularDoublyLinkedList flightList; // ¡La lista enlazada es la estructura en memoria!
+    private FlightData flightData;
+    private CircularDoublyLinkedList flightList;
+    private ObservableList<Flight> observableFlights;
 
     public FlightService(FlightData flightData) {
         this.flightData = flightData;
-        this.flightList = new CircularDoublyLinkedList(); // Inicializa la lista enlazada
-
-        // Carga el Map de FlightData y lo convierte a CircularDoublyLinkedList
-        Map<Integer, Flight> loadedMap = flightData.loadFlightsToMap();
-        for (Flight flight : loadedMap.values()) {
-            // Inicia el bloque try
-            this.flightList.add(flight); // Añade cada vuelo cargado a la lista enlazada
-        }
+        this.flightList = new CircularDoublyLinkedList();
+        this.observableFlights = FXCollections.observableArrayList();
+        loadInitialFlights();
     }
 
-    // Getter para la lista enlazada (útil para controladores)
-    public CircularDoublyLinkedList getFlightList() {
-        return flightList;
+
+    public ObservableList<Flight> getObservableFlights() {
+        return observableFlights;
     }
 
-    // Método para crear un vuelo, opera sobre la lista enlazada
-    public boolean createFlight(Flight flight) throws ListException {
-        if (findFlightByNumber(flight.getNumber()) != null) {
-            throw new ListException("Vuelo con número " + flight.getNumber() + " ya existe.");
-        }
-        this.flightList.add(flight); // Añade directamente a la lista enlazada
-        return true;
-    }
 
-    public Flight findFlightByNumber(int flightNumber) {
+    private void loadInitialFlights() {
         try {
-            if (flightList.isEmpty()) { // Primero, verifica si la lista está vacía de forma segura
-                return null; // Si está vacía, el vuelo no puede existir
-            }
-            for (int i = 1; i <= flightList.size(); i++) { // Ahora, size() debería ser seguro
-                Flight currentFlight = (Flight) flightList.getNode(i).data;
-                if (currentFlight.getNumber() == flightNumber) {
-                    return currentFlight;
+            Map<Integer, Flight> loadedMap = flightData.loadFlightsToMap();
+            if (loadedMap != null && !loadedMap.isEmpty()) {
+
+                this.flightList = new CircularDoublyLinkedList();
+                this.observableFlights.clear();
+                for (Flight flight : loadedMap.values()) {
+
+                    this.flightList.add(flight);
+                    this.observableFlights.add(flight);
                 }
-            }
-        } catch (ListException e) {
-            // Este catch maneja ListException si ocurren en getNode(i) por otras razones (e.g., índice inválido)
-            System.err.println("Error al buscar vuelo en la lista enlazada: " + e.getMessage());
-            // No relanzar, sino retornar null para indicar que no se encontró o hubo un problema
-        }
-        return null; // Vuelo no encontrado
-    }
-
-    // Dentro de domain.service.FlightService.java
-
-    public boolean assignPassengerToFlight(int flightNumber, Passenger passenger) throws ListException {
-        Flight flight = findFlightByNumber(flightNumber);
-        if (flight != null) { // Verifica si el vuelo existe
-            if (flight.getOccupancy() < flight.getCapacity()) { // Verifica si el vuelo tiene capacidad
-
-                // Asegura que la lista de pasajeros del vuelo esté inicializada
-                if (flight.getPasajeros() == null) {
-                    flight.setPasajeros(new SinglyLinkedList());
-                }
-
-                // Intenta añadir el pasajero a la lista enlazada del vuelo
-                flight.getPasajeros().add(passenger);
-                flight.incrementOccupancy();
-
-                // --- AÑADE ESTA LÓGICA AQUÍ ---
-                // Asegura que la lista de historial de vuelos del pasajero esté inicializada
-                if (passenger.getFlightHistory() == null) {
-                    // Asumo que el Passenger tiene un método setFlightHistory(SinglyLinkedList)
-                    passenger.setFlightHistory(new SinglyLinkedList());
-                }
-                // Añade el VUELO actual al historial de vuelos del pasajero
-                // ¡Es crucial que el historial del pasajero guarde el objeto Flight, no el Passenger!
-                passenger.getFlightHistory().add(flight);
-                // -----------------------------
-
-                return true; // Retorna true si todo fue exitoso
-
             } else {
-                System.out.println("Vuelo " + flightNumber + " está lleno. No se puede añadir más pasajeros.");
-                return false; // Retorna false si el vuelo está lleno
+
+                this.flightList = new CircularDoublyLinkedList();
+                this.observableFlights.clear();
             }
-        } else {
-            System.out.println("Vuelo " + flightNumber + " no encontrado.");
-            return false; // Retorna false si el vuelo no existe
+        } catch (Exception e) {
+            System.err.println("Error al cargar vuelos iniciales: " + e.getMessage());
+            e.printStackTrace();
+
+            this.flightList = new CircularDoublyLinkedList();
+            this.observableFlights.clear();
         }
     }
 
-    // Método para guardar datos: convierte la lista enlazada a Map y la pasa a FlightData
     public void saveData() {
         Map<Integer, Flight> flightsToSave = new HashMap<>();
         try {
@@ -114,21 +71,84 @@ public class FlightService {
             System.err.println("Error al preparar vuelos para guardar desde CircularDoublyLinkedList: " + e.getMessage());
             e.printStackTrace();
         }
-        flightData.saveFlightsFromMap(flightsToSave); // Pasa el Map a FlightData para guardar
+        flightData.saveFlightsFromMap(flightsToSave);
     }
 
-    // Métodos adicionales para operar sobre la CircularDoublyLinkedList
-    public boolean updateFlight(Flight updatedFlight) throws ListException {
-        // Encontrar el vuelo antiguo por su número
-        Flight oldFlight = findFlightByNumber(updatedFlight.getNumber());
-        if (oldFlight == null) {
-            System.out.println("No se encontró un vuelo con el ID " + updatedFlight.getNumber() + " para actualizar.");
-            return false;
+
+
+    public boolean createFlight(Flight flight) throws ListException {
+        if (findFlightByNumber(flight.getNumber()) != null) {
+            throw new ListException("Vuelo con número " + flight.getNumber() + " ya existe.");
+        }
+        this.flightList.add(flight);
+        this.observableFlights.add(flight);
+
+        return true;
+    }
+
+    public Flight findFlightByNumber(int flightNumber) {
+        try {
+            if (flightList.isEmpty()) {
+                return null;
+            }
+            for (int i = 1; i <= flightList.size(); i++) {
+                Flight currentFlight = (Flight) flightList.getNode(i).data;
+                if (currentFlight.getNumber() == flightNumber) {
+                    return currentFlight;
+                }
+            }
+        } catch (ListException e) {
+            System.err.println("Error al buscar vuelo en la lista enlazada: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public boolean assignPassengerToFlight(int flightNumber, Passenger passenger) throws ListException {
+        Flight flight = findFlightByNumber(flightNumber);
+        if (flight == null) {
+            throw new ListException("Vuelo " + flightNumber + " no encontrado."); // Lanza excepción para mejor manejo
         }
 
-        // Eliminar el vuelo antiguo y añadir el nuevo (actualizado)
-        // Esto asume que tu CircularDoublyLinkedList tiene un método para remover por índice o por objeto.
-        // Si no lo tiene, necesitarías implementarlo o iterar y recrear la lista.
+        if (flight.getOccupancy() >= flight.getCapacity()) { // Verifica si el vuelo tiene capacidad
+            throw new ListException("Vuelo " + flightNumber + " está lleno. No se puede añadir más pasajeros.");
+        }
+
+
+        if (flight.getPasajeros() == null) {
+            flight.setPasajeros(new SinglyLinkedList());
+        }
+
+        //Verifica si el pasajero ya está asignado a este vuelo para evitar duplicados en la lista interna del vuelo
+        if (flight.getPasajeros().contains(passenger)) {
+            throw new ListException("Pasajero " + passenger.getId() + " ya está asignado al vuelo " + flightNumber);
+        }
+
+        flight.getPasajeros().add(passenger);//Añade el pasajero a la lista interna del vuelo
+        flight.incrementOccupancy();// Incrementa la ocupación
+
+        if (passenger.getFlightHistory() == null) {
+            passenger.setFlightHistory(new SinglyLinkedList());
+        }
+
+        // verifica que el vuelo no esté ya en el historial para evitar duplicados
+        if (!passenger.getFlightHistory().contains(flight)) {
+            passenger.getFlightHistory().add(flight);
+        }
+
+        //Actualiza la vista
+        observableFlights.removeIf(f -> f.getNumber() == flight.getNumber()); // Remueve la versión vieja
+        observableFlights.add(flight); // Añade la versión actualizada (con ocupación incrementada)
+
+        return true;
+    }
+
+    public boolean updateFlight(Flight updatedFlight) throws ListException {
+        Flight oldFlight = findFlightByNumber(updatedFlight.getNumber());
+        if (oldFlight == null) {
+            throw new ListException("No se encontró un vuelo con el número " + updatedFlight.getNumber() + " para actualizar.");
+        }
+
+        //actualiza  CircularDoublyLinkedList
         int index = -1;
         for (int i = 1; i <= flightList.size(); i++) {
             if (((Flight) flightList.getNode(i).data).getNumber() == updatedFlight.getNumber()) {
@@ -137,9 +157,14 @@ public class FlightService {
             }
         }
         if (index != -1) {
-            flightList.remove(index); // Asume que remove(int index) existe
+            flightList.remove(index);//Elimina el vuelo antiguo
             flightList.add(updatedFlight); // Añade el vuelo actualizado
-            System.out.println("Vuelo " + updatedFlight.getNumber() + " actualizado correctamente en lista.");
+            System.out.println("Vuelo " + updatedFlight.getNumber() + " actualizado correctamente en lista interna.");
+
+            observableFlights.removeIf(f -> f.getNumber() == updatedFlight.getNumber());
+            observableFlights.add(updatedFlight);
+
+
             return true;
         }
         return false;
@@ -148,10 +173,10 @@ public class FlightService {
     public boolean deleteFlight(int flightNumber) throws ListException {
         Flight flightToDelete = findFlightByNumber(flightNumber);
         if (flightToDelete == null) {
-            System.out.println("No se encontró un vuelo con el ID " + flightNumber + " para eliminar.");
-            return false;
+            throw new ListException("No se encontró un vuelo con el número " + flightNumber + " para eliminar.");
         }
-        // Similar a update, necesitas encontrar el índice o implementar una eliminación por valor
+
+        //elimina la CircularDoublyLinkedList
         int index = -1;
         for (int i = 1; i <= flightList.size(); i++) {
             if (((Flight) flightList.getNode(i).data).getNumber() == flightNumber) {
@@ -160,26 +185,21 @@ public class FlightService {
             }
         }
         if (index != -1) {
-            flightList.remove(index); // Asume que remove(int index) existe
-            System.out.println("Vuelo " + flightNumber + " eliminado correctamente de lista.");
+            flightList.remove(index); //Elimina de la lista interna
+            System.out.println("Vuelo " + flightNumber + " eliminado correctamente de lista interna.");
+
+            //Actualiza el ObservableList
+            observableFlights.removeIf(f -> f.getNumber() == flightNumber);
+
             return true;
         }
         return false;
     }
 
-    // Helper para obtener todos los vuelos como una Collection (útil para la UI)
-    public Collection<Flight> getAllFlightsAsCollection() {
-        java.util.ArrayList<Flight> flights = new java.util.ArrayList<>();
-        try {
-            if (flightList != null && !flightList.isEmpty()) {
-                for (int i = 1; i <= flightList.size(); i++) {
-                    flights.add((Flight) flightList.getNode(i).data);
-                }
-            }
-        } catch (ListException e) {
-            System.err.println("Error al obtener todos los vuelos de CircularDoublyLinkedList: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return flights;
+
+
+
+    public CircularDoublyLinkedList getFlightList() {
+        return flightList;
     }
 }
