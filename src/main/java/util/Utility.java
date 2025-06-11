@@ -1,16 +1,28 @@
 package util;
 
 import domain.btree.*;
+import domain.common.Airport;
 import domain.common.Flight;
 import domain.common.Passenger;
 import domain.linkedlist.*;
 import domain.linkedqueue.*;
 import  domain.linkedstack.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import domain.btree.*;
+import domain.common.Airport;
+import domain.linkedlist.*;
+import domain.linkedqueue.*;
+import  domain.linkedstack.*;
+
+
 
 public class Utility {
     private static final Random random;
@@ -206,6 +218,12 @@ public class Utility {
 
                     // Si todos los atributos clave son iguales, se retorna 0
                     return 0;
+
+                case "Airport":
+                    Airport a1 = (Airport) a;
+                    Airport a2 = (Airport) b;
+                    return a1.getCode() < a2.getCode() ? -1
+                            :  a1.getCode() > a2.getCode() ? 1 : 0;
             }
 
         } catch (TreeException e) {
@@ -228,6 +246,7 @@ public class Utility {
         if (a instanceof AVL && b instanceof AVL) return "AVL";
         if (a instanceof Passenger && b instanceof Passenger) return "Passenger";
         if (a instanceof Flight && b instanceof Flight) return "Flight";
+        if (a instanceof Airport && b instanceof Airport) return "Airport";
 
         return "Unknown";
     }
@@ -374,6 +393,127 @@ public class Utility {
 
         return result;
     }
+    public static Object[] toArray(LinkedQueue queue) throws ListException, QueueException {
+        if (queue == null || queue.isEmpty()) {
+            return new Object[0]; //Retorna arreglo vacío si la cola es null o vacía
+        }
 
+        // Creamos una cola temporal para extraer elementos
+        LinkedQueue tempQueue = new LinkedQueue();
+        Object[] array = null;
+        try {
+            array = new Object[queue.size()];
+        } catch (QueueException e) {
+            throw new RuntimeException(e);
+        }
+        int originalSize = queue.size(); //Guardamos tamanno
+
+        try {
+            for (int i = 0; i < originalSize; i++) {
+                Object element = queue.deQueue();
+                tempQueue.enQueue(element);
+            }
+
+            for (int i = 0; i < originalSize; i++) {
+                Object element = tempQueue.deQueue();
+                array[i] = element; //Annadimos al array
+                queue.enQueue(element); //Devuelve elementos a la cola original
+            }
+
+        } catch (Exception e) {
+            throw new ListException("Error converting queue to array or restoring original queue: " + e.getMessage());
+        }
+        return array;
+    }
+
+    public static Object[] toArray(LinkedStack stack) throws ListException {
+        if (stack == null || stack.isEmpty()) {
+            return new Object[0]; //Retorna un arreglo vacío si la pila es nula o está vacía
+        }
+
+        //Pila temporal para invertir el orden
+        LinkedStack tempStack = new LinkedStack();
+        try {
+            while (!stack.isEmpty()) {
+                tempStack.push(stack.pop()); //Apilamos en la temporal
+            }
+        } catch (Exception e) {
+            throw new ListException("Error cloning stack for toArray: " + e.getMessage());
+        }
+
+        Object[] array = new Object[tempStack.size()];
+        int i = 0;
+        try {
+            while (!tempStack.isEmpty()) {
+                Object element = tempStack.pop();
+                array[i++] = element; //Annadimos al array
+                stack.push(element); //Delvovemos a la pila original
+            }
+        } catch (Exception e) {
+            throw new ListException("Error converting stack to array: " + e.getMessage());
+        }
+        return array;
+    }
+    public static boolean randomBoolean() {
+        return random.nextBoolean();
+    }
+    public static String getAirport() {
+        String[] airportsArray = {
+                // Costa Rica
+                "Aeropuerto Internacional Juan Santamaría (Costa Rica)",
+                "Aeropuerto Internacional Daniel Oduber Quirós (Costa Rica)",
+                "Aeropuerto de Limón (Costa Rica)",
+
+                // Estados Unidos
+                "Los Angeles International Airport (LAX - USA)",
+                "John F. Kennedy International Airport (JFK - USA)",
+                "Hartsfield–Jackson Atlanta International Airport (ATL - USA)",
+
+                // México
+                "Aeropuerto Internacional de la Ciudad de México (CDMX - México)",
+                "Aeropuerto Internacional de Cancún (México)",
+
+                // España
+                "Aeropuerto Adolfo Suárez Madrid-Barajas (España)",
+                "Aeropuerto de Barcelona-El Prat (España)",
+
+                // Francia
+                "Aeropuerto Charles de Gaulle (París - Francia)",
+                "Aeropuerto de Orly (París - Francia)",
+
+                // Alemania
+                "Aeropuerto de Frankfurt (Alemania)",
+                "Aeropuerto de Múnich (Alemania)",
+
+                // Reino Unido
+                "London Heathrow Airport (Reino Unido)",
+                "Gatwick Airport (Reino Unido)",
+
+                // Japón
+                "Tokyo Haneda Airport (Japón)",
+                "Narita International Airport (Japón)",
+
+                // Brasil
+                "Aeroporto Internacional de São Paulo/Guarulhos (Brasil)",
+                "Aeroporto do Galeão (Río de Janeiro - Brasil)",
+
+                // Argentina
+                "Aeropuerto Internacional Ministro Pistarini (Ezeiza - Argentina)",
+
+                // Canadá
+                "Toronto Pearson International Airport (Canadá)",
+                "Vancouver International Airport (Canadá)"
+        };
+        return airportsArray[random(airportsArray.length - 1)];
+    }
+
+    public static Path getFilePath(String directory, String fileName) throws IOException {
+        Path dataDirPath = Paths.get(directory);
+        // Crea el directorio si no existe
+        if (!Files.exists(dataDirPath)) {
+            Files.createDirectories(dataDirPath);
+        }
+        return dataDirPath.resolve(fileName);
+    }
 }
 

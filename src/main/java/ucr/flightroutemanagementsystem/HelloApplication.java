@@ -33,7 +33,8 @@ public class HelloApplication extends Application {
 
         stage.setTitle("Airport Operations System");
         stage.setScene(helloScene);
-        stage.setResizable(false);
+       stage.setResizable(true);
+
         stage.show();
     }
 

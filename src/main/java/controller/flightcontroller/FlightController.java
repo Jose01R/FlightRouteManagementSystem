@@ -98,8 +98,7 @@ public class FlightController {
 
     @FXML
     private TableView<Passenger> passengerTable;
-    @FXML
-    private TextField searchPassengerTf;
+
 
     private AVL avlPassengers;
     private PassengerService passengerService;
