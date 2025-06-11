@@ -12,6 +12,9 @@ import java.util.Map;
 public class UserData {
     //Nombre del archivo
     private static final String USERS_FILE = "users.json";
+
+    private static final String DATA_DIRECTORY = "JSON_FILES_DATA"; // Nombre directorio
+
     //Almacenar los usuarios asociados, usando el ID como key
     private Map<Integer, User> users;
     //Para la serialización y deserialización de JSON
@@ -22,7 +25,7 @@ public class UserData {
      * Intenta cargar los usuarios existentes
      * desde el archivo JSON al iniciar
      */
-    public UserData() {
+    public UserData() throws IOException {
         this.users = new HashMap<>();
         this.objectMapper = new ObjectMapper();
         //Para que el JSON sea legible
@@ -38,8 +41,8 @@ public class UserData {
      * Si el archivo no existe o está vacío
      * el map de usuarios se queda vacío
      */
-    private void loadUsersFromFile() {
-        File file = new File(USERS_FILE);
+    private void loadUsersFromFile() throws IOException {
+        File file = util.Utility.getFilePath(DATA_DIRECTORY, USERS_FILE).toFile();
         // Verifica si el archivo existe y no está vacío antes de intentar leerlo
         if (file.exists() && file.length() > 0) {
             try {
@@ -60,7 +63,7 @@ public class UserData {
      */
     public void saveUsersToFile() {
         try {
-            objectMapper.writeValue(new File(USERS_FILE), users);
+            objectMapper.writeValue(util.Utility.getFilePath(DATA_DIRECTORY, USERS_FILE).toFile(), users);
             System.out.println("Usuarios guardados exitosamente en " + USERS_FILE);
         } catch (IOException e) {
             System.err.println("Error al guardar usuarios en " + USERS_FILE + ": " + e.getMessage());

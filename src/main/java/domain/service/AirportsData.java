@@ -23,6 +23,9 @@ import java.util.List;
 public class AirportsData {
 
     private static final String FILE_NAME = "airports.json"; // Nombre del archivo JSON
+    private static final String DATA_DIRECTORY = "JSON_FILES_DATA"; // Nombre directorio
+
+    
 
     /**
      * Crea un nuevo aeropuerto y lo ingresa al "airports.json"
@@ -34,7 +37,7 @@ public class AirportsData {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
 
-        Path filePath = Paths.get(FILE_NAME);
+        Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME); //obtenemos ruta
 
         //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
         if (Files.exists(filePath)) {
@@ -85,13 +88,13 @@ public class AirportsData {
      * Si esta el Aeropuerto, lo que hace es elimimar y cambia de valor un boleano en verdadero
      * Al finalizar los datos de la "Lista Enlazada Doble" son ingresados al "airports.json",
      */
-    public static boolean deleteAirport(int codeAirport) throws ListException {
+    public static boolean deleteAirport(int codeAirport) throws ListException, IOException {
         boolean deleted = false;
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
 
-        Path filePath = Paths.get(FILE_NAME);
+        Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
 
         //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
         if (Files.exists(filePath)) {
@@ -137,13 +140,13 @@ public class AirportsData {
         return deleted;
     }
 
-    public static boolean editAirport(Airport airport) throws ListException {
+    public static boolean editAirport(Airport airport) throws ListException, IOException {
         boolean editAirport = false;
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
 
-        Path filePath = Paths.get(FILE_NAME);
+        Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
 
         //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
         if (Files.exists(filePath)) {
@@ -203,13 +206,13 @@ public class AirportsData {
         }
 
         //cambia el status del Aeropuerto en cue
-        public static boolean changeStatusAirport(int codeAirport) throws ListException {
+        public static boolean changeStatusAirport(int codeAirport) throws ListException, IOException {
             boolean updated = false;
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
 
-            Path filePath = Paths.get(FILE_NAME);
+            Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
 
             //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
             if (Files.exists(filePath)) {
@@ -280,13 +283,13 @@ public class AirportsData {
         }
 
         //hace una lista de Aeropuertos
-        public static SinglyLinkedList listAirports(String status) throws ListException {
+        public static SinglyLinkedList listAirports(String status) throws ListException, IOException {
             SinglyLinkedList list = new SinglyLinkedList();// Listar aeropuertos (activos, inactivos, o ambos)
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
 
-            Path filePath = Paths.get(FILE_NAME);
+            Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
 
             //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
             if (Files.exists(filePath)) {
@@ -347,12 +350,12 @@ public class AirportsData {
         }
 
         // Me da lo que esta en el json registrado, para actualizar el tableView
-        public static DoublyLinkedList getElements(){
+        public static DoublyLinkedList getElements() throws IOException {
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             DoublyLinkedList airportsDoublyList = new DoublyLinkedList();
 
-            Path filePath = Paths.get(FILE_NAME);
+            Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
 
             //Si el archivo existe, cargar la lista en la "Lista Enlazada Doble"
             if (Files.exists(filePath)) {
