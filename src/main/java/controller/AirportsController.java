@@ -37,6 +37,18 @@ public class AirportsController
     private Alert alert;
     private DoublyLinkedList airportList;
 
+    //son para listar por status
+    @javafx.fxml.FXML
+    private TableColumn<Airport, String> statusStatus;
+    @javafx.fxml.FXML
+    private TableColumn<Airport, String> countryForStatus;
+    @javafx.fxml.FXML
+    private TableView<Airport> tableViewForStatus;
+    @javafx.fxml.FXML
+    private TableColumn<Airport, String> nameForStatus;
+    @javafx.fxml.FXML
+    private TableColumn<Airport, Integer> codeForStatus;
+
     @javafx.fxml.FXML
     public void initialize() {
         alert = util.FXUtility.alert("Airports List", "Display Airports");

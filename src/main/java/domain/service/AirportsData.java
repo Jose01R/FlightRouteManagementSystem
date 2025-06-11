@@ -61,7 +61,7 @@ public class AirportsData {
         //Añadir el nuevo aeropuerto en la "Lista Enlazada Doble"
         if(airportsDoublyList.contains(airport.getCode())){
             throw new ListException("The airport already exists");
-        }
+        }//cambiarlo por boolean si lleva false no se inserto porque el codigo del aeropuerto ya existe
 
         //Convertir la "Lista Enlazada Doble" a una lista estandar para serializar en en formato Json
         List<Airport> airportsToSave = new ArrayList<>();

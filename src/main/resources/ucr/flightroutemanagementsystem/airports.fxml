@@ -9,22 +9,22 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="620.0" prefWidth="1087.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AirportsController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="642.0" prefWidth="1348.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AirportsController">
    <center>
       <Pane prefHeight="73.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane prefHeight="79.0" prefWidth="1089.0" style="-fx-background-color: #0aabba;">
+            <Pane prefHeight="79.0" prefWidth="1348.0" style="-fx-background-color: #0aabba;">
                <children>
-                  <Text fill="#f7f7f7" layoutX="426.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Airports" textAlignment="CENTER" wrappingWidth="231.54925537109375">
+                  <Text fill="#f7f7f7" layoutX="535.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Airports" textAlignment="CENTER" wrappingWidth="231.54925537109375">
                      <font>
                         <Font name="Arial Bold" size="35.0" />
                      </font>
                   </Text>
                </children>
             </Pane>
-            <Pane layoutY="75.0" prefHeight="545.0" prefWidth="1088.0" style="-fx-background-color: #FFFFFF;">
+            <Pane layoutY="75.0" prefHeight="572.0" prefWidth="1348.0" style="-fx-background-color: #FFFFFF;">
                <children>
-                  <TableView fx:id="tableview" layoutX="25.0" layoutY="80.0" prefHeight="450.0" prefWidth="843.0">
+                  <TableView fx:id="tableview" layoutX="25.0" layoutY="80.0" prefHeight="479.0" prefWidth="843.0">
                      <columns>
                         <TableColumn fx:id="codeColumn" prefWidth="113.66666412353516" text="Code" />
                         <TableColumn fx:id="nameColumn" prefWidth="338.33333587646484" text="Name" />
@@ -72,29 +72,37 @@
                         <Font name="Arial Bold" size="15.0" />
                      </font>
                   </TextField>
-                  <Button layoutX="913.0" layoutY="83.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Add Airport">
+                  <Button layoutX="951.0" layoutY="23.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Add Airport">
                      <font>
                         <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="913.0" layoutY="123.0" mnemonicParsing="false" onAction="#editAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Edit Airport">
+                  <Button layoutX="951.0" layoutY="63.0" mnemonicParsing="false" onAction="#editAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Edit Airport">
                      <font>
                         <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="913.0" layoutY="163.0" mnemonicParsing="false" onAction="#deleteAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Delete Airport">
+                  <Button layoutX="1125.0" layoutY="22.0" mnemonicParsing="false" onAction="#deleteAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Delete Airport">
                      <font>
                         <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="913.0" layoutY="203.0" mnemonicParsing="false" onAction="#changeStatusAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Change Status"> <font>
+                  <Button layoutX="1125.0" layoutY="62.0" mnemonicParsing="false" onAction="#changeStatusAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Change Status"> <font>
                      <Font name="Arial Bold" size="14.0" />
                   </font>
                   </Button>
-                  <Button layoutX="913.0" layoutY="243.0" mnemonicParsing="false" onAction="#listAirportsForStatusOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="List by Status"> <font>
+                  <Button layoutX="1030.0" layoutY="124.0" mnemonicParsing="false" onAction="#listAirportsForStatusOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="List by Status"> <font>
                      <Font name="Arial Bold" size="14.0" />
                   </font>
                   </Button>
+                  <TableView fx:id="tableViewForStatus" layoutX="891.0" layoutY="167.0" prefHeight="371.0" prefWidth="444.0">
+                    <columns>
+                      <TableColumn fx:id="codeForStatus" prefWidth="100.0" text="Code for Status" />
+                      <TableColumn fx:id="nameForStatus" prefWidth="116.00006103515625" text="Name for Status" />
+                        <TableColumn fx:id="countryForStatus" prefWidth="136.800048828125" text="Country for Status" />
+                        <TableColumn fx:id="statusStatus" prefWidth="89.5999755859375" text="Status" />
+                    </columns>
+                  </TableView>
 
                </children>
             </Pane>
