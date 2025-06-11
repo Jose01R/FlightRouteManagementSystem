@@ -285,7 +285,7 @@ public class AdjacencyListGraph implements Graph {
      * impares. Para los pesos utilice valores entre 1 y 40.
      */
 
-    public void connectEvenOddVertices() throws GraphException, ListException {
+    public void connectEvenOddVertices() throws GraphException, ListException, QueueException {
         if (isEmpty()) {
             throw new GraphException("Adjacency List Graph is empty. Cannot connect vertices.");
         }

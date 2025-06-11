@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import domain.common.Airport;
 import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,7 +18,19 @@ import static domain.service.AirportsData.*;
 
 class AirportsTest {
 
+//    @BeforeEach
+//        // Este método se ejecutará antes de cada test
+//    void setUp() throws IOException {
+//        Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
+//        if (Files.exists(filePath)) {
+//            Files.delete(filePath);
+//            System.out.println("Archivo airports.json (en data/) limpiado antes del test.");
+//        }
+//        Files.createDirectories(filePath.getParent());
+//    }
+
     private static final String FILE_NAME = "airports.json"; // Nombre del archivo JSON
+    private static final String DATA_DIRECTORY = "JSON_FILES_DATA"; // Nombre directorio
 
 
     @Test
@@ -41,7 +54,7 @@ class AirportsTest {
             //prueba de ver Aeropuertos
             //Leer desde archivo
             Gson gson = new Gson();
-            String contenido = Files.readString(Path.of(FILE_NAME));
+            String contenido = Files.readString(util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME));
             Type listType = new TypeToken<List<Airport>>() {}.getType();
             List<Airport> listaLeida = gson.fromJson(contenido, listType);
 
@@ -61,7 +74,7 @@ class AirportsTest {
             System.out.println("-----------------------------------------------------");
             // Leer desde archivo
             gson = new Gson();
-            contenido = Files.readString(Path.of(FILE_NAME));
+            contenido = Files.readString(util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME));
             listType = new TypeToken<List<Airport>>() {}.getType();
             listaLeida = gson.fromJson(contenido, listType);
 
@@ -81,7 +94,7 @@ class AirportsTest {
             System.out.println("-----------------------------------------------------");
             // Leer desde archivo
             gson = new Gson();
-            contenido = Files.readString(Path.of(FILE_NAME));
+            contenido = Files.readString(util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME));
             listType = new TypeToken<List<Airport>>() {}.getType();
             listaLeida = gson.fromJson(contenido, listType);
 
@@ -101,7 +114,7 @@ class AirportsTest {
             //prueba de ver Aeropuertos
             //Leer desde archivo
             gson = new Gson();
-            contenido = Files.readString(Path.of(FILE_NAME));
+            contenido = Files.readString(util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME));
             listType = new TypeToken<List<Airport>>() {}.getType();
             listaLeida = gson.fromJson(contenido, listType);
 
@@ -123,7 +136,7 @@ class AirportsTest {
             System.out.println("-----------------------------------------------------");
             // Leer desde archivo
             gson = new Gson();
-            contenido = Files.readString(Path.of(FILE_NAME));
+            contenido = Files.readString(util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME));
             listType = new TypeToken<List<Airport>>() {}.getType();
             listaLeida = gson.fromJson(contenido, listType);
 
@@ -143,7 +156,7 @@ class AirportsTest {
             System.out.println("-----------------------------------------------------");
             // Leer desde archivo
             gson = new Gson();
-            contenido = Files.readString(Path.of(FILE_NAME));
+            contenido = Files.readString(util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME));
             listType = new TypeToken<List<Airport>>() {}.getType();
             listaLeida = gson.fromJson(contenido, listType);
 

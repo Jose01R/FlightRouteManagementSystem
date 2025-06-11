@@ -1,7 +1,9 @@
 package controller;
 
+import domain.graph.EdgeWeight;
 import domain.graph.GraphException;
 import domain.graph.SinglyLinkedListGraph;
+import domain.graph.Vertex;
 import domain.linkedlist.ListException;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -18,19 +20,22 @@ import java.util.Set;
 public class RoutesBetweenAirports
 {
     @javafx.fxml.FXML
-    private Pane graphAirports;
-    @javafx.fxml.FXML
     private BorderPane bp;
+    @javafx.fxml.FXML
+    private Pane graphPane;
+
+    private final Map<String, Line> edgeMap = new HashMap<>();
+    private SinglyLinkedListGraph graph;
 
     @javafx.fxml.FXML
     public void initialize() {
+        graph = new SinglyLinkedListGraph(); // Inicializa para SinglyLinkedListGraph
         try {
             generateGraph();
-        } catch (ListException e) {
-            throw new RuntimeException(e);
-        } catch (GraphException e) {
+        } catch (ListException | GraphException e) {
             throw new RuntimeException(e);
         }
+
     }
 
 
@@ -39,11 +44,11 @@ public class RoutesBetweenAirports
         graph = new SinglyLinkedListGraph(); // Inicializa para SinglyLinkedListGraph
         Set<String> used = new HashSet<>();
 
-        graph.addVertex(util.Utility.getNameFamous());
+        graph.addVertex(util.Utility.getAirport());
 
         // Agrega vértices
         while (graph.size() <= 10) {
-            String v = util.Utility.getNameFamous();
+            String v = util.Utility.getAirport();
             if (used.add(v)) {
                 graph.addVertex(v);
             }
@@ -124,19 +129,19 @@ public class RoutesBetweenAirports
                     Object from = fromVertex.data;
                     Object to = toVertexData;
 
-                    edge.setOnMouseEntered(e -> {
-                        edge.setStroke(Color.RED);
-                        edge.setStrokeWidth(5);
-                        edgeInfoLabel.setText("Arista entre los vértices " + from + " - " + to +
-                                " | Peso: " + weight);
-                    });
-
-                    edge.setOnMouseExited(e -> {
-                        edge.setStroke(Color.PURPLE);
-                        edge.setStrokeWidth(2);
-                        edgeInfoLabel.setVisible(true);
-                        edgeInfoLabel.setText("");
-                    });
+//                    edge.setOnMouseEntered(e -> {
+//                        edge.setStroke(Color.RED);
+//                        edge.setStrokeWidth(5);
+//                        edgeInfoLabel.setText("Arista entre los vértices " + from + " - " + to +
+//                                " | Peso: " + weight);
+//                    });
+//
+//                    edge.setOnMouseExited(e -> {
+//                        edge.setStroke(Color.PURPLE);
+//                        edge.setStrokeWidth(2);
+//                        edgeInfoLabel.setVisible(true);
+//                        edgeInfoLabel.setText("");
+//                    });
 
                     String key;
                     if (util.Utility.compare(from.toString(), to.toString()) < 0) {
