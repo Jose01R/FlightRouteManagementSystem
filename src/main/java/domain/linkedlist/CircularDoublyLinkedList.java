@@ -11,8 +11,8 @@ public class CircularDoublyLinkedList implements List {
 
     @Override
     public int size() throws ListException {
-        if(isEmpty())
-            throw new ListException("Circular Doubly Linked List is empty");
+        if(isEmpty())return 0;
+
         int counter = 0; //contador de nodos
         Node aux = first; //aux para moverme por la lista y no perder el puntero al inicio
         while(aux!=last){

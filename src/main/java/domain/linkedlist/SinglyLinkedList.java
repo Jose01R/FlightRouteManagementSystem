@@ -1,5 +1,8 @@
 package domain.linkedlist;
 
+import domain.common.Flight;
+import domain.common.Passenger;
+
 public class SinglyLinkedList implements List {
     private Node first; //apuntador al inicio de la lista
 
@@ -8,10 +11,12 @@ public class SinglyLinkedList implements List {
         this.first = null;
     }
 
+    public void setFirst(Node first) {
+        this.first = first;
+    }
+
     @Override
     public int size() throws ListException {
-        if(isEmpty())
-            throw new ListException("Singly Linked List is empty");
         int counter = 0; //contador de nodos
         Node aux = first; //aux para moverme por la lista y no perder el puntero al inicio
         while(aux!=null){
@@ -34,7 +39,7 @@ public class SinglyLinkedList implements List {
     @Override
     public boolean contains(Object element) throws ListException {
         if(isEmpty())
-            throw new ListException("Singly Linked List is empty");
+            return false;
         Node aux = first;
         while(aux!=null){
             if(util.Utility.compare(aux.data, element)==0) return true; //ya lo encontro
@@ -228,7 +233,7 @@ public class SinglyLinkedList implements List {
         return null; //si llega aqui es xq no encontro el index
     }
 
-    @Override
+   /* @Override
     public String toString() {
         if(isEmpty()) return "Singly Linked List is empty";
         String result = "Singly Linked List Content\n";
@@ -238,5 +243,31 @@ public class SinglyLinkedList implements List {
             aux = aux.next; //lo muevo al sgte nodo
         }
         return result;
+    }*/
+    @Override
+    public String toString() {
+        if (isEmpty()) return "Singly Linked List is empty";
+
+        StringBuilder result = new StringBuilder();
+        Node aux = first; // aux para moverme por la lista y no perder el puntero al inicio
+
+        while (aux != null) {
+            // Verifica el tipo de dato para evitar recursión infinita
+            if (aux.data instanceof Flight) {
+                Flight flight = (Flight) aux.data;
+                result.append("Flight #").append(flight.getNumber())
+                        .append(" (").append(flight.getOrigin()).append("->").append(flight.getDestination()).append(")");
+            } else if (aux.data instanceof Passenger) {
+                Passenger passenger = (Passenger) aux.data;
+                result.append("Passenger ID: ").append(passenger.getId())
+                        .append(" (").append(passenger.getName()).append(")");
+            } else {
+                // Para otros tipos de datos, llama a su toString() normal
+                result.append(aux.data.toString());
+            }
+            result.append("\n");
+            aux = aux.next; // lo muevo al sgte nodo
+        }
+        return result.toString();
     }
 }

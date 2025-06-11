@@ -1,15 +1,12 @@
 package util;
 
 import domain.btree.*;
-import domain.common.Airport;
+import domain.common.Flight;
+import domain.common.Passenger;
 import domain.linkedlist.*;
 import domain.linkedqueue.*;
 import  domain.linkedstack.*;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,7 +34,7 @@ public class Utility {
 
     public static int random(int bound) {
         //return (int)Math.floor(Math.random()*bound); //forma 1
-        return 1 + random.nextInt(bound);
+        return  random.nextInt(bound);
     }
 
     public static int randomMinMax(int min, int max) {
@@ -143,18 +140,83 @@ public class Utility {
 //                    String inOrderAVL2 = avl2.inOrder();
 //                    return inOrderAVL1.compareTo(inOrderAVL2);
 
-                case "Airport":
-                    Airport a1 = (Airport) a;
-                    Airport a2 = (Airport) b;
-                    return a1.getCode() < a2.getCode() ? -1
-                            :  a1.getCode() > a2.getCode() ? 1 : 0;
+                case "Passenger":
+                    Passenger p1 = (Passenger) a;
+                    Passenger p2 = (Passenger) b;
+
+                    // Comparar por ID primero (clave principal)
+                    if (p1.getId() != p2.getId())
+                        return Integer.compare(p1.getId(), p2.getId());
+
+                    // Comparar por nombre
+                    int nameComparison = p1.getName().compareToIgnoreCase(p2.getName());
+                    if (nameComparison != 0)
+                        return nameComparison;
+
+                    // Comparar por nacionalidad
+                    int natComparison = p1.getNationality().compareToIgnoreCase(p2.getNationality());
+                    if (natComparison != 0)
+                        return natComparison;
+
+                    // Comparar por tamaño del historial de vuelos (si quieres)
+                    try {
+                        int size1 = p1.getFlightHistory().size();
+                        int size2 = p2.getFlightHistory().size();
+                        return Integer.compare(size1, size2);
+                    } catch (Exception e) {
+                        return 0; // Si no se puede comparar vuelo, se ignora
+                    }
+                case "Flight":
+                    Flight fl1 = (Flight) a;
+                    Flight fl2 = (Flight) b;
+
+                    // Comparar por número de vuelo (identificador principal)
+                    if (fl1.getNumber() != fl2.getNumber()) {
+                        return Integer.compare(fl1.getNumber(), fl2.getNumber());
+                    }
+
+
+                    int originComparison = fl1.getOrigin().compareToIgnoreCase(fl2.getOrigin());
+                    if (originComparison != 0) {
+                        return originComparison;
+                    }
+
+                    // Si el origen es igual, comparar por destino
+                    int destinationComparison = fl1.getDestination().compareToIgnoreCase(fl2.getDestination());
+                    if (destinationComparison != 0) {
+                        return destinationComparison;
+                    }
+
+                    // Si origen y destino son iguales, comparar por hora de salida
+                    if (fl1.getDepartureTime() != null && fl2.getDepartureTime() != null) {
+                        int departureTimeComparison = fl1.getDepartureTime().compareTo(fl2.getDepartureTime());
+                        if (departureTimeComparison != 0) {
+                            return departureTimeComparison;
+                        }
+                    } else if (fl1.getDepartureTime() != null) {
+                        return 1; // fl1 tiene fecha/hora, fl2 no
+                    } else if (fl2.getDepartureTime() != null) {
+                        return -1; // fl2 tiene fecha/hora, fl1 no
+                    }
+
+                    //Si todo lo anterior es igual, comparar por capacidad
+                    if (fl1.getCapacity() != fl2.getCapacity()) {
+                        return Integer.compare(fl1.getCapacity(), fl2.getCapacity());
+                    }
+
+                    // Si todos los atributos clave son iguales, se retorna 0
+                    return 0;
             }
 
         } catch (TreeException e) {
             throw new RuntimeException("Error comparing trees: " + e.getMessage(), e);
+        } catch (Exception e) { // Captura cualquier otra excepción que pueda ocurrir en las comparaciones
+            System.err.println("Error durante la comparación: " + e.getMessage());
+            e.printStackTrace();
+            return 2; // O maneja de otra forma, por ejemplo, lanzar una excepción específica o un valor diferente
         }
 
-        return 2; //Unknown
+        return 2; // Unknown type or comparison not implemented
     }
 
     public static String instanceOf(Object a, Object b) {
@@ -164,7 +226,8 @@ public class Utility {
         if (a instanceof BST && b instanceof BST) return "BST";
         if (a instanceof BTree && b instanceof BTree) return "BTree";
         if (a instanceof AVL && b instanceof AVL) return "AVL";
-        if (a instanceof Airport && b instanceof Airport) return "Airport";
+        if (a instanceof Passenger && b instanceof Passenger) return "Passenger";
+        if (a instanceof Flight && b instanceof Flight) return "Flight";
 
         return "Unknown";
     }
@@ -289,14 +352,15 @@ public class Utility {
         }
 
 
-    public static int[] copyArray (int[] arregloOriginal){
-        int[] copyArray = new int[arregloOriginal.length];
 
-        for (int i = 0; i < arregloOriginal.length; i++) {
-            copyArray[i] = arregloOriginal[i];
+        public static int[] copyArray (int[] arregloOriginal){
+            int[] copyArray = new int[arregloOriginal.length];
+
+            for (int i = 0; i < arregloOriginal.length; i++) {
+                copyArray[i] = arregloOriginal[i];
+            }
+            return copyArray;
         }
-        return copyArray;
-    }
 
     public static String arrayToString(int[] array) {
         if (array == null || array.length == 0) return "[]";
@@ -310,132 +374,6 @@ public class Utility {
 
         return result;
     }
-
-    public static Object[] toArray(LinkedQueue queue) throws ListException, QueueException {
-        if (queue == null || queue.isEmpty()) {
-            return new Object[0]; //Retorna arreglo vacío si la cola es null o vacía
-        }
-
-        // Creamos una cola temporal para extraer elementos
-        LinkedQueue tempQueue = new LinkedQueue();
-        Object[] array = null;
-        try {
-            array = new Object[queue.size()];
-        } catch (QueueException e) {
-            throw new RuntimeException(e);
-        }
-        int originalSize = queue.size(); //Guardamos tamanno
-
-        try {
-            for (int i = 0; i < originalSize; i++) {
-                Object element = queue.deQueue();
-                tempQueue.enQueue(element);
-            }
-
-            for (int i = 0; i < originalSize; i++) {
-                Object element = tempQueue.deQueue();
-                array[i] = element; //Annadimos al array
-                queue.enQueue(element); //Devuelve elementos a la cola original
-            }
-
-        } catch (Exception e) {
-            throw new ListException("Error converting queue to array or restoring original queue: " + e.getMessage());
-        }
-        return array;
-    }
-
-    public static Object[] toArray(LinkedStack stack) throws ListException {
-        if (stack == null || stack.isEmpty()) {
-            return new Object[0]; //Retorna un arreglo vacío si la pila es nula o está vacía
-        }
-
-        //Pila temporal para invertir el orden
-        LinkedStack tempStack = new LinkedStack();
-        try {
-            while (!stack.isEmpty()) {
-                tempStack.push(stack.pop()); //Apilamos en la temporal
-            }
-        } catch (Exception e) {
-            throw new ListException("Error cloning stack for toArray: " + e.getMessage());
-        }
-
-        Object[] array = new Object[tempStack.size()];
-        int i = 0;
-        try {
-            while (!tempStack.isEmpty()) {
-                Object element = tempStack.pop();
-                array[i++] = element; //Annadimos al array
-                stack.push(element); //Delvovemos a la pila original
-            }
-        } catch (Exception e) {
-            throw new ListException("Error converting stack to array: " + e.getMessage());
-        }
-        return array;
-    }
-
-    public static boolean randomBoolean() {
-        return random.nextBoolean();
-    }
-
-    public static String getAirport() {
-        String[] airportsArray = {
-                // Costa Rica
-                "Aeropuerto Internacional Juan Santamaría (Costa Rica)",
-                "Aeropuerto Internacional Daniel Oduber Quirós (Costa Rica)",
-                "Aeropuerto de Limón (Costa Rica)",
-
-                // Estados Unidos
-                "Los Angeles International Airport (LAX - USA)",
-                "John F. Kennedy International Airport (JFK - USA)",
-                "Hartsfield–Jackson Atlanta International Airport (ATL - USA)",
-
-                // México
-                "Aeropuerto Internacional de la Ciudad de México (CDMX - México)",
-                "Aeropuerto Internacional de Cancún (México)",
-
-                // España
-                "Aeropuerto Adolfo Suárez Madrid-Barajas (España)",
-                "Aeropuerto de Barcelona-El Prat (España)",
-
-                // Francia
-                "Aeropuerto Charles de Gaulle (París - Francia)",
-                "Aeropuerto de Orly (París - Francia)",
-
-                // Alemania
-                "Aeropuerto de Frankfurt (Alemania)",
-                "Aeropuerto de Múnich (Alemania)",
-
-                // Reino Unido
-                "London Heathrow Airport (Reino Unido)",
-                "Gatwick Airport (Reino Unido)",
-
-                // Japón
-                "Tokyo Haneda Airport (Japón)",
-                "Narita International Airport (Japón)",
-
-                // Brasil
-                "Aeroporto Internacional de São Paulo/Guarulhos (Brasil)",
-                "Aeroporto do Galeão (Río de Janeiro - Brasil)",
-
-                // Argentina
-                "Aeropuerto Internacional Ministro Pistarini (Ezeiza - Argentina)",
-
-                // Canadá
-                "Toronto Pearson International Airport (Canadá)",
-                "Vancouver International Airport (Canadá)"
-        };
-        return airportsArray[random(airportsArray.length - 1)];
-    }
-
-    public static Path getFilePath(String directory, String fileName) throws IOException {
-        Path dataDirPath = Paths.get(directory);
-        // Crea el directorio si no existe
-        if (!Files.exists(dataDirPath)) {
-            Files.createDirectories(dataDirPath);
-        }
-        return dataDirPath.resolve(fileName);
-    }
-
 
 }
 

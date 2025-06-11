@@ -1,6 +1,9 @@
 package domain.btree;
 
 
+import domain.common.Passenger;
+import util.Utility;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class AVL implements Tree {
         if(node==null) return 0;
         else return 1 + size(node.left) + size(node.right);
     }
+
 
     @Override
     public void clear() {
@@ -515,6 +519,23 @@ public class AVL implements Tree {
         }
     }
 
+
+
+
+    public List<Object> inOrderNodes1() throws TreeException {
+        List<Object> list = new ArrayList<>();
+        inOrder1(root, list);
+        return list;
+    }
+
+    private void inOrder1(BTreeNode node, List<Object> list) {
+        if (node != null) {
+            inOrder1(node.left, list);
+            list.add(node.data); // donde data es un Passenger
+            inOrder1(node.right, list);
+        }
+    }
+
     @Override
     public List<BTreeNode> postOrderNodes() throws TreeException {
         if(isEmpty())
@@ -530,6 +551,61 @@ public class AVL implements Tree {
             postOrderNodes(node.right, list);
             list.add(node);
         }
+    }
+    public List<Passenger> toList() {
+        List<Passenger> list = new ArrayList<>();
+        inOrderToList(root, list);
+        return list;
+    }
+
+    private void inOrderToList(BTreeNode node, List<Passenger> list) {
+        if (node != null) {
+            inOrderToList(node.left, list);
+            list.add((Passenger) node.data);
+            inOrderToList(node.right, list);
+        }
+    }
+
+    public static AVL fromList(List<Passenger> list) {
+        AVL avl = new AVL();
+        for (Passenger p : list) {
+            avl.add(p); // usa tu lógica existente de inserción AVL
+        }
+        return avl;
+    }
+
+    public Passenger getPassengerById(int id){
+        if (id<0)return null;
+
+        return getPassengerById(root,id);
+    }
+
+    private Passenger getPassengerById(BTreeNode node, int id){
+        if (node == null) {
+            return null;
+        }
+        Passenger currentPassenger = (Passenger) node.data;
+        int currentId = currentPassenger.getId();
+
+        if (Utility.compare(id, currentId) == 0) {
+            return currentPassenger;
+        } else if (Utility.compare(id, currentId) < 0) {
+            return getPassengerById(node.left, id);
+        } else {
+            return getPassengerById(node.right, id);
+        }
+    }
+
+    public void updatePassenger(Passenger updatedPassenger) throws TreeException {
+        if (isEmpty())
+            throw new TreeException("El árbol está vacío");
+
+        Passenger existing = getPassengerById(root, updatedPassenger.getId());
+        if (existing == null)
+            throw new TreeException("El pasajero a actualizar no existe");
+
+        remove(existing);
+        add(updatedPassenger);
     }
 
 }
