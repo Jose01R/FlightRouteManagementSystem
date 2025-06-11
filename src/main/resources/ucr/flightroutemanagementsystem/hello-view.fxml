@@ -20,44 +20,45 @@
       </AnchorPane>
    </center>
    <top>
-      <Pane prefHeight="107.0" prefWidth="1410.0" style="-fx-background-color: #286673;" BorderPane.alignment="CENTER">
+      <Pane prefHeight="110.0" prefWidth="1410.0" style="-fx-background-color: #286673;" BorderPane.alignment="CENTER">
          <children>
-            <Button layoutX="4.0" layoutY="4.0" mnemonicParsing="false" onAction="#Home" prefHeight="18.0" prefWidth="154.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 2px;" text="Home" textFill="WHITE">
+            <Button layoutX="4.0" layoutY="5.0" mnemonicParsing="false" onAction="#Home" prefHeight="50.0" prefWidth="154.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 2px;" text="Home" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="158.0" layoutY="4.0" mnemonicParsing="false" onAction="#rutasEntreAeropuertosOnAction" prefHeight="0.0" prefWidth="414.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 0px;" text="Rutas entre Aeropuertos" textFill="WHITE">
+            <Button layoutX="158.0" layoutY="5.0" mnemonicParsing="false" onAction="#rutasEntreAeropuertosOnAction" prefHeight="50.0" prefWidth="414.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 0px;" text="Rutas entre Aeropuertos" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="572.0" layoutY="4.0" mnemonicParsing="false" onAction="#simulaciónVuelosOcupaciónOnAction" prefHeight="0.0" prefWidth="557.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 0px;" text="Simulación de Vuelos y Ocupación " textFill="WHITE">
+            <Button layoutX="572.0" layoutY="5.0" mnemonicParsing="false" onAction="#simulaciónVuelosOcupaciónOnAction" prefHeight="50.0" prefWidth="557.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 0px;" text="Simulación de Vuelos y Ocupación " textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="1129.0" layoutY="4.0" mnemonicParsing="false" onAction="#reportesOnAction" prefHeight="0.0" prefWidth="277.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 0px;" text="Reportes" textFill="WHITE">
+            <Button layoutX="1129.0" layoutY="5.0" mnemonicParsing="false" onAction="#reportesOnAction" prefHeight="50.0" prefWidth="277.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 2px 2px 2px 0px;" text="Reportes" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="4.0" layoutY="47.0" mnemonicParsing="false" onAction="#Exit" prefHeight="25.0" prefWidth="153.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px2px 2px;" text="Exit" textFill="WHITE">
+
+            <Button layoutX="4.0" layoutY="55.0" mnemonicParsing="false" onAction="#Exit" prefHeight="50.0" prefWidth="153.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Exit" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="156.0" layoutY="45.0" mnemonicParsing="false" onAction="#aeropuertosOnAction" prefHeight="60.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Aeropuertos" textFill="WHITE">
+            <Button layoutX="156.0" layoutY="55.0" mnemonicParsing="false" onAction="#aeropuertosOnAction" prefHeight="50.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Aeropuertos" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="421.0" layoutY="45.0" mnemonicParsing="false" onAction="#pasajerosOnAction" prefHeight="60.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Pasajeros" textFill="WHITE">
+            <Button layoutX="421.0" layoutY="55.0" mnemonicParsing="false" onAction="#pasajerosOnAction" prefHeight="50.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Pasajeros" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="686.0" layoutY="45.0" mnemonicParsing="false" onAction="#vuelosOnAction" prefHeight="60.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Vuelos" textFill="WHITE">
+            <Button layoutX="686.0" layoutY="55.0" mnemonicParsing="false" onAction="#vuelosOnAction" prefHeight="50.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Vuelos" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>
