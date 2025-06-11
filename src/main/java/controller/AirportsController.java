@@ -148,7 +148,7 @@ public class AirportsController
             String status = statusAirport.get().trim();
             String country = countryAirport.get().trim();
 
-            newAirport = new Airport(idToEdit,name,status,country);
+            newAirport = new Airport(idToEdit,name,country,status);
 
             //esto ya edita el aeropuerto
             try {
