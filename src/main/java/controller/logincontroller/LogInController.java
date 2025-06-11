@@ -37,7 +37,11 @@ public class LogInController {
     private UserData userData;
 
     public LogInController() {
-        this.userData = new UserData(); //Inicializar UserData
+        try {
+            this.userData = new UserData(); //Inicializar UserData
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.logInService = new LogInService(userData); //Pasar UserData al LogInService
     }
 

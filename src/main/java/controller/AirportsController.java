@@ -114,7 +114,11 @@ public class AirportsController
             return;
         }
 
-        this.airportList = getElements(); //cargo la lista
+        try {
+            this.airportList = getElements(); //cargo la lista
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Airport newAirport = new Airport(idToEdit); //busco si el aeropuerto existe
         boolean contains = false;//
         try {
@@ -161,6 +165,8 @@ public class AirportsController
                     alert.showAndWait();
                 }
             } catch (ListException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }else{
@@ -215,6 +221,8 @@ public class AirportsController
             }
         } catch (ListException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -258,6 +266,8 @@ public class AirportsController
             }
         } catch (ListException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -267,13 +277,18 @@ public class AirportsController
 
     //crear un metodo de que refresque el tableview
     private void updateTableView() throws ListException {
-        this.tableview.getItems().clear(); //clear table
-        this.airportList = getElements(); //cargo la lista
+        try {
+            this.tableview.getItems().clear(); //clear table
+            this.airportList = getElements(); //cargo la lista
 
-        if(airportList!=null && !airportList.isEmpty()){
-            for(int i=1; i<=airportList.size(); i++) {
-                this.tableview.getItems().add((Airport) airportList.getNode(i).data);
+            if(airportList!=null && !airportList.isEmpty()){
+                for(int i=1; i<=airportList.size(); i++) {
+                    this.tableview.getItems().add((Airport) airportList.getNode(i).data);
+                }
             }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -6,6 +6,10 @@ import domain.linkedlist.*;
 import domain.linkedqueue.*;
 import  domain.linkedstack.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -423,6 +427,14 @@ public class Utility {
         return airportsArray[random(airportsArray.length - 1)];
     }
 
+    public static Path getFilePath(String directory, String fileName) throws IOException {
+        Path dataDirPath = Paths.get(directory);
+        // Crea el directorio si no existe
+        if (!Files.exists(dataDirPath)) {
+            Files.createDirectories(dataDirPath);
+        }
+        return dataDirPath.resolve(fileName);
+    }
 
 
 }
