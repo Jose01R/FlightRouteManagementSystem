@@ -3,15 +3,15 @@ package domain.common;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo; // Importar esta
-import com.fasterxml.jackson.annotation.ObjectIdGenerators; // Importar esta
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import domain.linkedlist.SinglyLinkedList;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// Añadir JsonIdentityInfo para manejar referencias circulares de Flight
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "number")
 public class Flight {
     private int number;
@@ -20,7 +20,7 @@ public class Flight {
     private LocalDateTime departureTime;
     private int capacity;
     private int occupancy;
-    @JsonIgnore // Ignora el campo SinglyLinkedList directo para la serialización/deserialización
+    @JsonIgnore
     private SinglyLinkedList pasajeros;
     private boolean compleated;
 
@@ -41,7 +41,7 @@ public class Flight {
         this.compleated = false;
     }
 
-    // Getters y Setters para campos simples
+
     public int getNumber() { return number; }
     public void setNumber(int number) { this.number = number; }
     public String getOrigin() { return origin; }
@@ -57,26 +57,25 @@ public class Flight {
     public boolean isCompleated() { return compleated; }
     public void setCompleated(boolean compleated) { this.compleated = compleated; }
 
-    // Este getter es para uso interno del objeto SinglyLinkedList (ignorando por Jackson)
+
     public SinglyLinkedList getPasajeros() {
         return pasajeros;
     }
 
-    // Este setter es para uso interno del objeto SinglyLinkedList
+
     public void setPasajeros(SinglyLinkedList pasajeros) {
         this.pasajeros = pasajeros;
     }
 
-    // 🚀 Serializador auxiliar: convierte la lista personalizada en una lista simple de Passengers
-    // Jackson usará este método para serializar la propiedad "pasajeros"
+
     @JsonGetter("pasajeros")
-    public List<Passenger> getPasajerosAsList() { // ¡Tipo de retorno específico: List<Passenger>!
+    public List<Passenger> getPasajerosAsList() {
         List<Passenger> list = new ArrayList<>();
         try {
             if (pasajeros != null) {
                 for (int i = 1; i <= pasajeros.size(); i++) {
                     Object data = pasajeros.getNode(i).data;
-                    if (data instanceof Passenger) { // Asegura que el objeto es de tipo Passenger
+                    if (data instanceof Passenger) {
                         list.add((Passenger) data);
                     } else {
                         System.err.println("Advertencia: El objeto en SinglyLinkedList de pasajeros no es un Pasajero. Tipo: " + (data != null ? data.getClass().getName() : "null"));
@@ -89,11 +88,10 @@ public class Flight {
         return list;
     }
 
-    // 🔁 Deserializador auxiliar: convierte lista común (de Jackson) a SinglyLinkedList de Passengers
-    // Jackson usará este método para deserializar la propiedad "pasajeros"
+
     @JsonSetter("pasajeros")
-    public void setPasajerosFromList(List<Passenger> passengerList) { // ¡Tipo de parámetro específico: List<Passenger>!
-        this.pasajeros = new SinglyLinkedList(); // Re-inicializa la lista personalizada
+    public void setPasajerosFromList(List<Passenger> passengerList) {
+        this.pasajeros = new SinglyLinkedList();
         if (passengerList != null) {
             for (Passenger p : passengerList) {
                 this.pasajeros.add(p);

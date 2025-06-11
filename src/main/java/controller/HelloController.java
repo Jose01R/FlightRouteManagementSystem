@@ -1,5 +1,8 @@
 package controller;
 
+import controller.flightcontroller.FlightController;
+import domain.service.FlightService;
+import domain.service.PassengerService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +33,13 @@ public class HelloController {
             throw new RuntimeException(e);
         }
     }
+    private PassengerService passengerService;
+    private FlightService flightService;
 
+    public void setServices(PassengerService passengerService, FlightService flightService) {
+        this.passengerService = passengerService;
+        this.flightService = flightService;
+    }
     @FXML
     void Exit(ActionEvent event) {
         System.exit(0);
@@ -66,20 +75,27 @@ public class HelloController {
 
     @FXML
     public void vuelosOnAction(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/flightinterface/flight.fxml"));
+            Parent root = loader.load();
 
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/flightinterface/flight.fxml"));
-                Parent root = loader.load();
+            // Obtener el controlador del archivo flight.fxml
+            FlightController flightController = loader.getController();
 
-                Scene scene = new Scene(root, 1410, 900); // Tamaño deseado
-                Stage stage = new Stage();
-                stage.setTitle("Gestión de Vuelos");
-                stage.setScene(scene);
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // Pasar los servicios
+            flightController.setServices(this.passengerService, this.flightService);
+
+            // Crear y mostrar la nueva ventana
+            Scene scene = new Scene(root, 1410, 900);
+            Stage stage = new Stage();
+            stage.setTitle("Gestión de Vuelos");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
 
     @FXML
     public void rutasEntreAeropuertosOnAction(ActionEvent actionEvent) {

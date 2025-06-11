@@ -17,7 +17,7 @@ public class Passenger{
     private String name;
     private String nationality;
     @JsonIgnore // Ignora el campo SinglyLinkedList directo para la serialización/deserialización
-    private SinglyLinkedList flightHistory; // Asumo que este es el campo SinglyLinkedList<Flight>
+    private SinglyLinkedList flightHistory;
 
     public Passenger(int id, String name, String nationality) {
         this.id = id;
@@ -30,7 +30,7 @@ public class Passenger{
         this.flightHistory = new SinglyLinkedList();
     }
 
-    // Getters y Setters para campos simples
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getName() { return name; }
@@ -38,20 +38,20 @@ public class Passenger{
     public String getNationality() { return nationality; }
     public void setNationality(String nationality) { this.nationality = nationality; }
 
-    // Este getter es para uso interno del objeto SinglyLinkedList (ignorando por Jackson)
+
     public SinglyLinkedList getFlightHistory() {
         return flightHistory;
     }
 
-    // Este setter es para uso interno del objeto SinglyLinkedList
+
     public void setFlightHistory(SinglyLinkedList flightHistory) {
         this.flightHistory = flightHistory;
     }
 
-    // 🚀 Serializador auxiliar: convierte la lista personalizada en una lista simple de Flights
-    // Jackson usará este método para serializar la propiedad "flightHistory"
+
+
     @JsonGetter("flightHistory")
-    public List<Flight> getFlightHistoryAsList() { // ¡Tipo de retorno específico: List<Flight>!
+    public List<Flight> getFlightHistoryAsList() {
         List<Flight> list = new ArrayList<>();
         try {
             if (flightHistory != null) {
@@ -70,10 +70,8 @@ public class Passenger{
         return list;
     }
 
-    // 🔁 Deserializador auxiliar: convierte lista común (de Jackson) a SinglyLinkedList de Flights
-    // Jackson usará este método para deserializar la propiedad "flightHistory"
     @JsonSetter("flightHistory")
-    public void setFlightHistoryFromList(List<Flight> flightList) { // ¡Tipo de parámetro específico: List<Flight>!
+    public void setFlightHistoryFromList(List<Flight> flightList) {
         this.flightHistory = new SinglyLinkedList();
         if (flightList != null) {
             for (Flight f : flightList) {

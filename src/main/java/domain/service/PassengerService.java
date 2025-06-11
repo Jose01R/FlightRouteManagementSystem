@@ -6,6 +6,7 @@ import domain.btree.TreeException;
 import domain.common.Passenger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ucr.flightroutemanagementsystem.HelloApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,11 @@ public class PassengerService {
 
     //Método para guardar el estado actual del AVL en el archivo
     public void saveData() {
+        try {
+            System.out.println("Guardando datos... cantidad de pasajeros: " + avlTree.size());
+        } catch (TreeException e) {
+            throw new RuntimeException(e);
+        }
         passengerData.saveAllPassengers(this.avlTree);
     }
 
@@ -100,10 +106,10 @@ public class PassengerService {
 
     public void loadRandomPassengersIntoFile(int n){
         passengerData.generateAndSaveInitialRandomPassengers(n);
-        //
+
     }
 
-    // Si aún necesitas acceder al AVL directamente para otras operaciones internas
+
     public AVL getAvlTree() {
         return avlTree;
     }

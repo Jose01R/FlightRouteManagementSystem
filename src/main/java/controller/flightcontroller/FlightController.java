@@ -110,58 +110,57 @@ public class FlightController {
 
     @FXML
     public void initialize() {
-
-        passengerService = new PassengerService(new PassengerData());
-        flightService = new FlightService(new FlightData());
-
-
+        // Configuración de CellValueFactory para las columnas de la tabla de Pasajeros
         idColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getId()).asObject());
         nameColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
         nationalityColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNationality()));
 
-
+        // Muestra el número del último vuelo en el historial del pasajero
         flightColumn.setCellValueFactory(cell -> {
             Passenger p = cell.getValue();
             if (p != null && p.getFlightHistory() != null && !p.getFlightHistory().isEmpty()) {
                 try {
-
+                    // Accede al último elemento del historial de vuelos
                     Flight lastFlight = (Flight) p.getFlightHistory().getNode(p.getFlightHistory().size()).data;
                     return new SimpleStringProperty(String.valueOf(lastFlight.getNumber()));
                 } catch (Exception e) {
-
+                    // En caso de error (ej. ListException si getNode falla), muestra N/A
+                    System.err.println("Error al obtener el último vuelo del historial: " + e.getMessage());
                     return new SimpleStringProperty("N/A");
                 }
             } else {
-                return new SimpleStringProperty("N/A");
+                return new SimpleStringProperty("N/A"); // Si no hay historial o el pasajero es null
             }
         });
 
-
+        // Muestra una lista de números de vuelos en el historial del pasajero
         flightHistoryColumn.setCellValueFactory(cell -> {
             Passenger p = cell.getValue();
             if (p != null && p.getFlightHistory() != null && !p.getFlightHistory().isEmpty()) {
                 StringBuilder historyBuilder = new StringBuilder();
                 try {
+                    // Itera sobre el historial de vuelos para construir el string
                     for (int i = 1; i <= p.getFlightHistory().size(); i++) {
-                        Flight flight = (Flight) p.getFlightHistory().getNode(i).data;
-                        if (flight != null) {
+                        Object data = p.getFlightHistory().getNode(i).data;
+                        if (data instanceof Flight) { // Asegúrate de que el dato es un Flight
+                            Flight flight = (Flight) data;
                             historyBuilder.append("#").append(flight.getNumber());
                             if (i < p.getFlightHistory().size()) {
-                                historyBuilder.append(", ");
+                                historyBuilder.append(", "); // Añade coma si no es el último
                             }
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    return new SimpleStringProperty("Error al cargar historial");
+                    e.printStackTrace(); // Imprime el stack trace para depuración
+                    return new SimpleStringProperty("Error al cargar historial"); // Mensaje de error en la UI
                 }
                 return new SimpleStringProperty(historyBuilder.toString());
             } else {
-                return new SimpleStringProperty("Sin vuelos registrados");
+                return new SimpleStringProperty("Sin vuelos registrados"); // Si no hay historial
             }
         });
 
-
+        // Configuración de CellValueFactory para las columnas de la tabla de Vuelos
         flightTableNumberColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getNumber()).asObject());
         flightTableOriginColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getOrigin()));
         flightTableDestinationColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDestination()));
@@ -170,24 +169,29 @@ public class FlightController {
         flightTableOccupancyColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getOccupancy()).asObject());
 
 
-        passengerTable.setItems(passengerService.getObservablePassengers());
-        flightTable.setItems(flightService.getObservableFlights());
-        assignedFlightComboBox.setItems(flightService.getObservableFlights());
-
-
         assignedFlightComboBox.setConverter(new StringConverter<Flight>() {
             @Override
             public String toString(Flight flight) {
+
                 return flight != null ? "Vuelo #" + flight.getNumber() + " (" + flight.getOrigin() + " -> " + flight.getDestination() + ")" : "";
             }
             @Override
             public Flight fromString(String string) {
-                // Este método no es necesario para un ComboBox que solo se usa para selección (no para ingresar texto)
+
                 return null;
             }
         });
 
     }
+
+    public void setServices(PassengerService passengerService, FlightService flightService) {
+        this.passengerService = passengerService;
+        this.flightService = flightService;
+        passengerTable.setItems(this.passengerService.getObservablePassengers());
+        flightTable.setItems(this.flightService.getObservableFlights());
+        assignedFlightComboBox.setItems(this.flightService.getObservableFlights());
+    }
+
 
 
     @FXML

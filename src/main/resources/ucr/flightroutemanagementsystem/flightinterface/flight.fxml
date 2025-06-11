@@ -18,7 +18,7 @@
     </top>
 
     <left>
-        <VBox centerShape="false" maxWidth="Infinity" prefHeight="498.0" prefWidth="217.0" spacing="15" style="-fx-padding: 25px;">
+        <VBox centerShape="false" maxWidth="Infinity" prefHeight="552.0" prefWidth="223.0" spacing="15" style="-fx-padding: 25px;">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Registro de Vuelo" />
             <Label text="Número de vuelo:" />
             <TextField fx:id="flightNumberField" promptText="Ej: 101" style="-fx-background-radius: 8;" />
