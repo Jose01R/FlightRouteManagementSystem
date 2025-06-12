@@ -11,10 +11,10 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="815.0" prefWidth="1038.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.flightcontroller.FlightController">
+<BorderPane prefHeight="868.0" prefWidth="876.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.flightcontroller.FlightController">
 
     <top>
-        <Label alignment="CENTER" maxWidth="Infinity" prefHeight="46.0" prefWidth="1038.0" style="-fx-background-color: #7e57c2; -fx-text-fill: white; -fx-font-size: 28px; -fx-padding: 20px; -fx-font-weight: bold;" text="✈️ Sistema de Gestión de Vuelos" BorderPane.alignment="CENTER" />
+        <Label alignment="CENTER" maxWidth="Infinity" prefHeight="46.0" prefWidth="1038.0" style="-fx-background-color: #7e57c2; -fx-text-fill: white; -fx-font-size: 28px; -fx-padding: 20px; -fx-font-weight: bold;" text="✈️ Sistema de Gestión de Vuelos y Pasajeros" BorderPane.alignment="CENTER" />
     </top>
 
     <left>
@@ -37,7 +37,7 @@
     </left>
 
     <right>
-        <VBox maxWidth="Infinity" prefHeight="506.0" prefWidth="282.0" spacing="15" style="-fx-padding: 25px;">
+        <VBox maxWidth="Infinity" prefHeight="552.0" prefWidth="283.0" spacing="15" style="-fx-padding: 25px;">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Registro de Pasajero" />
             <Label text="ID:" />
             <TextField fx:id="passengerIdField" promptText="Ej: 305630386" style="-fx-background-radius: 8;" />
@@ -59,23 +59,31 @@
     <center>
         <VBox prefHeight="552.0" prefWidth="502.0" spacing="10" style="-fx-padding: 25px;" VBox.vgrow="ALWAYS">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Vuelos Registrados" />
-            <TableView fx:id="flightTable" prefHeight="446.0" prefWidth="482.0" VBox.vgrow="ALWAYS">
+            <TableView fx:id="flightTable" prefHeight="462.0" prefWidth="524.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="flightTableNumberColumn" text="N°" />
                     <TableColumn fx:id="flightTableOriginColumn" text="Origen" />
                     <TableColumn fx:id="flightTableDestinationColumn" text="Destino" />
                     <TableColumn fx:id="flightTableDepartureTimeColumn" text="Fecha/Hora" />
-                    <TableColumn fx:id="flightTableCapacityColumn" text="Capacidad" />
-                    <TableColumn fx:id="flightTableOccupancyColumn" text="Ocupación" />
+                    <TableColumn fx:id="flightTableCapacityColumn" minWidth="0.0" prefWidth="85.0" text="Capacidad" />
+                    <TableColumn fx:id="flightTableOccupancyColumn" prefWidth="75.0" text="Ocupación" />
+                    <!-- Nueva columna agregada -->
+                    <TableColumn fx:id="flightTableStatusColumn" text="Status" />
                 </columns>
             </TableView>
+
         </VBox>
     </center>
 
     <bottom>
-        <VBox prefHeight="236.0" prefWidth="1038.0" spacing="10" style="-fx-padding: 20px;" VBox.vgrow="ALWAYS">
-              <Label prefHeight="30.0" prefWidth="224.0" style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Pasajeros Registrados" />
-            <TableView fx:id="passengerTable" prefHeight="171.0" prefWidth="998.0">
+        <VBox prefHeight="236.0" prefWidth="845.0" spacing="10" style="-fx-padding: 20px;" VBox.vgrow="ALWAYS">
+         <Pane prefHeight="33.0" prefWidth="836.0">
+            <children>
+                    <Label layoutX="14.0" layoutY="-1.0" prefHeight="30.0" prefWidth="224.0" style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Pasajeros Registrados" />
+               <TextField fx:id="searchTextField" layoutX="255.0" prefHeight="25.0" prefWidth="92.0" promptText="search by ID" />
+            </children>
+         </Pane>
+            <TableView fx:id="passengerTable" prefHeight="171.0" prefWidth="836.0">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" />
                     <TableColumn fx:id="nameColumn" text="Nombre" />

@@ -21,6 +21,7 @@ public class PassengerData {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
     }
 
     // Método para leer pasajeros del archivo al inicio
@@ -63,36 +64,6 @@ public class PassengerData {
             e.printStackTrace();
         }
     }
-    public void generateAndSaveInitialRandomPassengers(int count) {
-        List<Passenger> passengers = new ArrayList<>();
-
-        String[] names = {"Juan", "Maria", "Pedro", "Ana", "Luis", "Sofía", "Diego", "Valeria"};
-        String[] nationalities = {"Costarricense", "Nicaragüense", "Panameño", "Guatemalteco", "Salvadoreño", "Hondureño"};
-
-        for (int i = 0; i < count; i++) {
-            // Genera una cédula de 9 dígitos, donde el primero no es cero
-            int id = 100_000_000 + util.Utility.random(900_000_000);
-
-            String name = names[util.Utility.random(names.length)];
-            String nationality = nationalities[util.Utility.random(nationalities.length)];
-
-            passengers.add(new Passenger(id, name, nationality));
-        }
-
-        try {
-            saveInitialRandomPassengersToJson(passengers);
-            System.out.println("Se generaron y guardaron " + count + " pasajeros aleatorios en " + PASSENGERS_FILE);
-        } catch (IOException e) {
-            System.err.println("Error al generar y guardar pasajeros iniciales: " + e.getMessage());
-        }
-    }
 
 
-    private void saveInitialRandomPassengersToJson(List<Passenger> passengers) throws IOException {
-        if (passengers != null && !passengers.isEmpty()) {
-            objectMapper.writeValue(new File(PASSENGERS_FILE), passengers);
-            System.out.println("Pasajeros guardados exitosamente en " + PASSENGERS_FILE);
-        }
-
-    }
 }

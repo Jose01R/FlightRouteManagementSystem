@@ -9,6 +9,7 @@ import domain.linkedlist.SinglyLinkedList;
 import javafx.collections.FXCollections; // Importación necesaria
 import javafx.collections.ObservableList; // Importación necesaria
 
+import java.time.LocalDateTime;
 import java.util.Collection; // Sigue siendo útil
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,8 @@ public class FlightService {
         this.flightList = new CircularDoublyLinkedList();
         this.observableFlights = FXCollections.observableArrayList();
         loadInitialFlights();
+        generateInitialRandomFlights(10);
+
     }
 
 
@@ -132,7 +135,7 @@ public class FlightService {
 
         // verifica que el vuelo no esté ya en el historial para evitar duplicados
         if (!passenger.getFlightHistory().contains(flight)) {
-            passenger.getFlightHistory().add(flight);
+            passenger.getFlightHistory().add(flight.getNumber());
         }
 
         //Actualiza la vista
@@ -164,7 +167,6 @@ public class FlightService {
             observableFlights.removeIf(f -> f.getNumber() == updatedFlight.getNumber());
             observableFlights.add(updatedFlight);
 
-
             return true;
         }
         return false;
@@ -195,11 +197,45 @@ public class FlightService {
         }
         return false;
     }
-
-
-
-
     public CircularDoublyLinkedList getFlightList() {
         return flightList;
     }
+
+    public void generateInitialRandomFlights(int count) {
+        String[] origins = {"San José", "Managua", "Panamá", "Ciudad de Guatemala", "San Salvador", "Tegucigalpa", "Bogotá"};
+        String[] destinations = {"Miami", "Madrid", "Los Ángeles", "Toronto", "París", "Buenos Aires", "Ciudad de México"};
+
+        for (int i = 0; i < count; i++) {
+            int number = 1000 + util.Utility.random(9000);
+
+            String origin = origins[util.Utility.random(origins.length)];
+            String destination;
+
+            // Asegurarse que el destino sea distinto al origen
+            do {
+                destination = destinations[util.Utility.random(destinations.length)];
+            } while (destination.equals(origin));
+
+            LocalDateTime departureTime = LocalDateTime.now()
+                    .plusDays(util.Utility.random(30))
+                    .withHour(util.Utility.random(24))
+                    .withMinute(util.Utility.random(60));
+
+            int []capacityArray={100,150,200};
+            int capacity=capacityArray[util.Utility.random(capacityArray.length)];
+
+            Flight flight = new Flight(number, origin, destination, departureTime, capacity);
+            flight.setPasajeros(new SinglyLinkedList());
+
+                if (findFlightByNumber(flight.getNumber()) == null) {
+                    flightList.add(flight);
+                    observableFlights.add(flight);
+                } else {
+                    i--; // Evita duplicados: si ya existe el número, repite el ciclo
+                }
+        }
+
+        System.out.println(count + " vuelos aleatorios generados y agregados a la lista.");
+    }
+
 }

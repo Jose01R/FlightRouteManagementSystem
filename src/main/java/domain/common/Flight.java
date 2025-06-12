@@ -127,4 +127,5 @@ public class Flight {
             System.out.println("Advertencia: La ocupación del vuelo " + this.number + " ya es 0.");
         }
     }
+
 }

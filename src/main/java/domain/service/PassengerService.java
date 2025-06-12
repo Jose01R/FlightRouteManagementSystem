@@ -4,9 +4,9 @@ import data.PassengerData;
 import domain.btree.AVL;
 import domain.btree.TreeException;
 import domain.common.Passenger;
+import domain.linkedlist.SinglyLinkedList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import ucr.flightroutemanagementsystem.HelloApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +20,11 @@ public class PassengerService {
         this.passengerData = passengerData;
         this.avlTree = new AVL();
 
-
         this.observablePassengers = FXCollections.observableArrayList();
-
-
         loadInitialPassengers();
+        generateInitialRandomPassengers(10);
+
+
     }
 
 
@@ -54,8 +54,8 @@ public class PassengerService {
         } catch (Exception e) {
             System.err.println("Error inesperado al cargar pasajeros iniciales: " + e.getMessage());
             e.printStackTrace();
-            this.avlTree = new AVL();
-            this.observablePassengers.clear();
+            //this.avlTree = new AVL();
+            //this.observablePassengers.clear();
         }
     }
 
@@ -104,11 +104,24 @@ public class PassengerService {
     }
 
 
-    public void loadRandomPassengersIntoFile(int n){
-        passengerData.generateAndSaveInitialRandomPassengers(n);
+    public void generateInitialRandomPassengers(int count) {
+
+        String[] names = {"Juan", "Maria", "Pedro", "Ana", "Luis", "Sofía", "Diego", "Valeria","Jared","Jose","Luis","Pablo","Mario","Miguel","Kristel","Alondra","Lincy","Fabricio"};
+        String[] nationalities = {"Costarricense", "Nicaragüense", "Panameño", "Guatemalteco", "Salvadoreño", "Hondureño","Colombiano"};
+
+        for (int i = 0; i < count; i++) {
+
+            int id = 100_000_000 + util.Utility.random(900_000_000);
+
+            String name = names[util.Utility.random(names.length)];
+            String nationality = nationalities[util.Utility.random(nationalities.length)];
+            Passenger passenger= new Passenger(id, name, nationality);
+            passenger.setFlightHistory(new SinglyLinkedList());
+            avlTree.add(passenger);
+            observablePassengers.add(passenger);
+        }
 
     }
-
 
     public AVL getAvlTree() {
         return avlTree;

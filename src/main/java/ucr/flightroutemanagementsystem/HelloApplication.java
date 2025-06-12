@@ -34,8 +34,6 @@ public class HelloApplication extends Application {
          passengerService = new PassengerService(passengerData);
          flightService = new FlightService(flightData);
 
-
-
         FXMLLoader loginFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/logininterface/login.fxml"));
         Scene loginScene = new Scene(loginFxmlLoader.load());
 
