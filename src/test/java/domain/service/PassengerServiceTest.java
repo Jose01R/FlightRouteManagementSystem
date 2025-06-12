@@ -1,16 +1,13 @@
 package domain.service;
 
 import data.PassengerData;
-import domain.btree.AVL;
 import domain.btree.TreeException;
 import domain.common.Flight;
 import domain.common.Passenger;
 import domain.linkedlist.SinglyLinkedList;
-import domain.service.PassengerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,6 +98,6 @@ class PassengerServiceTest {
 
     @Test
     void loadRandomPassengersTest(){
-        passengerService.loadRandomPassengersIntoFile(10);
+        passengerService.generateInitialRandomPassengers(10);
     }
 }
