@@ -56,12 +56,19 @@ public class AirportsData {
             }
         }
 
-        airportsDoublyList.add(airport);
+        if (!airportsDoublyList.isEmpty()) {
+            if (airportsDoublyList.contains(airport)) {
+                throw new ListException("The airport with code: " + airport.getCode() + " already exists");
+            }
+        }
 
         //Añadir el nuevo aeropuerto en la "Lista Enlazada Doble"
-        if(airportsDoublyList.contains(airport.getCode())){
-            throw new ListException("The airport already exists");
-        }//cambiarlo por boolean si lleva false no se inserto porque el codigo del aeropuerto ya existe
+        airportsDoublyList.add(airport);
+
+
+//        if(airportsDoublyList.contains(airport.getCode())){
+//            throw new ListException("The airport already exists");
+//        }//cambiarlo por boolean si lleva false no se inserto porque el codigo del aeropuerto ya existe
 
         //Convertir la "Lista Enlazada Doble" a una lista estandar para serializar en en formato Json
         List<Airport> airportsToSave = new ArrayList<>();

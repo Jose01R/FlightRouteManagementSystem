@@ -62,7 +62,7 @@
                         <Font name="Arial Bold" size="15.0" />
                      </font>
                   </TextField>
-                  <Text layoutX="172.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Contry:">
+                  <Text layoutX="172.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Country:">
                      <font>
                         <Font name="Arial Bold" size="15.0" />
                      </font>
