@@ -4,6 +4,7 @@ import domain.btree.*;
 import domain.common.Airport;
 import domain.common.Flight;
 import domain.common.Passenger;
+import domain.graph.Vertex;
 import domain.linkedlist.*;
 import domain.linkedqueue.*;
 import  domain.linkedstack.*;
@@ -131,6 +132,10 @@ public class Utility {
                     Character ch2 = (Character) b;
                     return ch1.compareTo(ch2) < 0 ? -1 : ch1.compareTo(ch2) > 0 ? 1 : 0;
 
+                case "Vertex":
+                    Vertex v1 = (Vertex) a; Vertex v2 = (Vertex) b;
+                    return compare(v1.data, v2.data);
+
                 case "BST":
                     BST bst1 = (BST) a;
                     BST bst2 = (BST) b;
@@ -247,6 +252,7 @@ public class Utility {
         if (a instanceof Passenger && b instanceof Passenger) return "Passenger";
         if (a instanceof Flight && b instanceof Flight) return "Flight";
         if (a instanceof Airport && b instanceof Airport) return "Airport";
+        if(a instanceof Vertex && b instanceof Vertex) return "Vertex";
 
         return "Unknown";
     }

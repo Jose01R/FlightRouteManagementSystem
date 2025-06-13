@@ -61,7 +61,7 @@ public class LogInController {
             if (authenticatedUser != null) {
                 util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
 
-                //Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 //                HelloApplication.loadMainApplicationScene(stage);
 //                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
 
@@ -70,8 +70,8 @@ public class LogInController {
                 String fxmlPath = "";
                 switch (authenticatedUser.getRole()) {
                     case ADMINISTRATOR:
-                        //HelloApplication.loadMainApplicationScene(stage);
-                        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+                        HelloApplication.loadMainApplicationScene(stage);
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
 //                        if (authenticatedUser != null) {
 //                            util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
 //
@@ -129,6 +129,8 @@ public class LogInController {
             System.err.println("ListException durante el inicio de sesión: " + e.getMessage());
 
 
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

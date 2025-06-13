@@ -1,28 +1,85 @@
 package domain.common;
 
-import domain.linkedlist.SinglyLinkedList;
+// NO necesitas SinglyLinkedList aquí, una ruta es una entidad singular.
+import java.time.LocalTime; // Para manejar horas, si es relevante
+
+import java.util.Objects;
 
 public class Route {
-    private int originAirportCode; // Usamos int para el código del aeropuerto de origen
-    private SinglyLinkedList destinationList; // Lista de códigos de aeropuertos de destino
+    private String routeId; //Ejm: AA123
+    private String airline;
+    private double durationHours; //Costo de duración
+    private double distanceKm;    //Costo de distancia
+    private double price;         //Costo de precio
+    private LocalTime departureTime;
+    private LocalTime arrivalTime;
 
-    public Route(int originAirportCode) {
+    private int originAirportCode;
+    private int destinationAirportCode;
+
+    //CONSTRUCTOR VACIO PARA JSON
+    public Route() {}
+
+    public Route(String routeId, int originAirportCode, int destinationAirportCode,
+                 String airline, double durationHours, double distanceKm, double price,
+                 LocalTime departureTime, LocalTime arrivalTime) {
+        if (routeId == null || routeId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Route ID cannot be null or empty.");
+        }
+        if (durationHours <= 0 || distanceKm <= 0 || price <= 0) {
+            throw new IllegalArgumentException("Duration, distance, and price must be positive.");
+        }
+        this.routeId = routeId;
+
         this.originAirportCode = originAirportCode;
-        this.destinationList = new SinglyLinkedList();
+        this.destinationAirportCode = destinationAirportCode;
+
+        this.airline = airline;
+        this.durationHours = durationHours;
+        this.distanceKm = distanceKm;
+        this.price = price;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
     }
 
-    // Getters
-    public int getOriginAirportCode() {
-        return originAirportCode;
-    }
+    //GETTERS
+    public String getRouteId() { return routeId; }
+    public String getAirline() { return airline; }
+    public double getDurationHours() { return durationHours; }
+    public double getDistanceKm() { return distanceKm; }
+    public double getPrice() { return price; }
+    public LocalTime getDepartureTime() { return departureTime; }
+    public LocalTime getArrivalTime() { return arrivalTime; }
 
-    public SinglyLinkedList getDestinationList() {
-        return destinationList;
-    }
+    public int getOriginAirportCode() {return originAirportCode;}
+    public int getDestinationAirportCode() {return destinationAirportCode;}
 
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Route route = (Route) o;
+        return Objects.equals(routeId, route.routeId); //Ruta es única por su ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(routeId);
+    }
+
+    @Override
     public String toString() {
-        return "Route [originAirportCode=" + originAirportCode + ", destinationList=" + destinationList + "]";
+        return "Route{" +
+                "routeId='" + routeId + '\'' +
+                ", airline='" + airline + '\'' +
+                ", durationHours=" + durationHours +
+                ", distanceKm=" + distanceKm +
+                ", price=" + String.format("%.2f", price) +
+                ", departureTime=" + departureTime +
+                ", arrivalTime=" + arrivalTime +
+                ", originAirportCode=" + originAirportCode +
+                ", destinationAirportCode=" + destinationAirportCode +
+                '}';
     }
 }

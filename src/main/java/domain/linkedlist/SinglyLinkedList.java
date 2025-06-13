@@ -244,6 +244,51 @@ public class SinglyLinkedList implements List {
         }
         return result;
     }*/
+
+//    public Object get(Object element) throws ListException {
+//        if (isEmpty()) {
+//            throw new ListException("Singly Linked List is empty.");
+//        }
+//        Node aux = first;
+//        while (aux != null) {
+//            if (util.Utility.compare(aux.data, element) == 0) {
+//                return aux.data; // Devuelve el DATO del nodo, no el nodo en sí
+//            }
+//            aux = aux.next;
+//        }
+//        return null; // Elemento no encontrado
+//    }
+
+
+    public Object remove(int index) throws ListException {
+        if (isEmpty()) {
+            throw new ListException("Singly Linked List is empty");
+        }
+        if (index < 1 || index > size()) { // Check for valid index
+            throw new ListException("Index out of bounds: " + index);
+        }
+
+        Object removedData = null;
+        if (index == 1) { // Removemos primer node
+            removedData = first.data;
+            first = first.next;
+        } else {
+            Node prev = first;
+            //Atraviesa el nodo anterior al que se va a eliminar
+            for (int i = 1; i < index - 1; i++) {
+                prev = prev.next;
+            }
+            //prev ahora está en el nodo anterior al nodo de destino (índice)
+            Node nodeToRemove = prev.next;
+            if (nodeToRemove == null) {
+                throw new ListException("Node at index " + index + " not found (unexpected).");
+            }
+            removedData = nodeToRemove.data;
+            prev.next = nodeToRemove.next; //Omitir el nodo para eliminar
+        }
+        return removedData;
+    }
+
     @Override
     public String toString() {
         if (isEmpty()) return "Singly Linked List is empty";

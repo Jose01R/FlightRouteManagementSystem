@@ -57,6 +57,19 @@ public class Airport {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Airport airport = (Airport) o;
+        return code == airport.code;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
+    }
+
+    @Override
     public String toString() {
         return "Airport [code=" + code + ", name=" + name + ", country=" + country + ", status=" + status + "]";
     }

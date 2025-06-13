@@ -1,0 +1,79 @@
+{
+  "AA300" : {
+    "routeId" : "AA300",
+    "airline" : "American Airlines",
+    "durationHours" : 3.0,
+    "distanceKm" : 1500.0,
+    "price" : 350.0,
+    "departureTime" : [ 9, 0 ],
+    "arrivalTime" : [ 12, 0 ],
+    "originAirportCode" : 101,
+    "destinationAirportCode" : 404
+  },
+  "CM100" : {
+    "routeId" : "CM100",
+    "airline" : "Copa Airlines",
+    "durationHours" : 1.5,
+    "distanceKm" : 800.0,
+    "price" : 250.0,
+    "departureTime" : [ 8, 0 ],
+    "arrivalTime" : [ 9, 30 ],
+    "originAirportCode" : 101,
+    "destinationAirportCode" : 202
+  },
+  "UA700" : {
+    "routeId" : "UA700",
+    "airline" : "United Airlines",
+    "durationHours" : 6.0,
+    "distanceKm" : 4000.0,
+    "price" : 450.0,
+    "departureTime" : [ 19, 0 ],
+    "arrivalTime" : [ 1, 0 ],
+    "originAirportCode" : 303,
+    "destinationAirportCode" : 101
+  },
+  "CM200" : {
+    "routeId" : "CM200",
+    "airline" : "Copa Airlines",
+    "durationHours" : 7.0,
+    "distanceKm" : 4800.0,
+    "price" : 500.0,
+    "departureTime" : [ 10, 0 ],
+    "arrivalTime" : [ 17, 0 ],
+    "originAirportCode" : 202,
+    "destinationAirportCode" : 303
+  },
+  "AV500" : {
+    "routeId" : "AV500",
+    "airline" : "Avianca",
+    "durationHours" : 1.0,
+    "distanceKm" : 700.0,
+    "price" : 100.0,
+    "departureTime" : [ 14, 0 ],
+    "arrivalTime" : [ 15, 0 ],
+    "originAirportCode" : 202,
+    "destinationAirportCode" : 505
+  },
+  "DL400" : {
+    "routeId" : "DL400",
+    "airline" : "Delta Airlines",
+    "durationHours" : 5.5,
+    "distanceKm" : 3900.0,
+    "price" : 400.0,
+    "departureTime" : [ 13, 0 ],
+    "arrivalTime" : [ 18, 30 ],
+    "originAirportCode" : 404,
+    "destinationAirportCode" : 303
+  },
+  "IB600" : {
+    "routeId" : "IB600",
+    "airline" : "Iberia",
+    "durationHours" : 9.0,
+    "distanceKm" : 8000.0,
+    "price" : 700.0,
+    "departureTime" : [ 20, 0 ],
+    "arrivalTime" : [ 11, 0 ],
+    "originAirportCode" : 505,
+    "destinationAirportCode" : 606
+  }
+}

@@ -377,4 +377,30 @@ public class AirportsData {
             return airportsDoublyList;
         }
 
+    /**
+     * Obtiene un Airport por su código
+     * Lee el archivo JSON para buscar el aeropuerto
+     */
+
+    public static Airport getAirportByCode(int code) throws IOException, ListException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Path filePath = util.Utility.getFilePath(DATA_DIRECTORY, FILE_NAME);
+
+        if (Files.exists(filePath)) {
+            try (Reader reader = Files.newBufferedReader(filePath)) {
+                Type listType = new TypeToken<List<Airport>>() {}.getType();
+                List<Airport> tempJavaList = gson.fromJson(reader, listType);
+
+                if (tempJavaList != null) {
+                    for (Airport a : tempJavaList) {
+                        if (a.getCode() == code) {
+                            return a; //RETORNAMOS UN AIRPORT si se encontro
+                        }
+                    }
+                }
+            }
+        }
+        return null; //AIRPORT no encontrado
+    }
+
 }
