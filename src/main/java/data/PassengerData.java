@@ -16,7 +16,7 @@ import java.util.List;
 public class PassengerData {
     private final String PASSENGERS_FILE = "passengers.json";
     private ObjectMapper objectMapper;
-
+    private static final String DATA_DIRECTORY = "JSON_FILES_DATA";
     public PassengerData() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
@@ -28,7 +28,7 @@ public class PassengerData {
     public AVL readPassengers() {
         AVL avlPassengers = new AVL();
         try {
-            File file = new File(PASSENGERS_FILE);
+            File file = util.Utility.getFilePath(DATA_DIRECTORY, PASSENGERS_FILE).toFile();
             if (file.exists() && file.length() > 0) {
                 List<Passenger> passengerList = objectMapper.readValue(file, new TypeReference<List<Passenger>>() {});
                 for (Passenger passenger : passengerList) {
@@ -54,7 +54,7 @@ public class PassengerData {
                     passengerList.add((Passenger) obj);
                 }
             }
-            objectMapper.writeValue(new File(PASSENGERS_FILE), passengerList);
+            objectMapper.writeValue(util.Utility.getFilePath(DATA_DIRECTORY, PASSENGERS_FILE).toFile(), passengerList);
             System.out.println("Pasajeros guardados exitosamente en " + PASSENGERS_FILE);
         } catch (IOException e) {
             System.err.println("Error al guardar pasajeros en el archivo: " + e.getMessage());
