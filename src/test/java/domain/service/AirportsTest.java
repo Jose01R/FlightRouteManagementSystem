@@ -172,8 +172,8 @@ class AirportsTest {
         try{
             SinglyLinkedList list = listAirports("Inactive");
             Airport airport1 = new Airport(101, "Aeropuerto de Dortmund", "Alemania", "Active");
-            boolean find = createAirport(airport1);
-            System.out.println(find);
+            //boolean find = createAirport(airport1);
+            //System.out.println(find);
 
             System.out.println(list);
 
