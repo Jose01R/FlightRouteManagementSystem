@@ -310,7 +310,7 @@ public class AirportsData {
 
             //Verifica si el avión existe por su ID
             if(!airportsDoublyList.isEmpty()){
-                int i = 1;
+//                int i = 1;
                 Node airportNode = airportsDoublyList.getNode(1);
                 while(airportNode!=null){
                     // Verifica que el nodo y sus datos no sean nulos y que los datos sean de tipo Airport
@@ -332,7 +332,7 @@ public class AirportsData {
             //Convertir la "Lista Enlazada Doble" a una lista estandar para serializar en en formato Json
             List<Airport> airportsToSave = new ArrayList<>();
             if (!airportsDoublyList.isEmpty()) {
-                Node current = airportsDoublyList.getFirstNode(); // Access the first node of the DoublyLinkedList
+                Node current = airportsDoublyList.getFirstNode(); // primer nodo de la lista doble enlazada
                 while (current != null) {
                     airportsToSave.add((Airport) current.data);
                     current = current.next;

@@ -1,0 +1,202 @@
+{
+  "6144" : {
+    "number" : 6144,
+    "origin" : "San Salvador",
+    "destination" : "Madrid",
+    "departureTime" : [ 2025, 6, 13, 0, 49, 6, 491673900 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "7936" : {
+    "number" : 7936,
+    "origin" : "Managua",
+    "destination" : "París",
+    "departureTime" : [ 2025, 6, 27, 15, 50, 6, 491673900 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "8769" : {
+    "number" : 8769,
+    "origin" : "Managua",
+    "destination" : "Madrid",
+    "departureTime" : [ 2025, 6, 18, 16, 16, 40, 339143800 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "6113" : {
+    "number" : 6113,
+    "origin" : "Panamá",
+    "destination" : "Los Ángeles",
+    "departureTime" : [ 2025, 6, 27, 15, 37, 6, 491673900 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "6625" : {
+    "number" : 6625,
+    "origin" : "Bogotá",
+    "destination" : "Ciudad de México",
+    "departureTime" : [ 2025, 6, 20, 11, 46, 6, 491673900 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "7399" : {
+    "number" : 7399,
+    "origin" : "Managua",
+    "destination" : "Toronto",
+    "departureTime" : [ 2025, 6, 17, 2, 20, 40, 339143800 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "2696" : {
+    "number" : 2696,
+    "origin" : "Bogotá",
+    "destination" : "París",
+    "departureTime" : [ 2025, 7, 9, 14, 54, 40, 338108500 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "6410" : {
+    "number" : 6410,
+    "origin" : "Managua",
+    "destination" : "Miami",
+    "departureTime" : [ 2025, 7, 1, 12, 56, 40, 339143800 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "1643" : {
+    "number" : 1643,
+    "origin" : "Tegucigalpa",
+    "destination" : "París",
+    "departureTime" : [ 2025, 7, 1, 7, 59, 40, 339143800 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "1900" : {
+    "number" : 1900,
+    "origin" : "Panamá",
+    "destination" : "Toronto",
+    "departureTime" : [ 2025, 6, 29, 23, 26, 40, 339143800 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "9266" : {
+    "number" : 9266,
+    "origin" : "Bogotá",
+    "destination" : "París",
+    "departureTime" : [ 2025, 6, 29, 11, 20, 6, 491673900 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "9778" : {
+    "number" : 9778,
+    "origin" : "Panamá",
+    "destination" : "Buenos Aires",
+    "departureTime" : [ 2025, 6, 16, 7, 19, 6, 491673900 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "8468" : {
+    "number" : 8468,
+    "origin" : "Tegucigalpa",
+    "destination" : "París",
+    "departureTime" : [ 2025, 7, 10, 23, 45, 40, 339143800 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "4757" : {
+    "number" : 4757,
+    "origin" : "Panamá",
+    "destination" : "Toronto",
+    "departureTime" : [ 2025, 7, 11, 19, 51, 6, 491673900 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "1783" : {
+    "number" : 1783,
+    "origin" : "San Salvador",
+    "destination" : "Los Ángeles",
+    "departureTime" : [ 2025, 6, 19, 7, 26, 40, 339143800 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "7064" : {
+    "number" : 7064,
+    "origin" : "San Salvador",
+    "destination" : "Ciudad de México",
+    "departureTime" : [ 2025, 6, 24, 9, 41, 6, 490648300 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "6237" : {
+    "number" : 6237,
+    "origin" : "Managua",
+    "destination" : "Ciudad de México",
+    "departureTime" : [ 2025, 6, 29, 22, 15, 40, 339143800 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "2845" : {
+    "number" : 2845,
+    "origin" : "Tegucigalpa",
+    "destination" : "Miami",
+    "departureTime" : [ 2025, 6, 22, 13, 33, 6, 491673900 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "4734" : {
+    "number" : 4734,
+    "origin" : "San Salvador",
+    "destination" : "Toronto",
+    "departureTime" : [ 2025, 6, 29, 1, 34, 40, 339143800 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "4126" : {
+    "number" : 4126,
+    "origin" : "Managua",
+    "destination" : "Buenos Aires",
+    "departureTime" : [ 2025, 7, 9, 17, 4, 6, 491673900 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  }
+}

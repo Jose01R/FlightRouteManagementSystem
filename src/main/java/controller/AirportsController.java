@@ -3,6 +3,7 @@ package controller;
 import domain.common.Airport;
 import domain.linkedlist.DoublyLinkedList;
 import domain.linkedlist.ListException;
+import domain.linkedlist.SinglyLinkedList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -36,6 +37,7 @@ public class AirportsController
 
     private Alert alert;
     private DoublyLinkedList airportList;
+    private SinglyLinkedList listForStatus;
 
     //son para listar por status
     @javafx.fxml.FXML
@@ -74,16 +76,24 @@ public class AirportsController
     @javafx.fxml.FXML
     public void addOnAction(ActionEvent actionEvent) {
         int id = Integer.parseInt(idAirport.getText().trim());
+
         String name = nameAirport.getText().trim();
         String status = statusAirport.getText().trim();
         String country = countryAirport.getText().trim();
 
-        if(idAirport.getText().isEmpty() || name.isEmpty() || status.isEmpty() || country.isEmpty()){
+        if(idAirport.getText().isEmpty() || nameAirport.getText().isEmpty() || statusAirport.getText().isEmpty() || countryAirport.getText().isEmpty()){
             util.FXUtility.alert("ERROR", "Todos los campos deben ser completados.").showAndWait();
             return;
         }
 
-        Airport newAirport = new Airport(id,name,status,country);
+        // Verifica que el estado sea válido
+        if (!status.equalsIgnoreCase("Active") && !status.equalsIgnoreCase("Inactive")) {
+            util.FXUtility.alert("ERROR", "El estado debe ser 'Active' o 'Inactive'.").showAndWait();
+            statusAirport.clear();
+            return;
+        }
+
+        Airport newAirport = new Airport(id,name,country,status);
         try {
             createAirport(newAirport);
             idAirport.clear();
@@ -95,11 +105,14 @@ public class AirportsController
 
         } catch (IOException | ListException e) {
             util.FXUtility.alertInfo("Error", e.getMessage()).showAndWait();
+        } catch (NumberFormatException e) {
+            util.FXUtility.alert("ERROR", "El ID debe ser un número entero.").showAndWait();
         }
 
 
 
     }
+
 
     @javafx.fxml.FXML
     public void editAirportOnAction(ActionEvent actionEvent) {
@@ -285,6 +298,53 @@ public class AirportsController
 
     @javafx.fxml.FXML
     public void listAirportsForStatusOnAction(ActionEvent actionEvent) {
+        TextInputDialog inputDialog = new TextInputDialog();
+        inputDialog.setTitle("List Airport For Status");
+        inputDialog.setHeaderText("Which airports do you want to see for their status?");
+        inputDialog.setContentText("Status:");
+
+        Optional<String> result = inputDialog.showAndWait();//status
+
+        //detecta si se cerró el diálogo sin escribir nada, o presionó Cancelar
+        if (!result.isPresent()) return;
+
+        String status = result.get().trim();
+
+        if(status.equalsIgnoreCase("Active") || status.equalsIgnoreCase("Inactive") || status.equalsIgnoreCase("Ambos")){
+            try {
+                tableViewForStatus.getItems().clear();
+
+                listForStatus = new SinglyLinkedList();
+                listForStatus = listAirports(status);
+
+                codeForStatus.setCellValueFactory(new PropertyValueFactory<>("code"));
+                nameForStatus.setCellValueFactory(new PropertyValueFactory<>("name"));
+                statusStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+                countryForStatus.setCellValueFactory(new PropertyValueFactory<>("country"));
+
+                try{
+                    if(listForStatus!=null && !listForStatus.isEmpty()){
+                        for(int i=1; i<=listForStatus.size(); i++) {
+                            this.tableViewForStatus.getItems().add((Airport) listForStatus.getNode(i).data);
+                        }
+                    }
+                }catch(ListException ex){
+                    alert.setContentText("Airports list is empty");
+                    alert.showAndWait();
+                }
+
+            } catch (ListException | IOException e) {
+                alert.setContentText(e.getMessage());
+                alert.setAlertType(Alert.AlertType.ERROR);
+                alert.showAndWait();
+                throw new RuntimeException(e);
+            }
+        }else{
+            alert.setContentText(status + "it is not valid, please enter \"Active\", \"Inactive\" or \"Ambos\"");
+            alert.setAlertType(Alert.AlertType.INFORMATION);
+            alert.showAndWait();
+        }
+
     }
 
     //crear un metodo de que refresque el tableview

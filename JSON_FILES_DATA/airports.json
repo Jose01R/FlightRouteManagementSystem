@@ -28,10 +28,17 @@
     "departuresBoard": {}
   },
   {
-    "code": 606,
-    "name": "Adolfo Suarez Madrid-Barajas Airport",
-    "country": "Spain",
-    "status": "Active",
+    "code": 555,
+    "name": "sadas",
+    "country": "asd",
+    "status": "active",
+    "departuresBoard": {}
+  },
+  {
+    "code": 45534,
+    "name": "asd",
+    "country": "asd",
+    "status": "inactive",
     "departuresBoard": {}
   }
 ]
