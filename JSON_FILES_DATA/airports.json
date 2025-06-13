@@ -1,142 +1,37 @@
 [
   {
-    "code": 11,
-    "name": "Aeropuerto de Dortmund",
-    "country": "Alemania",
+    "code": 101,
+    "name": "Juan Santamaria Intl Airport",
+    "country": "Costa Rica",
     "status": "Active",
     "departuresBoard": {}
   },
   {
-    "code": 12,
-    "name": "Aeropuerto de Aalborg",
-    "country": "Dinamarca",
+    "code": 202,
+    "name": "Tocumen Intl Airport",
+    "country": "Panama",
     "status": "Active",
     "departuresBoard": {}
   },
   {
-    "code": 13,
-    "name": "Aeropuerto de La Coruña",
-    "country": "España",
-    "status": "Inactive",
-    "departuresBoard": {}
-  },
-  {
-    "code": 14,
-    "name": "Aeropuerto de Marsella-Provenza",
-    "country": "Francia",
+    "code": 303,
+    "name": "Los Angeles Intl Airport",
+    "country": "USA",
     "status": "Active",
     "departuresBoard": {}
   },
   {
-    "code": 15,
-    "name": "Aeropuerto de Oporto",
-    "country": "Portugal",
+    "code": 404,
+    "name": "Miami Intl Airport",
+    "country": "USA",
     "status": "Active",
     "departuresBoard": {}
   },
   {
-    "code": 16,
-    "name": "Aeropuerto de Zúrich",
-    "country": "Suiza",
-    "status": "Inactive",
-    "departuresBoard": {}
-  },
-  {
-    "code": 17,
-    "name": "Aeropuerto de Milán-Malpensa",
-    "country": "Italia",
+    "code": 606,
+    "name": "Adolfo Suarez Madrid-Barajas Airport",
+    "country": "Spain",
     "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 18,
-    "name": "Aeropuerto de Bruselas",
-    "country": "Bélgica",
-    "status": "Inactive",
-    "departuresBoard": {}
-  },
-  {
-    "code": 19,
-    "name": "Aeropuerto de Estocolmo-Arlanda",
-    "country": "Suecia",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 20,
-    "name": "Aeropuerto de Viena-Schwechat",
-    "country": "Austria",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 21,
-    "name": "Aeropuerto de Praga",
-    "country": "Chequia",
-    "status": "Inactive",
-    "departuresBoard": {}
-  },
-  {
-    "code": 22,
-    "name": "Aeropuerto de Ámsterdam-Schiphol",
-    "country": "Países Bajos",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 23,
-    "name": "Aeropuerto de Helsinki-Vantaa",
-    "country": "Finlandia",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 24,
-    "name": "Aeropuerto de Dublín",
-    "country": "Irlanda",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 25,
-    "name": "Aeropuerto de Oslo-Gardermoen",
-    "country": "Noruega",
-    "status": "Inactive",
-    "departuresBoard": {}
-  },
-  {
-    "code": 26,
-    "name": "Aeropuerto de Bucarest-Henri Coandă",
-    "country": "Rumanía",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 27,
-    "name": "Aeropuerto de Budapest-Ferenc Liszt",
-    "country": "Hungría",
-    "status": "Inactive",
-    "departuresBoard": {}
-  },
-  {
-    "code": 28,
-    "name": "Aeropuerto de Varsovia-Chopin",
-    "country": "Polonia",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 29,
-    "name": "Aeropuerto de Copenhague-Kastrup",
-    "country": "Dinamarca",
-    "status": "Active",
-    "departuresBoard": {}
-  },
-  {
-    "code": 30,
-    "name": "Aeropuerto de Sofía",
-    "country": "Bulgaria",
-    "status": "Inactive",
     "departuresBoard": {}
   }
 ]

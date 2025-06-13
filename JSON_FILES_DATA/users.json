@@ -9,7 +9,7 @@
   "2" : {
     "id" : 2,
     "name" : "Usuario Normal",
-    "hashedPassword" : "pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=",
+    "hashedPassword" : "5gbjiw2MGbJM8O44CBgxYup81j/3kS27IrXoAyhrREY=",
     "email" : "user@sys.com",
     "role" : "USER"
   },
