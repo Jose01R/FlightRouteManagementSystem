@@ -24,7 +24,6 @@ public class PassengerService {
         loadInitialPassengers();
         generateInitialRandomPassengers(10);
 
-
     }
 
 

@@ -1,5 +1,8 @@
 package domain.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import data.PassengerData;
 import domain.btree.TreeException;
 import domain.common.Flight;
@@ -9,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,5 +103,37 @@ class PassengerServiceTest {
     @Test
     void loadRandomPassengersTest(){
         passengerService.generateInitialRandomPassengers(10);
+    }
+    @Test
+    public void testPassengerSharedFlightSerialization() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule()); // <-- Soluciona el problema
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Usa formato ISO-8601 legible
+
+
+        // Vuelo compartido
+        Flight sharedFlight = new Flight(3863, "San José", "Madrid", LocalDateTime.of(2025, 7, 1, 10, 30), 100);
+
+        // Pasajeros que comparten vuelo
+        Passenger p1 = new Passenger(1, "Ana", "CR");
+        Passenger p2 = new Passenger(2, "Luis", "CR");
+
+        p1.setFlightHistoryFromList(Arrays.asList(sharedFlight));
+        p2.setFlightHistoryFromList(Arrays.asList(sharedFlight));
+
+        // Serializar
+        String json = mapper.writeValueAsString(Arrays.asList(p1, p2));
+        assertNotNull(json);
+        assertTrue(json.contains("3863"));
+
+        // Deserializar
+        Passenger[] deserialized = mapper.readValue(json, Passenger[].class);
+
+        assertEquals(2, deserialized.length);
+        Flight f1 = deserialized[0].getFlightHistoryAsList().get(0);
+        Flight f2 = deserialized[1].getFlightHistoryAsList().get(0);
+
+        // Verificar que comparten la misma instancia de vuelo
+        assertSame(f1, f2, "Ambos pasajeros deberían tener la misma instancia de vuelo");
     }
 }
