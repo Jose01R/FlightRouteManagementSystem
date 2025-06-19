@@ -59,7 +59,7 @@ public class HelloController {
 
     @FXML
     public void pasajerosOnAction(ActionEvent actionEvent) {
-        loadPage("fxml.");
+        loadPage("/ucr/flightroutemanagementsystem/ticketsinterface/tickets.fxml");
     }
 
     @FXML

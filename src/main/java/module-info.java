@@ -19,6 +19,6 @@ module ucr.flightroutemanagementsystem {
     opens controller.flightcontroller to javafx.fxml;
     opens domain.linkedlist to com.fasterxml.jackson.databind, com.google.gson;
     opens ucr.flightroutemanagementsystem to javafx.fxml;
-
+    opens controller.ticketscontroller;
 
 }
