@@ -99,6 +99,8 @@ public class FlightController {
     private TableView<Passenger> passengerTable;
 
     @FXML private TextField searchTextField;
+    @FXML private TextField searchByOrigenTf;
+    @FXML private TextField searchByArrivalTf;
     private AVL avlPassengers;
     private PassengerService passengerService;
     private PassengerData passengerData;
@@ -207,6 +209,16 @@ public class FlightController {
             if (newSelection != null) {
                 passengerIdField.setText(String.valueOf(newSelection.getId()));
             }
+        });
+        searchByOrigenTf.textProperty().addListener((obs, oldText, newText) -> {
+            reorderFlightTableView(searchByOrigenTf.getText(), searchByArrivalTf.getText());
+        });
+
+        searchByArrivalTf.textProperty().addListener((obs, oldText, newText) -> {
+            reorderFlightTableView(searchByOrigenTf.getText(), searchByArrivalTf.getText());
+        });
+        flightTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            assignedFlightComboBox.getSelectionModel().select(newSelection);
         });
 
     }
@@ -470,6 +482,36 @@ public class FlightController {
 
         passengerTable.setItems(filteredList);
         passengerTable.refresh(); // Refresca la vista por si ya estaba seleccionado
+    }
+    private void reorderFlightTableView(String originInput, String destinationInput) {
+        ObservableList<Flight> filteredList = FXCollections.observableArrayList();
+        ObservableList<Flight> allFlights = flightService.getObservableFlights();
+
+        String origin = originInput != null ? originInput.toLowerCase().trim() : "";
+        String destination = destinationInput != null ? destinationInput.toLowerCase().trim() : "";
+
+        // Primero los que coinciden al inicio (parcial o total)
+        for (Flight f : allFlights) {
+            boolean matchesOrigin = f.getOrigin().toLowerCase().startsWith(origin);
+            boolean matchesDestination = f.getDestination().toLowerCase().startsWith(destination);
+
+            if ((origin.isEmpty() || matchesOrigin) && (destination.isEmpty() || matchesDestination)) {
+                filteredList.add(f); // Coincidencias preferidas primero
+            }
+        }
+
+        // Luego el resto
+        for (Flight f : allFlights) {
+            boolean matchesOrigin = f.getOrigin().toLowerCase().startsWith(origin);
+            boolean matchesDestination = f.getDestination().toLowerCase().startsWith(destination);
+
+            if (!((origin.isEmpty() || matchesOrigin) && (destination.isEmpty() || matchesDestination))) {
+                filteredList.add(f);
+            }
+        }
+
+        flightTable.setItems(filteredList);
+        flightTable.refresh();
     }
 
 

@@ -2,7 +2,7 @@
   "1" : {
     "id" : 1,
     "name" : "Administrador Supremo",
-    "hashedPassword" : "JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=",
+    "hashedPassword" : "pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=",
     "email" : "admin@sys.com",
     "role" : "ADMINISTRATOR"
   },

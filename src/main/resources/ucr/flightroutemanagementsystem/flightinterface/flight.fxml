@@ -59,6 +59,12 @@
     <center>
         <VBox prefHeight="552.0" prefWidth="502.0" spacing="10" style="-fx-padding: 25px;" VBox.vgrow="ALWAYS">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Vuelos Registrados" />
+         <Pane prefHeight="46.0" prefWidth="320.0">
+            <children>
+               <TextField fx:id="searchByOrigenTf" layoutY="-3.0" prefHeight="25.0" prefWidth="110.0" promptText="Buscar por origen" />
+               <TextField fx:id="searchByArrivalTf" layoutX="120.0" layoutY="-3.0" prefHeight="25.0" prefWidth="131.0" promptText="Buscar por Destino" />
+            </children>
+         </Pane>
             <TableView fx:id="flightTable" prefHeight="462.0" prefWidth="524.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="flightTableNumberColumn" text="N°" />
@@ -80,7 +86,7 @@
          <Pane prefHeight="33.0" prefWidth="836.0">
             <children>
                     <Label layoutX="14.0" layoutY="-1.0" prefHeight="30.0" prefWidth="224.0" style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Pasajeros Registrados" />
-               <TextField fx:id="searchTextField" layoutX="255.0" prefHeight="25.0" prefWidth="92.0" promptText="search by ID" />
+               <TextField fx:id="searchTextField" layoutX="255.0" prefHeight="25.0" prefWidth="92.0" promptText="Buscar por ID" />
             </children>
          </Pane>
             <TableView fx:id="passengerTable" prefHeight="171.0" prefWidth="836.0">

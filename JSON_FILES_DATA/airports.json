@@ -138,5 +138,40 @@
     "country": "Bulgaria",
     "status": "Inactive",
     "departuresBoard": {}
+  },
+  {
+    "code": 101,
+    "name": "Juan Santamaria Intl Airport",
+    "country": "Costa Rica",
+    "status": "Active",
+    "departuresBoard": {}
+  },
+  {
+    "code": 202,
+    "name": "Tocumen Intl Airport",
+    "country": "Panama",
+    "status": "Active",
+    "departuresBoard": {}
+  },
+  {
+    "code": 303,
+    "name": "Los Angeles Intl Airport",
+    "country": "USA",
+    "status": "Active",
+    "departuresBoard": {}
+  },
+  {
+    "code": 404,
+    "name": "Miami Intl Airport",
+    "country": "USA",
+    "status": "Active",
+    "departuresBoard": {}
+  },
+  {
+    "code": 606,
+    "name": "Adolfo Suarez Madrid-Barajas Airport",
+    "country": "Spain",
+    "status": "Active",
+    "departuresBoard": {}
   }
 ]
