@@ -5,6 +5,10 @@ module ucr.flightroutemanagementsystem {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.databind;
     requires net.bytebuddy;
+    requires java.desktop;
+    requires kernel;
+    requires layout;
+    requires itextpdf;
     //requires com.fasterxml.jackson.datatype.jsr310;
 
     opens controller.logincontroller to javafx.fxml;

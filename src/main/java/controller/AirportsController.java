@@ -34,10 +34,13 @@ public class AirportsController
     private TextField countryAirport;
     @javafx.fxml.FXML
     private TextField nameAirport;
+    @javafx.fxml.FXML
+    private TextField searchAirport;
 
     private Alert alert;
     private DoublyLinkedList airportList;
     private SinglyLinkedList listForStatus;
+    private SinglyLinkedList listForCountry;
 
     //son para listar por status
     @javafx.fxml.FXML
@@ -112,7 +115,6 @@ public class AirportsController
 
 
     }
-
 
     @javafx.fxml.FXML
     public void editAirportOnAction(ActionEvent actionEvent) {
@@ -347,6 +349,46 @@ public class AirportsController
 
     }
 
+    @javafx.fxml.FXML
+    public void searchOnAction(ActionEvent actionEvent) {
+        String pais = searchAirport.getText().trim();
+
+        if(searchAirport.getText().isEmpty()){
+            util.FXUtility.alert("ERROR", "You must enter an ID to search for the Airport.").showAndWait();
+            return;
+        }
+
+        try {
+            this.airportList = getElements(); //cargo la lista
+            this.listForCountry = new SinglyLinkedList();
+
+            for (int i = 1; i <= airportList.size(); i++) {
+                Airport airport = (Airport) airportList.getNode(i).data;
+                if (airport.getCountry().equalsIgnoreCase(pais)) {
+                    listForCountry.add(airport);
+                }
+            }
+
+            if (listForCountry.isEmpty()){
+                util.FXUtility.alert("Information", "There is no airport in that country..").showAndWait();
+                return;
+            }
+
+            //el tableView grande
+            this.tableview.getItems().clear(); //clear table
+            if(listForCountry!=null && !listForCountry.isEmpty()){
+                for(int i=1; i<=airportList.size(); i++) {
+                    this.tableview.getItems().add((Airport) listForCountry.getNode(i).data);
+                }
+            }
+
+        } catch (IOException | ListException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     //crear un metodo de que refresque el tableview
     private void updateTableView() throws ListException {
         try {
@@ -364,6 +406,12 @@ public class AirportsController
         }
     }
 
-
-
+    @javafx.fxml.FXML
+    public void updateOnAction(ActionEvent actionEvent) {
+        try {
+            updateTableView();
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

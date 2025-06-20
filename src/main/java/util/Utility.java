@@ -17,12 +17,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-import domain.btree.*;
-import domain.common.Airport;
-import domain.linkedlist.*;
-import domain.linkedqueue.*;
-import  domain.linkedstack.*;
-
 
 
 public class Utility {
@@ -170,11 +164,16 @@ public class Utility {
                     return Integer.compare(fl1.getNumber(), fl2.getNumber());
 
 
-                case "Airport":
+                case "AirportByCode":
                     Airport a1 = (Airport) a;
                     Airport a2 = (Airport) b;
                     return a1.getCode() < a2.getCode() ? -1
-                            :  a1.getCode() > a2.getCode() ? 1 : 0;
+                            : a1.getCode() > a2.getCode() ? 1 : 0;
+
+                case "AirportByCountry":
+                    Airport country1 = (Airport) a;
+                    Airport country2 = (Airport) b;
+                    return country1.getCountry().compareToIgnoreCase(country2.getCountry());
             }
 
         } catch (TreeException e) {
@@ -197,7 +196,8 @@ public class Utility {
         if (a instanceof AVL && b instanceof AVL) return "AVL";
         if (a instanceof Passenger && b instanceof Passenger) return "Passenger";
         if (a instanceof Flight && b instanceof Flight) return "Flight";
-        if (a instanceof Airport && b instanceof Airport) return "Airport";
+        if (a instanceof Airport && b instanceof Airport) return "AirportByCode";
+        if (a instanceof Airport && b instanceof Airport) return "AirportByCountry";
         if(a instanceof Vertex && b instanceof Vertex) return "Vertex";
 
         return "Unknown";
