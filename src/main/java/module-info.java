@@ -24,5 +24,7 @@ module ucr.flightroutemanagementsystem {
     opens domain.linkedlist to com.fasterxml.jackson.databind, com.google.gson;
     opens ucr.flightroutemanagementsystem to javafx.fxml;
 
+    opens domain.linkedqueue to com.google.gson;
+    opens data to com.google.gson;
 
 }

@@ -1,6 +1,8 @@
 package domain.linkedstack;
 
 
+import java.util.ArrayList;
+
 public class LinkedStack implements Stack {
 
     private int counter;
@@ -58,6 +60,20 @@ public class LinkedStack implements Stack {
         top = top.next;
         counter--;
         return result;
+    }
+
+    public ArrayList<Object> toList() {
+        ArrayList<Object> list = new ArrayList<>();
+        Node current = top; // Assumes 'top' is the head of your stack's linked list
+        while (current != null) {
+            list.add(current.data); // Assumes 'data' is the field holding the element
+            current = current.next; // Assumes 'next' is the pointer to the next node
+        }
+        // Commented-out reversal: This is fine. The current implementation
+        // will add elements from the top of the stack downwards.
+        // So, if you push A, then B, then C: Stack is [C, B, A] (C at top).
+        // The list will be [C, B, A]. This is generally intuitive for stack serialization.
+        return list;
     }
 
     @Override

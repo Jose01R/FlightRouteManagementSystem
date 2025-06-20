@@ -1,23 +1,25 @@
 package domain.common;
 
-// NO necesitas SinglyLinkedList aquí, una ruta es una entidad singular.
-import java.time.LocalTime; // Para manejar horas, si es relevante
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.time.LocalTime;
 import java.util.Objects;
 
+// --- ADJUSTMENT 1: Add JsonIdentityInfo ---
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "routeId")
 public class Route {
-    private String routeId; //Ejm: AA123
+    private String routeId; // Ejm: AA123
     private String airline;
-    private double durationHours; //Costo de duración
-    private double distanceKm;    //Costo de distancia
-    private double price;         //Costo de precio
+    private double durationHours; // Costo de duración
+    private double distanceKm;    // Costo de distancia
+    private double price;         // Costo de precio
     private LocalTime departureTime;
     private LocalTime arrivalTime;
 
     private int originAirportCode;
     private int destinationAirportCode;
 
-    //CONSTRUCTOR VACIO PARA JSON
+    // CONSTRUCTOR VACIO PARA JSON
     public Route() {}
 
     public Route(String routeId, int originAirportCode, int destinationAirportCode,
@@ -42,7 +44,7 @@ public class Route {
         this.arrivalTime = arrivalTime;
     }
 
-    //GETTERS
+    // GETTERS (no setters, assuming immutability after creation)
     public String getRouteId() { return routeId; }
     public String getAirline() { return airline; }
     public double getDurationHours() { return durationHours; }
@@ -51,16 +53,20 @@ public class Route {
     public LocalTime getDepartureTime() { return departureTime; }
     public LocalTime getArrivalTime() { return arrivalTime; }
 
-    public int getOriginAirportCode() {return originAirportCode;}
-    public int getDestinationAirportCode() {return destinationAirportCode;}
+    public int getOriginAirportCode() { return originAirportCode; }
+    public int getDestinationAirportCode() { return destinationAirportCode; }
 
+    // --- Optional: Add setters if properties need to be mutable after creation ---
+    // public void setAirline(String airline) { this.airline = airline; }
+    // public void setDurationHours(double durationHours) { this.durationHours = durationHours; }
+    // ... etc.
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Route route = (Route) o;
-        return Objects.equals(routeId, route.routeId); //Ruta es única por su ID
+        return Objects.equals(routeId, route.routeId); // Ruta es única por su ID
     }
 
     @Override

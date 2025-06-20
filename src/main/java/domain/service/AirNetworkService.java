@@ -1,12 +1,13 @@
 package domain.service;
 
+import data.RouteData;
 import domain.common.Airport;
 import domain.common.Route;
 import domain.graph.DijkstraNode;
 import domain.graph.DirectedSinglyLinkedListGraph;
 import domain.graph.GraphException;
 import domain.graph.Vertex;
-import domain.linkedlist.DoublyLinkedList;
+import domain.graph.EdgeWeight;
 import domain.linkedlist.ListException;
 import domain.linkedlist.Node;
 import domain.linkedlist.SinglyLinkedList;
@@ -15,262 +16,303 @@ import domain.linkedqueue.QueueException;
 import util.Utility;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import java.util.PriorityQueue;
-
-import java.util.Comparator;
-import java.util.Objects; //Para Objects .equals
+import java.util.Objects;
+import java.util.HashMap;
 
 public class AirNetworkService {
     private DirectedSinglyLinkedListGraph airportGraph;
-    private Map<Integer, Airport> airports;
+    private Map<String, Route> routesMap;
+    private AirportService airportService;
+    private RouteData routeData;
 
-    public AirNetworkService() {
+    public AirNetworkService(AirportService airportService, RouteData routeData) {
+        this.airportService = Objects.requireNonNull(airportService, "AirportService cannot be null");
+        this.routeData = Objects.requireNonNull(routeData, "RouteData cannot be null");
+
         this.airportGraph = new DirectedSinglyLinkedListGraph();
-        this.airports = new HashMap<>();
-
-        //Para cargar automáticamente todos los aeropuertos del JSON al iniciar el service
-        // try {
-        //     loadAllAirportsIntoGraph();
-        // } catch (IOException | ListException | GraphException e) {
-        //     System.err.println("Error al cargar aeropuertos iniciales en el grafo: " + e.getMessage());
-        // }
-
+        this.routesMap = new HashMap<>();
+        loadRoutesAndNetwork();
     }
 
-    /**
-     * Carga todos los aeropuertos desde el archivo JSON al grafo
-     * para inicializar el estado del grafo con datos persistentes
-     * @throws IOException Si hay un error de lectura/escritura del archivo
-     * @throws ListException Si hay un problema con las operaciones de la lista enlazada
-     * @throws GraphException Si hay un problema al añadir vértices al grafo
-     */
-    public void loadAllAirportsIntoGraph() throws IOException, ListException, GraphException {
-        //Obtenemos lista de aeropuertos desde el JSON
-        DoublyLinkedList airportsJsonList = AirportsData.getElements();
+    private void loadRoutesAndNetwork() {
+        try {
+            airportGraph.clear();
+            routesMap.clear();
 
-        if (airportsJsonList != null && !airportsJsonList.isEmpty()) {
-            domain.linkedlist.Node current = airportsJsonList.getFirstNode(); //obtenemos un node
-            while (current != null) {
-                if (current.data instanceof Airport) { //current.data es el airport
-                    try {
-                        addAirport((Airport) current.data); //Añadimos cada airport al grafo
-                    } catch (GraphException e) {
-                        //Evitamos duplicados si se carga más de una vez
-                        if (!e.getMessage().contains("already exists")) {
-                            throw e; //excepciones de grafo
-                        }
-                        System.out.println("Advertencia: Aeropuerto " + ((Airport) current.data).getCode() + " ya existe en el grafo. Ignorando.");
-                    }
+            //Cargamos todos los aeropuertos y agregarmos al grafo como vértices
+            List<Object> allAirportsObjects = airportService.getAllAirportsAsList();
+            List<Airport> allAirports = new ArrayList<>();
+            for (Object obj : allAirportsObjects) {
+                if (obj instanceof Airport) {
+                    allAirports.add((Airport) obj);
+                } else {
+                    System.err.println("Warning: Object in AirportService.getAllAirports is not an Airport. Type: " + (obj != null ? obj.getClass().getName() : "null"));
                 }
-                current = current.next;
             }
+
+            System.out.println("Loading " + allAirports.size() + " airports into graph...");
+            for (Airport airport : allAirports) {
+                try {
+                    airportGraph.addVertex(airport);
+                } catch (GraphException e) {
+                    System.err.println("Warning: Could not add airport to graph: " + airport.getCode() + " - " + e.getMessage());
+                }
+            }
+
+            this.routesMap = routeData.loadRoutesToMap();
+            System.out.println("Loading " + routesMap.size() + " routes into graph...");
+
+            for (Route route : routesMap.values()) {
+                Airport origin = airportService.getAirportByCode(route.getOriginAirportCode());
+                Airport destination = airportService.getAirportByCode(route.getDestinationAirportCode());
+
+                if (origin != null && destination != null) {
+                    try {
+                        airportGraph.addVertex(origin);
+                        airportGraph.addVertex(destination);
+
+                        airportGraph.addEdgeWeight(origin, destination, route);
+                    } catch (GraphException e) {
+                        System.err.println("Warning: Could not add edge for route " + route.getRouteId() + ": " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Warning: Route " + route.getRouteId() + " has airports not found in AirportService. Not added to graph");
+                }
+            }
+            System.out.println("Airport network and routes loaded successfully in AirNetworkService");
+        } catch (IOException e) {
+            System.err.println("Error reading route data file: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ListException e) {
+            System.err.println("Error loading airport network and routes: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Agrega un aeropuerto al grafo
-     * @param airport El objeto Airport a agregar
-     * @throws GraphException Si el aeropuerto ya existe en el grafo o hay un problema interno
-     * @throws ListException Si hay un problema con las operaciones de la lista enlazada (del grafo)
-     */
-    public void addAirport(Airport airport) throws GraphException, ListException {
-        if (airport == null) {
-            throw new IllegalArgumentException("Airport cannot be null.");
+    public void saveRoutes() {
+        try {
+            routeData.saveRoutesFromMap(this.routesMap);
+            System.out.println("Routes saved from AirNetworkService: " + routesMap.size());
+        } catch (IOException e) {
+            System.err.println("Error saving routes to file: " + e.getMessage());
+            e.printStackTrace();
         }
-        if (airports.containsKey(airport.getCode())) {
-            throw new GraphException("Airport with code " + airport.getCode() + " already exists in the graph.");
-        }
-        airportGraph.addVertex(airport);
-        airports.put(airport.getCode(), airport);
     }
 
-    /**
-     * Agrega una ruta entre dos aeropuertos en el grafo en memoria
-     * Los aeropuertos de origen y destino deben existir en el AirportsData y se asegurará
-     * que existan en el grafo antes de añadir la arista
-     * @param originAirportCode El código del aeropuerto de origen
-     * @param destinationAirportCode El código del aeropuerto de destino
-     * @param route La información de la ruta (peso de la arista)
-     * @throws GraphException Si alguno de los aeropuertos no existe en los datos o si la arista ya existe en el grafo
-     * @throws IOException Si hay un problema al obtener los aeropuertos del archivo JSON (vía AirportsData)
-     */
-    public void addRoute(int originAirportCode, int destinationAirportCode, Route route)
-            throws GraphException, ListException, IOException {
-        if (route == null) {
-            throw new IllegalArgumentException("Route details cannot be null.");
+    public boolean addRoute(Route route) throws ListException, GraphException {
+        Objects.requireNonNull(route, "Route details cannot be null");
+
+        if (routesMap.containsKey(route.getRouteId())) {
+            throw new ListException("La ruta con ID " + route.getRouteId() + " ya existe");
         }
 
-        //Obtener los aeropuertos del AirportsData (que los lee del JSON)
-        Airport originAirport = AirportsData.getAirportByCode(originAirportCode);
-        Airport destinationAirport = AirportsData.getAirportByCode(destinationAirportCode);
+        Airport originAirport = airportService.getAirportByCode(route.getOriginAirportCode());
+        Airport destinationAirport = airportService.getAirportByCode(route.getDestinationAirportCode());
 
         if (originAirport == null) {
-            throw new GraphException("Origin airport with code " + originAirportCode + " not found in data (AirportsData).");
+            throw new ListException("Aeropuerto de origen con código " + route.getOriginAirportCode() + " no encontrado en el AirportService");
         }
         if (destinationAirport == null) {
-            throw new GraphException("Destination airport with code " + destinationAirportCode + " not found in data (AirportsData).");
+            throw new ListException("Aeropuerto de destino con código " + route.getDestinationAirportCode() + " no encontrado en el AirportService");
         }
 
-        //Aeropuertos deben estar en el grafo antes de añadir la arista
-        //Metodo addAirport() hace validacion si el aeropuerto existe
+        airportGraph.addVertex(originAirport);
+        airportGraph.addVertex(destinationAirport);
+
+        routesMap.put(route.getRouteId(), route);
+
+        airportGraph.addEdgeWeight(originAirport, destinationAirport, route);
+
         try {
-            addAirport(originAirport);
-        } catch (GraphException e) {
-            if (!e.getMessage().contains("already exists")) {
-                throw e;
+            saveRoutes();
+        } catch (Exception e) {
+            //Revertir si falla el guardado
+            routesMap.remove(route.getRouteId());
+            try {
+                airportGraph.removeEdge(originAirport, destinationAirport);
+            } catch (GraphException rollbackEx) {
+                System.err.println("CRITICAL: Failed to rollback addEdge after save error: " + rollbackEx.getMessage());
+            }
+            throw new GraphException("Failed to save route after addition: " + e.getMessage());
+        }
+        System.out.println("Ruta " + route.getRouteId() + " añadida a la red y persistida");
+        return true;
+    }
+
+    public boolean deleteRoute(String routeId) throws ListException, GraphException {
+        Route routeToDelete = routesMap.get(routeId);
+
+        if (routeToDelete == null) {
+            throw new ListException("Ruta con ID " + routeId + " no encontrada para eliminar");
+        }
+
+        Airport originAirport = airportService.getAirportByCode(routeToDelete.getOriginAirportCode());
+        Airport destinationAirport = airportService.getAirportByCode(routeToDelete.getDestinationAirportCode());
+
+        routesMap.remove(routeId);
+        if (originAirport != null && destinationAirport != null) {
+            airportGraph.removeEdge(originAirport, destinationAirport);
+        } else {
+            System.err.println("Warning: Airports for deleted route " + routeId + " not found in AirportService. Could not precisely remove graph edge");
+        }
+
+        try {
+            saveRoutes();
+        } catch (Exception e) {
+            //Revertir si falla el guardado
+            routesMap.put(routeId, routeToDelete);
+            if (originAirport != null && destinationAirport != null) {
+                try {
+                    //Re agregamos el edge, pasando la ruta directamente
+                    airportGraph.addEdgeWeight(originAirport, destinationAirport, routeToDelete);
+                } catch (GraphException rollbackEx) {
+                    System.err.println("CRITICAL: Failed to rollback removeEdge after save error: " + rollbackEx.getMessage());
+                }
+            }
+            throw new GraphException("Failed to save route changes after deletion: " + e.getMessage());
+        }
+        System.out.println("Ruta " + routeId + " eliminada de la red y persistida");
+        return true;
+    }
+
+    public boolean updateRoute(Route updatedRoute) throws ListException, GraphException {
+        Objects.requireNonNull(updatedRoute, "Updated route details cannot be null");
+
+        if (!routesMap.containsKey(updatedRoute.getRouteId())) {
+            throw new ListException("Ruta con ID " + updatedRoute.getRouteId() + " no encontrada para actualizar");
+        }
+
+        Route oldRoute = routesMap.get(updatedRoute.getRouteId());
+
+        Airport originAirport = airportService.getAirportByCode(updatedRoute.getOriginAirportCode());
+        Airport destinationAirport = airportService.getAirportByCode(updatedRoute.getDestinationAirportCode());
+
+        if (originAirport == null) {
+            throw new ListException("Aeropuerto de origen con código " + updatedRoute.getOriginAirportCode() + " no encontrado para actualizar la ruta");
+        }
+        if (destinationAirport == null) {
+            throw new ListException("Aeropuerto de destino con código " + updatedRoute.getDestinationAirportCode() + " no encontrado para actualizar la ruta");
+        }
+
+        //Primero removemos el edge viejo
+        airportGraph.removeEdge(airportService.getAirportByCode(oldRoute.getOriginAirportCode()),
+                airportService.getAirportByCode(oldRoute.getDestinationAirportCode()));
+
+        //Actualizar la ruta en el mapa
+        routesMap.put(updatedRoute.getRouteId(), updatedRoute);
+
+        //Añade el nuevo edge actualizado
+        airportGraph.addEdgeWeight(originAirport, destinationAirport, updatedRoute);
+
+        try {
+            saveRoutes();
+        } catch (Exception e) {
+            // Rollback changes if save fails
+            routesMap.put(updatedRoute.getRouteId(), oldRoute);
+            try {
+                //Removemos el edge nuevo y agregamos el antiguo
+                airportGraph.removeEdge(originAirport, destinationAirport);
+                //Volvemos a agregar el edge antiguo, pasando la ruta anterior
+                airportGraph.addEdgeWeight(airportService.getAirportByCode(oldRoute.getOriginAirportCode()),
+                        airportService.getAirportByCode(oldRoute.getDestinationAirportCode()),
+                        oldRoute);
+            } catch (GraphException rollbackEx) {
+                System.err.println("CRITICAL: Failed to rollback updateEdge after save error: " + rollbackEx.getMessage());
+            }
+            throw new GraphException("Failed to save route changes after update: " + e.getMessage());
+        }
+        System.out.println("Ruta " + updatedRoute.getRouteId() + " actualizada y persistida");
+        return true;
+    }
+
+    public void generateInitialRandomRoutes(int count) throws ListException, GraphException {
+        List<Object> allAirportsObjects = airportService.getAllAirportsAsList();
+        List<Airport> allAirports = new ArrayList<>();
+        for (Object obj : allAirportsObjects) {
+            if (obj instanceof Airport) {
+                allAirports.add((Airport) obj);
+            } else {
+                System.err.println("Warning: Object in AirportService.getAllAirports is not an Airport during random route generation. Type: " + (obj != null ? obj.getClass().getName() : "null"));
             }
         }
-        try {
-            addAirport(destinationAirport);
-        } catch (GraphException e) {
-            if (!e.getMessage().contains("already exists")) {
-                throw e; //Relanza si no es el error de "already exists"
+
+        if (allAirports.size() < 2) {
+            throw new ListException("Necesitas al menos dos aeropuertos para generar rutas aleatorias");
+        }
+
+        int generatedCount = 0;
+        while (generatedCount < count) {
+            Airport origin = allAirports.get(Utility.random(allAirports.size()));
+            Airport destination;
+            do {
+                destination = allAirports.get(Utility.random(allAirports.size()));
+            } while (origin.equals(destination));
+
+            String routeId = "R" + Utility.random(1000000);
+            String airline = "Airline" + (char)('A' + Utility.random(26)) + (char)('A' + Utility.random(26));
+
+            double distance = 500 + Utility.random(5000);
+            double duration = Utility.randomMinMax(1, 10);
+            double price = Utility.randomMinMax(50, 1000);
+
+            LocalTime departureTime = LocalTime.of(Utility.random(24), Utility.random(60));
+            LocalTime arrivalTime = departureTime.plusHours((long) duration).plusMinutes((long) ((duration - (long)duration) * 60));
+
+            Route newRoute = new Route(routeId, origin.getCode(), destination.getCode(),
+                    airline, duration, distance, price,
+                    departureTime, arrivalTime);
+
+            try {
+                addRoute(newRoute);
+                generatedCount++;
+            } catch (ListException | GraphException e) {
+                System.err.println("Warning: Error generating or adding random route " + routeId + ": " + e.getMessage());
             }
         }
+        System.out.println(generatedCount + " rutas aleatorias generadas y guardadas.");
+    }
 
-
-        //Agregamos la arista con el peso (Route)
-        //Pueden ser mnutos, KM o precio
-        Airport originInGraph = airports.get(originAirportCode);
-        Airport destinationInGraph = airports.get(destinationAirportCode);
+    public boolean containsRoute(int originAirportCode, int destinationAirportCode) throws ListException {
+        Airport originInGraph = airportService.getAirportByCode(originAirportCode);
+        Airport destinationInGraph = airportService.getAirportByCode(destinationAirportCode);
 
         if (originInGraph == null || destinationInGraph == null) {
-            throw new GraphException("Internal error: Airport found in data but not in graph's in-memory map.");
+            return false;
         }
 
-        airportGraph.addEdgeWeight(originInGraph, destinationInGraph, route);
+        try {
+            return airportGraph.containsEdge(originInGraph, destinationInGraph);
+        } catch (GraphException | ListException e) {
+            System.err.println("Error checking route: " + e.getMessage());
+            return false;
+        }
     }
 
-    /**
-     * Elimina una ruta específica entre dos aeropuertos del grafo
-     * @throws GraphException Si alguno de los aeropuertos no existe en el grafo o no hay ruta entre ellos
-     * @throws IOException Si hay un problema al obtener los aeropuertos del JSON
-     */
-    public void removeRoute(int originAirportCode, int destinationAirportCode)
-            throws GraphException, ListException, IOException {
-        // Obtener los objetos Airport de la clase AirportsData (que los lee del JSON)
-        Airport originAirport = AirportsData.getAirportByCode(originAirportCode);
-        Airport destinationAirport = AirportsData.getAirportByCode(destinationAirportCode);
-
-        if (originAirport == null || destinationAirport == null) {
-            throw new GraphException("Origin or destination airport not found in data to remove route.");
-        }
-
-        // Asegurarse de usar las instancias de Airport que están en el grafo
-        Airport originInGraph = airports.get(originAirportCode);
-        Airport destinationInGraph = airports.get(destinationAirportCode);
-
-        if (originInGraph == null || destinationInGraph == null) {
-            throw new GraphException("Origin or destination airport not found in the graph's in-memory map to remove route.");
-        }
-
-        airportGraph.removeEdge(originInGraph, destinationInGraph);
-    }
-
-    /**
-     * Elimina un aeropuerto (VERTEX) del grafo  y todas sus aristas asociadas
-     * SOLO elimina el aeropuerto del grafo no del JSON
-     *
-     * @throws GraphException Si hay un problema al eliminar el vértice
-     * @throws ListException Si hay un problema con las operaciones de la linked list (del grafo)
-     */
-    public void removeAirportFromGraph(int airportCode) throws GraphException, ListException {
-        // Verificar si el aeropuerto existe en el mapa en memoria del servicio
-        if (!airports.containsKey(airportCode)) {
-            System.out.println("Advertencia: Aeropuerto con código " + airportCode + " no encontrado en el grafo en memoria para eliminar. Puede que ya haya sido eliminado o nunca se añadió.");
-            return; // No hay nada que eliminar si no está en el grafo en memoria
-        }
-
-        //Obtener el Airport de la colección en memoria
-        Airport airportToRemove = airports.get(airportCode);
-
-        //Eliminar el vértice (aeropuerto) del grafo con sus aristas
-        airportGraph.removeVertex(airportToRemove);
-
-        //Suprimimos el aeropuerto del mapa de aeropuertos en memoria
-        airports.remove(airportCode);
-
-        System.out.println("Aeropuerto " + airportCode + " y sus rutas han sido eliminados del grafo en memoria.");
-    }
-
-
-    /**
-     * Verifica si existe una ruta directa entre dos aeropuertos en el grafo
-     *
-     * @throws GraphException Si el grafo está vacío o hay un problema con los vertexes
-     * @throws IOException Si hay un problema al obtener los aeropuertos del JSON
-     */
-    public boolean containsRoute(int originAirportCode, int destinationAirportCode)
-            throws GraphException, ListException, IOException {
-        // Obtener los objetos Airport de la clase AirportsData (que los lee del JSON)
-        Airport originAirport = AirportsData.getAirportByCode(originAirportCode);
-        Airport destinationAirport = AirportsData.getAirportByCode(destinationAirportCode);
-
-        if (originAirport == null || destinationAirport == null) {
-            return false; //Si no existen en los datos persistentes, no pueden tener una ruta.
-        }
-
-        // Asegurarse de usar las instancias de Airport que están en el grafo
-        Airport originInGraph = airports.get(originAirportCode);
-        Airport destinationInGraph = airports.get(destinationAirportCode);
-
-        if (originInGraph == null || destinationInGraph == null) {
-            return false; //Si no están en el grafo en memoria, no hay ruta en el grafo.
-        }
-
-        //true si existe una ruta directa
-        return airportGraph.containsEdge(originInGraph, destinationInGraph);
-    }
-
-    /**
-     * Método auxiliar: Obtener la misma instancia del objeto Airport
-     * que está almacenada en el grafo, dado un objeto Airport de búsqueda
-     */
-    private Airport getAirportFromGraph(Airport searchAirport) {
-        //La forma más eficiente de obtener el objeto del grafo es usar el mapa airports
-        //que ya mantiene las instancias que están en el grafo
-        if (searchAirport == null) return null;
-
-        //Retrna un Airport del grafo o null caso contrario
-        return airports.get(searchAirport.getCode());
-    }
-
-
-    /**
-     *Encuentra la ruta más corta entre dos aeropuertos utilizando Dijkstra.
-     *Puede ser por tiempo, distancia o precio, según costType
-     */
     public List<Integer> findShortestRoute(int originAirportCode, int destinationAirportCode, String costType)
-            throws GraphException, ListException, IOException {
+            throws GraphException, ListException {
 
         if (airportGraph.isEmpty()) {
             throw new GraphException("Airport network is empty. Please load airports and routes first.");
         }
 
-        //Obtener los objetos Airport completos del archivo (JSON) para verificación inicial
-        Airport origin = AirportsData.getAirportByCode(originAirportCode);
-        Airport destination = AirportsData.getAirportByCode(destinationAirportCode);
+        Airport origin = airportService.getAirportByCode(originAirportCode);
+        Airport destination = airportService.getAirportByCode(destinationAirportCode);
 
         if (origin == null) {
-            throw new GraphException("Origin airport with code " + originAirportCode + " not found in data (AirportsData).");
+            throw new GraphException("Origin airport with code " + originAirportCode + " not found in AirportService.");
         }
         if (destination == null) {
-            throw new GraphException("Destination airport with code " + destinationAirportCode + " not found in data (AirportsData).");
+            throw new GraphException("Destination airport with code " + destinationAirportCode + " not found in AirportService.");
         }
 
-        //Debemos usar las instancias de Airport que ESTAN en el grafo
-        Airport actualOrigin = getAirportFromGraph(origin);
-        Airport actualDestination = getAirportFromGraph(destination);
-
-        if (actualOrigin == null) {
+        if (!airportGraph.containsVertex(origin)) {
             throw new GraphException("Origin airport with code " + originAirportCode + " not found in the in-memory graph.");
         }
-        if (actualDestination == null) {
+        if (!airportGraph.containsVertex(destination)) {
             throw new GraphException("Destination airport with code " + destinationAirportCode + " not found in the in-memory graph.");
         }
 
@@ -279,51 +321,38 @@ public class AirNetworkService {
         }
 
         Map<Airport, Double> minCosts = new HashMap<>();
-        Map<Airport, Airport> predecessors = new HashMap<>(); //Para reconstruir la ruta
-        //PriorityQueue para Dijkstra
-        PriorityLinkedQueue pq = new PriorityLinkedQueue(); //Usando tu clase
+        Map<Airport, Airport> predecessors = new HashMap<>();
+
+        PriorityLinkedQueue pq = new PriorityLinkedQueue();
 
         try {
-            minCosts.put(actualOrigin, 0.0);
-            //Cola de minima prioridad (donde queremos sacar el elemento con el menor costo primero) Integer.MAX_VALUE - costo
-            //Un costo más pequeño resultará en una prioridad entera más grande (mayor valor)
-            //Al usar int puede ser menos preciso
-            int initialPriority = (int) (Integer.MAX_VALUE - 0.0); //Costo inicial 0
-            pq.enQueue(new DijkstraNode(actualOrigin, 0.0, List.of(actualOrigin)), initialPriority);
+            minCosts.put(origin, 0.0);
+            pq.enQueue(new DijkstraNode(origin, 0.0, new ArrayList<>(List.of(origin))), (int) 0.0);
 
-            List<Airport> shortestPathAirports = null; //Almacenará la ruta de objetos Airport
+            List<Airport> shortestPathAirports = null;
 
             while (!pq.isEmpty()) {
                 DijkstraNode current = (DijkstraNode) pq.deQueue();
                 Airport currentAirport = current.getAirport();
 
-                //Si ya procesamos un camino más corto a este aeropuerto, ignoramos esta iteración
-                //Comparamos Airports
-
-//                if (current.getCost() > minCosts.getOrDefault(currentAirport, Double.MAX_VALUE)) {
-//                    continue;
-//                }
-
-                if (current.getCost() > minCosts.getOrDefault(currentAirport, Double.MAX_VALUE) && Utility.compare(current.getAirport(), currentAirport) != 0) {
+                //Si ya encontramos una ruta más corta al aeropuerto actual, saltamos
+                if (current.getCost() > minCosts.getOrDefault(currentAirport, Double.MAX_VALUE) + 1e-9) {
                     continue;
                 }
 
-                //Si llegamos al destino, almacenamos la ruta y terminamos
-                if (util.Utility.compare(currentAirport, actualDestination) == 0) {
+                if (Objects.equals(currentAirport, destination)) {
                     shortestPathAirports = current.getPath();
-                    break; //Ruta encontrada, salimos del bucle
+                    break;
                 }
 
-                //Obtener el Vertex correspondiente en el grafo para acceder a sus aristas
                 Vertex currentGraphVertex = null;
-                SinglyLinkedList vertexList = airportGraph.getVertexList();
-                if (vertexList != null && !vertexList.isEmpty()) {
-                    for (int i = 1; i <= vertexList.size(); i++) {
-                        Node nodeFromList = vertexList.getNode(i);
+                SinglyLinkedList vertexListSLL = airportGraph.getVertexList();
+                if (vertexListSLL != null && !vertexListSLL.isEmpty()) {
+                    for (int i = 1; i <= vertexListSLL.size(); i++) {
+                        Node nodeFromList = vertexListSLL.getNode(i);
                         if (nodeFromList != null && nodeFromList.data instanceof Vertex) {
                             Vertex potentialVertex = (Vertex) nodeFromList.data;
-                            //Comparamos el Airport dentro del Vertex con currentAirport
-                            if (Utility.compare(potentialVertex.data, currentAirport) == 0) {
+                            if (Objects.equals(potentialVertex.data, currentAirport)) {
                                 currentGraphVertex = potentialVertex;
                                 break;
                             }
@@ -332,14 +361,26 @@ public class AirNetworkService {
                 }
 
                 if (currentGraphVertex == null || currentGraphVertex.edgesList == null || currentGraphVertex.edgesList.isEmpty()) {
-                    continue; //No hay aristas salientes desde este aeropuerto o el vértice no fue encontrado
+                    continue;
                 }
 
-                //Iterar sobre las aristas salientes (vecinos)
+                //Iterar sobre los edges salientes (vecinas)
                 for (int i = 1; i <= currentGraphVertex.edgesList.size(); i++) {
-                    domain.graph.EdgeWeight edgeWeight = (domain.graph.EdgeWeight) currentGraphVertex.edgesList.getNode(i).data;
-                    Airport neighborAirport = (Airport) edgeWeight.getEdge(); //El aeropuerto destino de esta arista
-                    Route routeDetails = (Route) edgeWeight.getWeight(); //El peso de la arista
+                    Node edgeNode = currentGraphVertex.edgesList.getNode(i);
+                    if (edgeNode == null || !(edgeNode.data instanceof EdgeWeight)) {
+                        System.err.println("Warning: Non-EdgeWeight object found in edgesList for vertex " + currentAirport.getCode() + ". Data type: " + (edgeNode != null ? edgeNode.data.getClass().getName() : "null"));
+                        continue;
+                    }
+                    EdgeWeight edgeWeight = (EdgeWeight) edgeNode.data;
+
+                    Airport neighborAirport = (Airport) edgeWeight.getEdge(); //obtiene el aeropuerto de destino
+
+                    Route routeDetails = (Route) edgeWeight.getWeight(); //devuelve Ruta directamente
+
+                    if (neighborAirport == null || routeDetails == null) {
+                        System.err.println("Warning: Malformed EdgeWeight object found for vertex " + currentAirport.getCode() + ". Missing neighbor airport or route details.");
+                        continue;
+                    }
 
                     double edgeCost = 0.0;
                     switch (costType.toLowerCase()) {
@@ -352,25 +393,24 @@ public class AirNetworkService {
                         case "price":
                             edgeCost = routeDetails.getPrice();
                             break;
+                        default:
+                            throw new IllegalArgumentException("Invalid cost type in Dijkstra calculation.");
                     }
 
                     double newCost = current.getCost() + edgeCost;
 
-                    //Si encontramos un camino más corto al vecino
                     if (newCost < minCosts.getOrDefault(neighborAirport, Double.MAX_VALUE)) {
                         minCosts.put(neighborAirport, newCost);
-                        predecessors.put(neighborAirport, currentAirport); //Almacenamos el predecesor para reconstruir la ruta
+                        predecessors.put(neighborAirport, currentAirport);
 
                         List<Airport> newPath = new ArrayList<>(current.getPath());
-                        newPath.add(neighborAirport); //Añade el vecino al camino actual
-                        //Calcula la prioridad para el nuevo DijkstraNode
-                        int newPriority = (int) (Integer.MAX_VALUE - newCost); // Mayor prioridad para menor costo
-                        pq.enQueue(new DijkstraNode(neighborAirport, newCost, newPath), newPriority); // Enqueue con tu cola
+                        newPath.add(neighborAirport);
+
+                        pq.enQueue(new DijkstraNode(neighborAirport, newCost, newPath), (int) newCost);
                     }
                 }
             }
 
-            //Convertir la lista de objetos Airport a lista de códigos de aeropuerto
             if (shortestPathAirports != null) {
                 List<Integer> resultCodes = new ArrayList<>();
                 for (Airport airport : shortestPathAirports) {
@@ -378,16 +418,67 @@ public class AirNetworkService {
                 }
                 return resultCodes;
             } else {
-                return null; //No se encontró una ruta al destino
+                return null;
             }
         } catch (QueueException e) {
             throw new GraphException("Error processing shortest path with Priority Queue: " + e.getMessage());
         }
     }
 
+    public void removeAirportFromGraph(int airportCode) throws GraphException, ListException {
+        Airport airportToRemove = airportService.getAirportByCode(airportCode);
+
+        if (airportToRemove == null) {
+            throw new GraphException("Airport with code " + airportCode + " not found in AirportService, cannot remove from graph.");
+        }
+        if (!airportGraph.containsVertex(airportToRemove)) {
+            System.out.println("Warning: Airport " + airportCode + " not found in the graph. No removal required from graph.");
+            return;
+        }
+
+        System.out.println("Removing airport " + airportCode + " and its associated routes from the graph...");
+
+        List<String> routeIdsToRemove = new ArrayList<>();
+        for (Route route : new ArrayList<>(routesMap.values())) {
+            if (route.getOriginAirportCode() == airportCode || route.getDestinationAirportCode() == airportCode) {
+                routeIdsToRemove.add(route.getRouteId());
+            }
+        }
+
+        for (String routeId : routeIdsToRemove) {
+            Route routeRemovedFromMap = routesMap.get(routeId);
+            if (routeRemovedFromMap != null) {
+                routesMap.remove(routeId);
+
+                Airport origin = airportService.getAirportByCode(routeRemovedFromMap.getOriginAirportCode());
+                Airport destination = airportService.getAirportByCode(routeRemovedFromMap.getDestinationAirportCode());
+
+                if (origin != null && destination != null) {
+                    try {
+                        airportGraph.removeEdge(origin, destination);
+                    } catch (GraphException e) {
+                        System.err.println("Error removing edge for route " + routeId + ": " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        airportGraph.removeVertex(airportToRemove);
+        System.out.println("Airport " + airportCode + " and its edges removed from the graph.");
+
+        saveRoutes();
+    }
+
+    public Route getRouteById(String routeId) {
+        return routesMap.get(routeId);
+    }
+
+    public List<Route> getAllRoutes() {
+        return new ArrayList<>(routesMap.values());
+    }
+
     @Override
     public String toString() {
         return airportGraph.toString();
     }
-
 }
