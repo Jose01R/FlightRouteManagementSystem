@@ -374,12 +374,30 @@ public class AirportsController
                 return;
             }
 
-            //el tableView grande
-            this.tableview.getItems().clear(); //clear table
-            if(listForCountry!=null && !listForCountry.isEmpty()){
-                for(int i=1; i<=airportList.size(); i++) {
-                    this.tableview.getItems().add((Airport) listForCountry.getNode(i).data);
+//            //el tableView grande
+//            this.tableview.getItems().clear(); //clear table
+//            if(listForCountry!=null && !listForCountry.isEmpty()){
+//                for(int i=1; i<=airportList.size(); i++) {
+//                    this.tableview.getItems().add((Airport) listForCountry.getNode(i).data);
+//                }
+//            }
+
+            tableViewForStatus.getItems().clear(); //reutilizo el tableView de la lista por status para mostrar los aeropuerto que esten en el pasi colocado
+
+            codeForStatus.setCellValueFactory(new PropertyValueFactory<>("code"));
+            nameForStatus.setCellValueFactory(new PropertyValueFactory<>("name"));
+            statusStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+            countryForStatus.setCellValueFactory(new PropertyValueFactory<>("country"));
+
+            try{
+                if(listForCountry!=null && !listForCountry.isEmpty()){
+                    for(int i=1; i<=listForCountry.size(); i++) {
+                        this.tableViewForStatus.getItems().add((Airport) listForCountry.getNode(i).data);
+                    }
                 }
+            }catch(ListException ex){
+                alert.setContentText("Airports list is empty");
+                alert.showAndWait();
             }
 
         } catch (IOException | ListException e) {
