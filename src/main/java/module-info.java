@@ -5,6 +5,10 @@ module ucr.flightroutemanagementsystem {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.databind;
     requires net.bytebuddy;
+    requires java.desktop;
+    requires kernel;
+    requires layout;
+    requires itextpdf;
     //requires com.fasterxml.jackson.datatype.jsr310;
 
     opens controller.logincontroller to javafx.fxml;
@@ -19,6 +23,8 @@ module ucr.flightroutemanagementsystem {
     opens controller.flightcontroller to javafx.fxml;
     opens domain.linkedlist to com.fasterxml.jackson.databind, com.google.gson;
     opens ucr.flightroutemanagementsystem to javafx.fxml;
-    opens controller.ticketscontroller;
+
+    opens domain.linkedqueue to com.google.gson;
+    opens data to com.google.gson;
 
 }

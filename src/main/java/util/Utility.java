@@ -161,20 +161,82 @@ public class Utility {
                     Passenger p1 = (Passenger) a;
                     Passenger p2 = (Passenger) b;
 
-                    return Integer.compare(p1.getId(), p2.getId());
+                    // Comparar por ID primero (clave principal)
+                    if (p1.getId() != p2.getId())
+                        return Integer.compare(p1.getId(), p2.getId());
 
+                    // Comparar por nombre
+                    int nameComparison = p1.getName().compareToIgnoreCase(p2.getName());
+                    if (nameComparison != 0)
+                        return nameComparison;
+
+                    // Comparar por nacionalidad
+                    int natComparison = p1.getNationality().compareToIgnoreCase(p2.getNationality());
+                    if (natComparison != 0)
+                        return natComparison;
+
+                    // Comparar por tamaño del historial de vuelos (si quieres)
+                    try {
+                        int size1 = p1.getFlightHistory().size();
+                        int size2 = p2.getFlightHistory().size();
+                        return Integer.compare(size1, size2);
+                    } catch (Exception e) {
+                        return 0; // Si no se puede comparar vuelo, se ignora
+                    }
                 case "Flight":
                     Flight fl1 = (Flight) a;
                     Flight fl2 = (Flight) b;
-                    // Comparar por número de vuelo (identificador principal)
-                    return Integer.compare(fl1.getNumber(), fl2.getNumber());
 
+                    // Comparar por número de vuelo (identificador principal)
+                    if (fl1.getNumber() != fl2.getNumber()) {
+                        return Integer.compare(fl1.getNumber(), fl2.getNumber());
+                    }
+
+
+                    int originComparison = fl1.getOrigin().compareToIgnoreCase(fl2.getOrigin());
+                    if (originComparison != 0) {
+                        return originComparison;
+                    }
+
+                    // Si el origen es igual, comparar por destino
+                    int destinationComparison = fl1.getDestination().compareToIgnoreCase(fl2.getDestination());
+                    if (destinationComparison != 0) {
+                        return destinationComparison;
+                    }
+
+                    // Si origen y destino son iguales, comparar por hora de salida
+                    if (fl1.getDepartureTime() != null && fl2.getDepartureTime() != null) {
+                        int departureTimeComparison = fl1.getDepartureTime().compareTo(fl2.getDepartureTime());
+                        if (departureTimeComparison != 0) {
+                            return departureTimeComparison;
+                        }
+                    } else if (fl1.getDepartureTime() != null) {
+                        return 1; // fl1 tiene fecha/hora, fl2 no
+                    } else if (fl2.getDepartureTime() != null) {
+                        return -1; // fl2 tiene fecha/hora, fl1 no
+                    }
+
+                    //Si todo lo anterior es igual, comparar por capacidad
+                    if (fl1.getCapacity() != fl2.getCapacity()) {
+                        return Integer.compare(fl1.getCapacity(), fl2.getCapacity());
+                    }
+
+                    // Si todos los atributos clave son iguales, se retorna 0
+                    return 0;
 
                 case "Airport":
                     Airport a1 = (Airport) a;
                     Airport a2 = (Airport) b;
-                    return a1.getCode() < a2.getCode() ? -1
-                            :  a1.getCode() > a2.getCode() ? 1 : 0;
+
+                    // Primero comparar por país (alfabéticamente)
+                    int countryComparison = a1.getCountry().compareToIgnoreCase(a2.getCountry());
+                    if (countryComparison != 0) {
+                        return countryComparison;
+                    }
+
+                    // Si los países son iguales, comparar por código numérico
+                    return Integer.compare(a1.getCode(), a2.getCode());
+
             }
 
         } catch (TreeException e) {

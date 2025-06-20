@@ -1,0 +1,45 @@
+{
+  "99" : {
+    "number" : 99,
+    "departureTime" : [ 2025, 6, 19, 19, 28, 52, 756057600 ],
+    "capacity" : 30,
+    "occupancy" : 3,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : null,
+      "model" : "TestModel-A1",
+      "totalCapacity" : 0,
+      "currentStatus" : null,
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "RT_SJO_PTY",
+      "airline" : "TestAir",
+      "durationHours" : 2.0,
+      "distanceKm" : 800.0,
+      "price" : 250.0,
+      "departureTime" : [ 8, 0 ],
+      "arrivalTime" : [ 10, 0 ],
+      "originAirportCode" : 11,
+      "destinationAirportCode" : 202
+    },
+    "origin" : "11",
+    "destination" : "202",
+    "pasajeros" : [ {
+      "id" : 201,
+      "name" : "Carlos",
+      "nationality" : "Costarricense",
+      "flightHistory" : [ 99 ]
+    }, {
+      "id" : 202,
+      "name" : "Ana",
+      "nationality" : "Nicaragüense",
+      "flightHistory" : [ 99 ]
+    }, {
+      "id" : 203,
+      "name" : "Luis",
+      "nationality" : "Panameño",
+      "flightHistory" : [ 99 ]
+    } ]
+  }
+}

@@ -3,70 +3,77 @@ package data;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule; // Asegúrate de que esta dependencia esté bien configurada
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import domain.common.Flight;
-import domain.linkedlist.SinglyLinkedList;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import util.Utility;
 
 public class FlightData {
 
-    private static final String FLIGHT_FILE = "flight.json";
-    private ObjectMapper objectMapper;
+    private static final String FLIGHT_FILE = "flights.json";
     private static final String DATA_DIRECTORY = "JSON_FILES_DATA";
-    public FlightData() {
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        this.objectMapper.registerModule(new JavaTimeModule());
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .enable(SerializationFeature.INDENT_OUTPUT);
 
+    /**
+     * Carga todos los vuelos desde el archivo JSON en un Map.
+     *
+     * @throws IOException Si ocurre un error al leer el archivo
+     */
+    public static Map<Integer, Flight> loadFlightsToMap() throws IOException {
+        // --- ADJUSTMENT 1: Use Utility for file path ---
+        Path filePath = Utility.getFilePath(DATA_DIRECTORY, FLIGHT_FILE);
+        File file = filePath.toFile(); //Convertir ruta a archivo para ObjectMapper
 
-    }
+        if (file.exists() && file.length() > 0) {
+            try {
 
-    //Método para cargar vuelos del archivo en un Map
-    public Map<Integer, Flight> loadFlightsToMap() {
-        Map<Integer, Flight> flightsMap = new HashMap<>();
-
-        try {
-            File file = util.Utility.getFilePath(DATA_DIRECTORY, FLIGHT_FILE).toFile();
-
-            if (file.exists() && file.length() > 0) {
-                // Deserializa directamente a un HashMap<Integer, Flight>
-                flightsMap = objectMapper.readValue(
+                //retornamos mapa de objetos Flight, mapeados por su número de vuelo
+                return objectMapper.readValue(
                         file,
                         new TypeReference<HashMap<Integer, Flight>>() {}
                 );
-            } else {
-                System.out.println("Archivo de vuelos no encontrado o vacío. Se inicia una colección nueva.");
+
+            } catch (IOException e) {
+                System.err.println("Error al cargar vuelos desde el archivo: " + e.getMessage());
+                e.printStackTrace();
+                throw e; //Relanza excepción
             }
-
-        } catch (IOException e) {
-            System.err.println("Error al leer vuelos del archivo: " + e.getMessage());
-            e.printStackTrace();
-            System.err.println("Error al deserializar vuelos al mapa: " + e.getMessage());
-            e.printStackTrace();
+        } else {
+            System.out.println("Archivo de vuelos no encontrado o vacío. Se inicia una colección nueva.");
         }
-
-        return flightsMap;
+        return new HashMap<>(); //Retorna mapa vacío si no hay archivo
     }
 
+    /**
+     * Guarda un Map de objetos Flight en el archivo
+     * Sobrescribe el contenido actual del archivo
+     *
+     * @throws IOException Si ocurre un error al escribir en el archivo
+     */
+    public static void saveFlightsFromMap(Map<Integer, Flight> flightsToSave) throws IOException {
 
-    // Método para guardar un Map de vuelos en el archivo
-    public void saveFlightsFromMap(Map<Integer, Flight> flightsToSave) {
+        Path filePath = Utility.getFilePath(DATA_DIRECTORY, FLIGHT_FILE);
+        File file = filePath.toFile(); //Convertir ruta a archivo para ObjectMapper
+
         try {
-            objectMapper.writeValue(util.Utility.getFilePath(DATA_DIRECTORY, FLIGHT_FILE).toFile(), flightsToSave);
+            Files.createDirectories(filePath.getParent());
+            objectMapper.writeValue(file, flightsToSave);
             System.out.println("Vuelos guardados exitosamente en " + FLIGHT_FILE);
         } catch (IOException e) {
             System.err.println("Error al guardar vuelos en el archivo: " + e.getMessage());
             e.printStackTrace();
+            throw e; //Relanza excepción
         }
     }
 }
-
-

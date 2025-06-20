@@ -135,7 +135,7 @@ public class FlightController {
             }
         });
         flightTableStatusColumn.setCellValueFactory(cellData -> {
-            boolean completed = cellData.getValue().isCompleated();
+            boolean completed = cellData.getValue().isCompleted();
             String status = completed ? "Completado" : "Activo";
             return new ReadOnlyStringWrapper(status);
         });
@@ -337,8 +337,8 @@ public class FlightController {
             }
 
             LocalDateTime departureDateTime = LocalDateTime.of(selectedDate, selectedTime);
-            Flight flight = new Flight(flightNumber, origin, destination, departureDateTime, capacity);
-            flightService.createFlight(flight);
+            //Flight flight = new Flight(flightNumber, origin, destination, departureDateTime, capacity);
+           // flightService.createFlight(flight);
 
 
             showAlert(Alert.AlertType.INFORMATION, "Éxito", "Vuelo " + flightNumber + " registrado correctamente.");
@@ -352,9 +352,6 @@ public class FlightController {
 
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Error de Entrada", "Número de vuelo y capacidad deben ser números válidos.");
-        } catch (ListException e) { // Esto podría ocurrir si tu createFlight usa ListException de forma interna
-            showAlert(Alert.AlertType.ERROR, "Error al manipular la lista de vuelos", e.getMessage());
-            e.printStackTrace();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error Inesperado", "Ocurrió un error al registrar el vuelo: " + e.getMessage());
             e.printStackTrace();

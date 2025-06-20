@@ -1,6 +1,10 @@
 package domain.linkedqueue;
 
+import domain.common.Passenger;
 import util.Utility;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LinkedQueue implements Queue {
 
@@ -33,7 +37,7 @@ public class LinkedQueue implements Queue {
     @Override
     public boolean isEmpty() {
         //return front = rear = null;
-        return counter==0;
+        return counter == 0;
     }
 
     @Override
@@ -45,15 +49,15 @@ public class LinkedQueue implements Queue {
         int encontrado = -1;
         LinkedQueue auxList = new LinkedQueue();
         Node aux = front; //creo
-        while(!isEmpty()){
-            if(Utility.compare(aux.data,element)==0)
+        while (!isEmpty()) {
+            if (Utility.compare(aux.data, element) == 0)
                 encontrado = i;
             auxList.enQueue(deQueue());
             aux = aux.next;
             i++;
         }
 
-        while(!auxList.isEmpty()){
+        while (!auxList.isEmpty()) {
             enQueue(auxList.deQueue());
         }
 
@@ -67,7 +71,7 @@ public class LinkedQueue implements Queue {
             rear = front = newNode;
         rear.next = newNode;
         rear = newNode;
-        counter ++;
+        counter++;
     }
 
     @Override
@@ -119,20 +123,29 @@ public class LinkedQueue implements Queue {
 
         String result = "Queue Linked List Content \n";
         try {
-        LinkedQueue aux = new LinkedQueue();
-        while(!isEmpty()){
-                result += peek() + " " ;
-            aux.enQueue(deQueue());
-        }
+            LinkedQueue aux = new LinkedQueue();
+            while (!isEmpty()) {
+                result += peek() + " ";
+                aux.enQueue(deQueue());
+            }
 
-        while(!aux.isEmpty()){
-            enQueue(aux.deQueue());
-        }
-        }catch (QueueException e){
+            while (!aux.isEmpty()) {
+                enQueue(aux.deQueue());
+            }
+        } catch (QueueException e) {
             System.out.println(e.getMessage());
         }
         return result;
     }
 
 
+    public ArrayList<Object> toList() {
+        ArrayList<Object> list = new ArrayList<>();
+        Node current = front;
+        while (current != null) {
+            list.add(current.data);
+            current = current.next;
+        }
+        return list;
+    }
 }

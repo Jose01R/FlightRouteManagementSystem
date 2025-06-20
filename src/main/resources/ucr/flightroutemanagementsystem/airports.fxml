@@ -24,6 +24,25 @@
             </Pane>
             <Pane layoutX="-3.0" layoutY="76.0" prefHeight="550.0" prefWidth="1401.0" style="-fx-background-color: #FFFFFF;">
                <children>
+                  <Pane layoutX="813.0" layoutY="36.0" prefHeight="102.0" prefWidth="205.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;">
+                     <children>
+                        <Button layoutX="31.0" layoutY="62.0" mnemonicParsing="false" onAction="#searchOnAction" prefHeight="35.0" prefWidth="145.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Search">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font>
+                        </Button>
+                        <TextField fx:id="searchAirport" layoutX="44.0" layoutY="29.0" prefHeight="27.0" prefWidth="118.0">
+                           <font>
+                              <Font name="Arial Bold" size="15.0" />
+                           </font>
+                        </TextField>
+                        <Text layoutX="6.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search Airport by Country">
+                           <font>
+                              <Font name="Arial Bold" size="15.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </Pane>
                   <TableView fx:id="tableview" layoutX="25.0" layoutY="80.0" prefHeight="461.0" prefWidth="772.0">
                      <columns>
                         <TableColumn fx:id="codeColumn" prefWidth="104.80002212524414" text="Code" />
@@ -57,7 +76,7 @@
                         <Font name="Arial Bold" size="15.0" />
                      </font>
                   </Text>
-                  <TextField fx:id="nameAirport" layoutX="227.0" layoutY="13.0" prefHeight="27.0" prefWidth="308.0">
+                  <TextField fx:id="nameAirport" layoutX="240.0" layoutY="13.0" prefHeight="27.0" prefWidth="308.0">
                      <font>
                         <Font name="Arial Bold" size="15.0" />
                      </font>
@@ -67,31 +86,31 @@
                         <Font name="Arial Bold" size="15.0" />
                      </font>
                   </Text>
-                  <TextField fx:id="countryAirport" layoutX="227.0" layoutY="44.0" prefHeight="27.0" prefWidth="307.0">
+                  <TextField fx:id="countryAirport" layoutX="240.0" layoutY="44.0" prefHeight="27.0" prefWidth="307.0">
                      <font>
                         <Font name="Arial Bold" size="15.0" />
                      </font>
                   </TextField>
-                  <Button layoutX="951.0" layoutY="23.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Add Airport">
+                  <Button layoutX="1023.0" layoutY="30.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Add Airport">
                      <font>
                         <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="951.0" layoutY="63.0" mnemonicParsing="false" onAction="#editAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Edit Airport">
+                  <Button layoutX="1023.0" layoutY="70.0" mnemonicParsing="false" onAction="#editAirportOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Edit Airport">
                      <font>
                         <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="1125.0" layoutY="22.0" mnemonicParsing="false" onAction="#deleteAirportOnAction" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Delete Airport">
+                  <Button layoutX="1197.0" layoutY="29.0" mnemonicParsing="false" onAction="#deleteAirportOnAction" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Delete Airport">
                      <font>
                         <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="1125.0" layoutY="62.0" mnemonicParsing="false" onAction="#changeStatusAirportOnAction" prefHeight="35.0" prefWidth="181.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Change Status"> <font>
+                  <Button layoutX="1197.0" layoutY="69.0" mnemonicParsing="false" onAction="#changeStatusAirportOnAction" prefHeight="35.0" prefWidth="181.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Change Status"> <font>
                      <Font name="Arial Bold" size="14.0" />
                   </font>
                   </Button>
-                  <Button layoutX="1043.0" layoutY="127.0" mnemonicParsing="false" onAction="#listAirportsForStatusOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="List by Status"> <font>
+                  <Button layoutX="1029.0" layoutY="118.0" mnemonicParsing="false" onAction="#listAirportsForStatusOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="List by Status"> <font>
                      <Font name="Arial Bold" size="14.0" />
                   </font>
                   </Button>
@@ -103,6 +122,11 @@
                         <TableColumn fx:id="statusStatus" prefWidth="97.5999755859375" text="Status" />
                     </columns>
                   </TableView>
+                  <Button layoutX="1219.0" layoutY="118.0" mnemonicParsing="false" onAction="#updateOnAction" prefHeight="35.0" prefWidth="138.0" style="-fx-background-color: #0aabba; -fx-background-radius: 20; -fx-border-color: BLACK; -fx-border-radius: 20;" text="Update">
+                     <font>
+                        <Font name="Arial Bold" size="14.0" />
+                     </font>
+                  </Button>
 
                </children>
             </Pane>
