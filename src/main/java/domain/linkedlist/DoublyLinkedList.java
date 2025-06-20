@@ -1,5 +1,7 @@
 package domain.linkedlist;
 
+import java.util.ArrayList;
+
 public class DoublyLinkedList implements List {
     private Node first; //apuntador al inicio de la lista
 
@@ -188,6 +190,19 @@ public class DoublyLinkedList implements List {
             aux = aux.next; //lo movemos al sgte nodo
         }
         return null;
+    }
+
+    public ArrayList<Object> toList() {
+        if (isEmpty()) {
+            return new ArrayList<>();
+        }
+        ArrayList<Object> list = new ArrayList<>();
+        Node aux = first;
+        while (aux != null) {
+            list.add(aux.data);
+            aux = aux.next;
+        }
+        return (ArrayList<Object>) list;
     }
 
     @Override

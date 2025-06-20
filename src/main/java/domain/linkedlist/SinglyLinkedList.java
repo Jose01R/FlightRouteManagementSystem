@@ -3,6 +3,8 @@ package domain.linkedlist;
 import domain.common.Flight;
 import domain.common.Passenger;
 
+import java.util.ArrayList;
+
 public class SinglyLinkedList implements List {
     private Node first; //apuntador al inicio de la lista
 
@@ -314,5 +316,15 @@ public class SinglyLinkedList implements List {
             aux = aux.next; // lo muevo al sgte nodo
         }
         return result.toString();
+    }
+
+    public ArrayList<Object> toList() { // Returns an ArrayList of the generic type T
+        ArrayList<Object> list = new ArrayList<>();
+        Node current = first;
+        while (current != null) {
+            list.add(current.data);
+            current = current.next;
+        }
+        return list;
     }
 }

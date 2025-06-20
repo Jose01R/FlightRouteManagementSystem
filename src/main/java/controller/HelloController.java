@@ -1,8 +1,7 @@
 package controller;
 
 import controller.flightcontroller.FlightController;
-import domain.service.FlightService;
-import domain.service.PassengerService;
+import domain.service.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,11 +34,18 @@ public class HelloController {
     }
     private PassengerService passengerService;
     private FlightService flightService;
+    private AirplaneService airplaneService;
+    private AirNetworkService airNetworkService;
+    private AirportService airportService;
 
-    public void setServices(PassengerService passengerService, FlightService flightService) {
+    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
         this.passengerService = passengerService;
         this.flightService = flightService;
+        this.airplaneService = airplaneService;
+        this.airNetworkService = airNetworkService;
+        this.airportService = airportService;
     }
+
     @FXML
     void Exit(ActionEvent event) {
         System.exit(0);

@@ -129,6 +129,16 @@
     "compleated" : false,
     "pasajeros" : [ ]
   },
+  "1564" : {
+    "number" : 1564,
+    "origin" : "Bogotá",
+    "destination" : "Buenos Aires",
+    "departureTime" : [ 2025, 6, 23, 1, 28, 47, 536673900 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
   "2845" : {
     "number" : 2845,
     "origin" : "Tegucigalpa",
@@ -209,6 +219,26 @@
     "compleated" : false,
     "pasajeros" : [ ]
   },
+  "6194" : {
+    "number" : 6194,
+    "origin" : "San Salvador",
+    "destination" : "París",
+    "departureTime" : [ 2025, 6, 21, 6, 50, 47, 536673900 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "4787" : {
+    "number" : 4787,
+    "origin" : "Managua",
+    "destination" : "Toronto",
+    "departureTime" : [ 2025, 6, 24, 15, 39, 47, 536673900 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
   "5685" : {
     "number" : 5685,
     "origin" : "Panamá",
@@ -225,6 +255,16 @@
     "destination" : "Madrid",
     "departureTime" : [ 2025, 6, 21, 9, 0, 34, 823209400 ],
     "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "5687" : {
+    "number" : 5687,
+    "origin" : "Tegucigalpa",
+    "destination" : "Madrid",
+    "departureTime" : [ 2025, 6, 23, 9, 10, 47, 536673900 ],
+    "capacity" : 100,
     "occupancy" : 0,
     "compleated" : false,
     "pasajeros" : [ ]
@@ -269,6 +309,16 @@
     "compleated" : false,
     "pasajeros" : [ ]
   },
+  "6728" : {
+    "number" : 6728,
+    "origin" : "San José",
+    "destination" : "Madrid",
+    "departureTime" : [ 2025, 6, 22, 1, 59, 47, 536673900 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
   "3147" : {
     "number" : 3147,
     "origin" : "Tegucigalpa",
@@ -289,12 +339,42 @@
     "compleated" : false,
     "pasajeros" : [ ]
   },
+  "7631" : {
+    "number" : 7631,
+    "origin" : "Tegucigalpa",
+    "destination" : "Miami",
+    "departureTime" : [ 2025, 7, 12, 10, 57, 47, 537675100 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "3924" : {
+    "number" : 3924,
+    "origin" : "San Salvador",
+    "destination" : "París",
+    "departureTime" : [ 2025, 6, 17, 18, 40, 47, 535674700 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
   "9430" : {
     "number" : 9430,
     "origin" : "Bogotá",
     "destination" : "Madrid",
     "departureTime" : [ 2025, 7, 3, 6, 39, 15, 264058000 ],
     "capacity" : 100,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "6234" : {
+    "number" : 6234,
+    "origin" : "Panamá",
+    "destination" : "Toronto",
+    "departureTime" : [ 2025, 7, 2, 13, 28, 47, 537675100 ],
+    "capacity" : 150,
     "occupancy" : 0,
     "compleated" : false,
     "pasajeros" : [ ]
@@ -334,6 +414,16 @@
     "origin" : "Managua",
     "destination" : "Toronto",
     "departureTime" : [ 2025, 6, 17, 2, 20, 40, 339143800 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "1768" : {
+    "number" : 1768,
+    "origin" : "San José",
+    "destination" : "París",
+    "departureTime" : [ 2025, 7, 14, 22, 27, 47, 535674700 ],
     "capacity" : 150,
     "occupancy" : 0,
     "compleated" : false,
@@ -384,6 +474,16 @@
     "origin" : "Tegucigalpa",
     "destination" : "Miami",
     "departureTime" : [ 2025, 7, 8, 9, 42, 15, 263059400 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "compleated" : false,
+    "pasajeros" : [ ]
+  },
+  "3693" : {
+    "number" : 3693,
+    "origin" : "Bogotá",
+    "destination" : "Los Ángeles",
+    "departureTime" : [ 2025, 7, 1, 22, 58, 47, 537675100 ],
     "capacity" : 200,
     "occupancy" : 0,
     "compleated" : false,
