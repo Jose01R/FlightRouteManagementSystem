@@ -71,7 +71,7 @@ public class HelloApplication extends Application {
         passengerService = new PassengerService(passengerData);
 
         // FlightService depends on FlightData, AirplaneService, AirNetworkService, AirportService
-        flightService = new FlightService(flightData, airplaneService, airNetworkService, airportService);
+        flightService = new FlightService(flightData, airplaneService, airNetworkService, airportService,passengerService);
 
         // 3. Load the initial login scene
         FXMLLoader loginFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/logininterface/login.fxml"));

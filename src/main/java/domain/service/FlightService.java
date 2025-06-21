@@ -32,21 +32,22 @@ public class FlightService {
     private AirplaneService airplaneService;
     private AirNetworkService routeService;
     private AirportService airportService;
-
+    private PassengerService passengerService;
     public FlightService(FlightData flightData,
                          AirplaneService airplaneService,
                          AirNetworkService routeService,
-                         AirportService airportService) {
+                         AirportService airportService,
+                         PassengerService passengerService) {
 
         this.flightData = Objects.requireNonNull(flightData, "FlightData cannot be null");
         this.airplaneService = Objects.requireNonNull(airplaneService, "AirplaneService cannot be null");
         this.routeService = Objects.requireNonNull(routeService, "AirNetworkService cannot be null");
         this.airportService = Objects.requireNonNull(airportService, "AirportService cannot be null");
-
+        this.passengerService = Objects.requireNonNull(passengerService, "PassengerService cannot be null");
         this.flightList = new CircularDoublyLinkedList();
         this.observableFlights = FXCollections.observableArrayList();
-        loadInitialFlights();
 
+        loadInitialFlights();
         // generateInitialRandomFlights(10);
     }
 
@@ -59,8 +60,8 @@ public class FlightService {
             Map<Integer, Flight> loadedMap = flightData.loadFlightsToMap();
             if (loadedMap != null && !loadedMap.isEmpty()) {
                 for (Flight flight : loadedMap.values()) {
+                    flight.replaceIdsWithPassengers(passengerService);
                     this.flightList.add(flight); //Agregamos Flight en la CircularDoublyLinkedList
-
                 }
             }
             // Después de cargar en flightList, copiar a observableFlights
@@ -185,6 +186,7 @@ public class FlightService {
         if (passenger.getFlightHistory() == null) {
             passenger.setFlightHistory(new SinglyLinkedList());
         }
+
         //Almacenamos el número de vuelo, no el objeto Vuelo completo, para evitar referencias circulares
         if (!passenger.getFlightHistory().contains(flight.getNumber())) {
             passenger.getFlightHistory().add(flight.getNumber()); //Add int

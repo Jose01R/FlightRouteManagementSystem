@@ -165,19 +165,24 @@ public class FlightController {
             return new ReadOnlyStringWrapper(status);
         });
 
-
-        // Muestra una lista de números de vuelos en el historial del pasajero
+        airPlaneIdColumn.setCellValueFactory(cellData -> {
+            Airplane airplane = cellData.getValue().getAssignedAirplane();
+            if (airplane != null) {
+                String info = airplane.getSerialNumber() + " (" + airplane.getModel() + ")";
+                return new SimpleStringProperty(info);
+            } else {
+                return new SimpleStringProperty("Sin avión");
+            }
+        });
         flightHistoryColumn.setCellValueFactory(cell -> {
             Passenger p = cell.getValue();
             if (p != null && p.getFlightHistory() != null && !p.getFlightHistory().isEmpty()) {
                 StringBuilder historyBuilder = new StringBuilder();
                 try {
-                    // Itera sobre el historial de vuelos para construir el string
                     for (int i = 1; i <= p.getFlightHistory().size(); i++) {
                         Object data = p.getFlightHistory().getNode(i).data;
-                        if (data instanceof Flight) {
-                            Flight flight = (Flight) data;
-                            historyBuilder.append("#").append(flight.getNumber());
+                        if (data instanceof Integer) {
+                            historyBuilder.append("#").append(data);
                             if (i < p.getFlightHistory().size()) {
                                 historyBuilder.append(", ");
                             }
@@ -536,23 +541,32 @@ public class FlightController {
         ObservableList<Flight> filteredList = FXCollections.observableArrayList();
         ObservableList<Flight> allFlights = flightService.getObservableFlights();
 
-        String origin = originInput != null ? originInput.toLowerCase().trim() : "";
-        String destination = destinationInput != null ? destinationInput.toLowerCase().trim() : "";
+        // Convertir entradas a string para comparar y buscar (pueden ser números o texto)
+        String origin = originInput != null ? originInput.trim().toLowerCase() : "";
+        String destination = destinationInput != null ? destinationInput.trim().toLowerCase() : "";
 
-        // Primero los que coinciden al inicio (parcial o total)
+        // Coincidencias preferidas primero
         for (Flight f : allFlights) {
-            boolean matchesOrigin = f.getOrigin().toLowerCase().startsWith(origin);
-            boolean matchesDestination = f.getDestination().toLowerCase().startsWith(destination);
+            Route route = f.getAssignedRoute();
+            String routeOrigin = route != null ? String.valueOf(route.getOriginAirportCode()).toLowerCase() : "";
+            String routeDestination = route != null ? String.valueOf(route.getDestinationAirportCode()).toLowerCase() : "";
+
+            boolean matchesOrigin = routeOrigin.startsWith(origin);
+            boolean matchesDestination = routeDestination.startsWith(destination);
 
             if ((origin.isEmpty() || matchesOrigin) && (destination.isEmpty() || matchesDestination)) {
-                filteredList.add(f); // Coincidencias preferidas primero
+                filteredList.add(f);
             }
         }
 
         // Luego el resto
         for (Flight f : allFlights) {
-            boolean matchesOrigin = f.getOrigin().toLowerCase().startsWith(origin);
-            boolean matchesDestination = f.getDestination().toLowerCase().startsWith(destination);
+            Route route = f.getAssignedRoute();
+            String routeOrigin = route != null ? String.valueOf(route.getOriginAirportCode()).toLowerCase() : "";
+            String routeDestination = route != null ? String.valueOf(route.getDestinationAirportCode()).toLowerCase() : "";
+
+            boolean matchesOrigin = routeOrigin.startsWith(origin);
+            boolean matchesDestination = routeDestination.startsWith(destination);
 
             if (!((origin.isEmpty() || matchesOrigin) && (destination.isEmpty() || matchesDestination))) {
                 filteredList.add(f);

@@ -184,11 +184,45 @@ public class Utility {
                         return 0; // Si no se puede comparar vuelo, se ignora
                     }
                  case"Flight":
-                    Flight fl1 = (Flight) a;
-                    Flight fl2 = (Flight) b;
+                     Flight fl1 = (Flight) a;
+                     Flight fl2 = (Flight) b;
 
-                    // Comparar por número de vuelo (identificador principal)
-                     return Integer.compare(fl1.getNumber(), fl2.getNumber());
+                     // Comparar por número de vuelo (identificador principal)
+                     if (fl1.getNumber() != fl2.getNumber()) {
+                         return Integer.compare(fl1.getNumber(), fl2.getNumber());
+                     }
+
+
+                     int originComparison = fl1.getOrigin().compareToIgnoreCase(fl2.getOrigin());
+                     if (originComparison != 0) {
+                         return originComparison;
+                     }
+
+                     // Si el origen es igual, comparar por destino
+                     int destinationComparison = fl1.getDestination().compareToIgnoreCase(fl2.getDestination());
+                     if (destinationComparison != 0) {
+                         return destinationComparison;
+                     }
+
+                     // Si origen y destino son iguales, comparar por hora de salida
+                     if (fl1.getDepartureTime() != null && fl2.getDepartureTime() != null) {
+                         int departureTimeComparison = fl1.getDepartureTime().compareTo(fl2.getDepartureTime());
+                         if (departureTimeComparison != 0) {
+                             return departureTimeComparison;
+                         }
+                     } else if (fl1.getDepartureTime() != null) {
+                         return 1; // fl1 tiene fecha/hora, fl2 no
+                     } else if (fl2.getDepartureTime() != null) {
+                         return -1; // fl2 tiene fecha/hora, fl1 no
+                     }
+
+                     //Si todo lo anterior es igual, comparar por capacidad
+                     if (fl1.getCapacity() != fl2.getCapacity()) {
+                         return Integer.compare(fl1.getCapacity(), fl2.getCapacity());
+                     }
+
+                     // Si todos los atributos clave son iguales, se retorna 0
+                     return 0;
 
 
                 case "Airport":
