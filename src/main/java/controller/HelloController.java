@@ -89,7 +89,7 @@ public class HelloController {
             FlightController flightController = loader.getController();
 
             // Pasar los servicios
-            flightController.setServices(this.passengerService, this.flightService);
+            flightController.setServices(this.passengerService, this.flightService,this.airplaneService,this.airNetworkService);
 
             // Crear y mostrar la nueva ventana
             Scene scene = new Scene(root, 1410, 900);

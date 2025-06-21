@@ -130,17 +130,18 @@ public class Flight {
 
     // --- Standard Overrides ---
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Flight flight = (Flight) o;
-        return number == flight.number;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Flight other = (Flight) obj;
+        return this.number == other.number;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(number);
+        return Integer.hashCode(number);
     }
+
 
     @Override
     public String toString() {

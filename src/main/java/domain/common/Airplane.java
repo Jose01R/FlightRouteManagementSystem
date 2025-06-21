@@ -10,6 +10,7 @@ import domain.linkedstack.StackException; // Keep if push/pop can throw this
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // @JsonIdentityInfo is important if Airplane objects are referenced multiple times
 // in your JSON data (e.g., by multiple Flights) to avoid duplication and loops.
@@ -75,17 +76,15 @@ public class Airplane {
     public void setFlightHistoryFromList(List<Flight> flightList) {
         this.flightHistory = new LinkedStack();
         if (flightList != null) {
-            // Iterate through the list and push elements onto the stack.
-            // The order depends on how you want them stacked from the list.
-            // If the list is [oldest, ..., most_recent], pushing them in order
-            // will put 'most_recent' at the top of the stack.
             for (Flight f : flightList) {
-                try {
-                    this.flightHistory.push(f);
-                } catch (StackException e) {
-                    // Handle or rethrow StackException (e.g., if stack capacity was exceeded)
-                    // For typical unbounded LinkedStacks, this might not occur for 'push'.
-                    throw new RuntimeException("Error pushing flight to history during deserialization: " + e.getMessage(), e);
+                if (f != null) {
+                    try {
+                        this.flightHistory.push(f);
+                    } catch (StackException e) {
+                        System.out.println("Error pushing flight to history: " + e.getMessage());
+                    }
+                } else {
+                    System.out.println("⚠️ Warning: Skipped null flight during deserialization");
                 }
             }
         }
@@ -121,6 +120,18 @@ public class Airplane {
 
     public void setCurrentStatus(String currentStatus) {
         this.currentStatus = currentStatus;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Airplane airplane)) return false;
+        return Objects.equals(serialNumber, airplane.serialNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(serialNumber);
     }
 
     @Override

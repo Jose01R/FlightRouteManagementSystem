@@ -4,11 +4,15 @@ import data.FlightData;
 import data.PassengerData;
 import domain.btree.AVL;
 import domain.btree.TreeException;
+import domain.common.Airplane;
 import domain.common.Flight;
 import domain.common.Passenger;
+import domain.common.Route;
 import domain.linkedlist.CircularDoublyLinkedList;
 import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
+import domain.service.AirNetworkService;
+import domain.service.AirplaneService;
 import domain.service.FlightService;
 import domain.service.PassengerService;
 import javafx.application.Platform;
@@ -47,8 +51,7 @@ public class FlightController {
     @FXML
     private TextField departureTimeField;
 
-    @FXML
-    private TextField destinationField;
+
 
     @FXML
     private TableColumn<Passenger,String > flightColumn;
@@ -73,7 +76,7 @@ public class FlightController {
     private TableColumn<Flight, Integer> flightTableOccupancyColumn;
     @FXML
     private TableColumn<Flight, String> flightTableStatusColumn;
-
+    @FXML TableColumn<Flight,String>airPlaneIdColumn;
     @FXML
     private TableColumn<Passenger,Integer> idColumn;
     @FXML
@@ -86,8 +89,8 @@ public class FlightController {
     @FXML
     private TextField nationalityField;
 
-    @FXML
-    private TextField originField;
+    @FXML private ComboBox<Airplane>airplaneComboBox;
+    @FXML private ComboBox<Route>routeComboBox;
 
     @FXML
     private TextField passengerIdField;
@@ -106,6 +109,8 @@ public class FlightController {
     private PassengerData passengerData;
     private FlightData flightData;
     private FlightService flightService;
+    private AirplaneService airplaneService;
+    private AirNetworkService airNetworkService;
     private CircularDoublyLinkedList circularDoublyLinkedList;
     private ScheduledExecutorService scheduler;
 
@@ -117,23 +122,43 @@ public class FlightController {
         nationalityColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNationality()));
 
 
-        //Muestra el número del último vuelo en el historial del pasajero
+        // --- CAMBIOS AQUÍ: flightColumn ---
         flightColumn.setCellValueFactory(cell -> {
             Passenger p = cell.getValue();
             if (p != null && p.getFlightHistory() != null && !p.getFlightHistory().isEmpty()) {
                 try {
-                    // Accede al último elemento del historial de vuelos
-                    Flight lastFlight = (Flight) p.getFlightHistory().getNode(p.getFlightHistory().size()).data;
-                    return new SimpleStringProperty(String.valueOf(lastFlight.getNumber()));
-                } catch (Exception e) {
-                    // En caso de error (ej. ListException si getNode falla), muestra N/A
-                    System.err.println("Error al obtener el último vuelo del historial: " + e.getMessage());
-                    return new SimpleStringProperty("N/A");
+                    Object lastFlightNumObject = p.getFlightHistory().getNode(p.getFlightHistory().size()).data;
+
+                    if (lastFlightNumObject instanceof Integer) { // Verificar si es un Integer
+                        Integer flightNumber = (Integer) lastFlightNumObject; // Casteo seguro a Integer
+
+                        // ¡Buscar el objeto Flight real usando el número de vuelo!
+                        Flight actualFlight = flightService.findFlightByNumber(flightNumber); // Necesitas este método en FlightService
+
+                        if (actualFlight != null) {
+                            return new SimpleStringProperty(String.valueOf(actualFlight.getNumber()));
+                        } else {
+                            System.err.println("Advertencia: Objeto Flight no encontrado para el número: " + flightNumber);
+                            return new SimpleStringProperty("N/A (Vuelo no encontrado)");
+                        }
+                    } else {
+                        System.err.println("Advertencia: Se encontró un objeto inesperado en el historial de vuelo (se esperaba Integer): " +
+                                (lastFlightNumObject != null ? lastFlightNumObject.getClass().getSimpleName() : "null"));
+                        return new SimpleStringProperty("N/A (Tipo incorrecto)");
+                    }
+                } catch (ListException e) { // Captura ListException de tu SinglyLinkedList
+                    System.err.println("Error al obtener el último vuelo del historial (ListException): " + e.getMessage());
+                    return new SimpleStringProperty("N/A (Error de lista)");
+                } catch (Exception e) { // Captura otras excepciones generales
+                    System.err.println("Error inesperado al obtener el último vuelo del historial: " + e.getMessage());
+                    e.printStackTrace(); // Imprime el stack trace para depuración
+                    return new SimpleStringProperty("N/A (Error)");
                 }
             } else {
-                return new SimpleStringProperty("N/A"); // Si no hay historial o el pasajero es null
+                return new SimpleStringProperty("N/A");
             }
         });
+
         flightTableStatusColumn.setCellValueFactory(cellData -> {
             boolean completed = cellData.getValue().isCompleted();
             String status = completed ? "Completado" : "Activo";
@@ -202,6 +227,30 @@ public class FlightController {
                 return null;
             }
         });
+        airplaneComboBox.setConverter(new StringConverter<Airplane>() {
+            @Override
+            public String toString(Airplane airplane) {
+                return (airplane != null) ? airplane.getSerialNumber() + " (" + airplane.getModel() + ")" : "";
+            }
+
+            @Override
+            public Airplane fromString(String string) {
+                return null; // No se necesita
+            }
+        });
+
+        routeComboBox.setConverter(new StringConverter<Route>() {
+            @Override
+            public String toString(Route route) {
+                return (route != null) ? route.getOriginAirportCode() + " → " + route.getDestinationAirportCode() : "";
+            }
+
+            @Override
+            public Route fromString(String string) {
+                return null;
+            }
+        });
+
         searchTextField.textProperty().addListener((obs, oldText, newText) -> {
             reorderTableViewByPassengerId(newText);
         });
@@ -223,12 +272,17 @@ public class FlightController {
 
     }
 
-    public void setServices(PassengerService passengerService, FlightService flightService) {
+    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService) {
         this.passengerService = passengerService;
         this.flightService = flightService;
+        this.airplaneService=airplaneService;
+        this.airNetworkService= airNetworkService;
         passengerTable.setItems(this.passengerService.getObservablePassengers());
-        flightTable.setItems(this.flightService.getObservableFlights());
         assignedFlightComboBox.setItems(this.flightService.getObservableFlights());
+        flightTable.setItems(this.flightService.getObservableFlights());
+        routeComboBox.setItems(airNetworkService.getObservableRoutes());
+        airplaneComboBox.setItems(airplaneService.getObservableAirplanes());
+
     }
 
 
@@ -263,7 +317,6 @@ public class FlightController {
             }
 
             Passenger passenger = passengerService.findPassengerById(passengerId);
-
             if (passenger == null) {
                 passenger = new Passenger(passengerId, passengerName, nationality);
                 passenger.setFlightHistory(new SinglyLinkedList());
@@ -312,14 +365,14 @@ public class FlightController {
     void handleRegisterFlight(ActionEvent event) {
         try {
             int flightNumber = Integer.parseInt(flightNumberField.getText());
-            String origin = originField.getText();
-            String destination = destinationField.getText();
+            Route selectedRoute = routeComboBox.getValue();
+            Airplane selectedAirplane = airplaneComboBox.getValue();
             int capacity = Integer.parseInt(capacityField.getText());
 
             LocalDate selectedDate = departureDatePicker.getValue();
             String timeString = departureTimeField.getText();
 
-            if (origin.isEmpty() || destination.isEmpty() || timeString.isEmpty() || selectedDate == null) {
+            if (selectedRoute==null || selectedAirplane==null|| timeString.isEmpty() || selectedDate == null) {
                 showAlert(Alert.AlertType.ERROR, "Error de Entrada", "Todos los campos de vuelo son obligatorios.");
                 return;
             }
@@ -337,15 +390,14 @@ public class FlightController {
             }
 
             LocalDateTime departureDateTime = LocalDateTime.of(selectedDate, selectedTime);
-            //Flight flight = new Flight(flightNumber, origin, destination, departureDateTime, capacity);
-           // flightService.createFlight(flight);
+            Flight flight = new Flight(flightNumber, departureDateTime, capacity,selectedAirplane, selectedRoute);
+            flightService.createFlight(flight);
 
 
             showAlert(Alert.AlertType.INFORMATION, "Éxito", "Vuelo " + flightNumber + " registrado correctamente.");
 
+
             flightNumberField.clear();
-            originField.clear();
-            destinationField.clear();
             capacityField.clear();
             departureDatePicker.setValue(null);
             departureTimeField.clear();

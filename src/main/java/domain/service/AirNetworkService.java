@@ -13,6 +13,8 @@ import domain.linkedlist.Node;
 import domain.linkedlist.SinglyLinkedList;
 import domain.linkedqueue.PriorityLinkedQueue;
 import domain.linkedqueue.QueueException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import util.Utility;
 
 import java.io.IOException;
@@ -28,21 +30,33 @@ public class AirNetworkService {
     private Map<String, Route> routesMap;
     private AirportService airportService;
     private RouteData routeData;
-
+    private ObservableList<Route> observableRoutes;
     public AirNetworkService(AirportService airportService, RouteData routeData) {
         this.airportService = Objects.requireNonNull(airportService, "AirportService cannot be null");
         this.routeData = Objects.requireNonNull(routeData, "RouteData cannot be null");
 
         this.airportGraph = new DirectedSinglyLinkedListGraph();
         this.routesMap = new HashMap<>();
+        this.observableRoutes = FXCollections.observableArrayList();
+        try {
+            generateInitialRandomRoutes(10);
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        } catch (GraphException e) {
+            throw new RuntimeException(e);
+        }
         loadRoutesAndNetwork();
+    }
+
+    public ObservableList<Route> getObservableRoutes() {
+        return observableRoutes;
     }
 
     private void loadRoutesAndNetwork() {
         try {
             airportGraph.clear();
             routesMap.clear();
-
+            observableRoutes.clear();
             //Cargamos todos los aeropuertos y agregarmos al grafo como vértices
             List<Object> allAirportsObjects = airportService.getAllAirportsAsList();
             List<Airport> allAirports = new ArrayList<>();
@@ -58,6 +72,8 @@ public class AirNetworkService {
             for (Airport airport : allAirports) {
                 try {
                     airportGraph.addVertex(airport);
+
+
                 } catch (GraphException e) {
                     System.err.println("Warning: Could not add airport to graph: " + airport.getCode() + " - " + e.getMessage());
                 }
@@ -69,7 +85,7 @@ public class AirNetworkService {
             for (Route route : routesMap.values()) {
                 Airport origin = airportService.getAirportByCode(route.getOriginAirportCode());
                 Airport destination = airportService.getAirportByCode(route.getDestinationAirportCode());
-
+                observableRoutes.setAll(routesMap.values());
                 if (origin != null && destination != null) {
                     try {
                         airportGraph.addVertex(origin);
@@ -124,6 +140,7 @@ public class AirNetworkService {
         airportGraph.addVertex(destinationAirport);
 
         routesMap.put(route.getRouteId(), route);
+        observableRoutes.add(route);
 
         airportGraph.addEdgeWeight(originAirport, destinationAirport, route);
 
@@ -154,6 +171,8 @@ public class AirNetworkService {
         Airport destinationAirport = airportService.getAirportByCode(routeToDelete.getDestinationAirportCode());
 
         routesMap.remove(routeId);
+        observableRoutes.remove(routeToDelete);
+
         if (originAirport != null && destinationAirport != null) {
             airportGraph.removeEdge(originAirport, destinationAirport);
         } else {
@@ -204,6 +223,10 @@ public class AirNetworkService {
 
         //Actualizar la ruta en el mapa
         routesMap.put(updatedRoute.getRouteId(), updatedRoute);
+        int index = observableRoutes.indexOf(oldRoute);
+        if (index >= 0) {
+            observableRoutes.set(index, updatedRoute);
+        }
 
         //Añade el nuevo edge actualizado
         airportGraph.addEdgeWeight(originAirport, destinationAirport, updatedRoute);
@@ -268,6 +291,8 @@ public class AirNetworkService {
 
             try {
                 addRoute(newRoute);
+                observableRoutes.add(newRoute);
+
                 generatedCount++;
             } catch (ListException | GraphException e) {
                 System.err.println("Warning: Error generating or adding random route " + routeId + ": " + e.getMessage());

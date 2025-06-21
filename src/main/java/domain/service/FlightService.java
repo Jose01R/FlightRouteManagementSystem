@@ -29,7 +29,6 @@ public class FlightService {
     private FlightData flightData;
     private CircularDoublyLinkedList flightList;
     private ObservableList<Flight> observableFlights;
-
     private AirplaneService airplaneService;
     private AirNetworkService routeService;
     private AirportService airportService;
@@ -58,20 +57,28 @@ public class FlightService {
     private void loadInitialFlights() {
         try {
             Map<Integer, Flight> loadedMap = flightData.loadFlightsToMap();
-            this.flightList.clear();
-            this.observableFlights.clear();
-
             if (loadedMap != null && !loadedMap.isEmpty()) {
                 for (Flight flight : loadedMap.values()) {
                     this.flightList.add(flight); //Agregamos Flight en la CircularDoublyLinkedList
-                    this.observableFlights.add(flight);
+
+                }
+            }
+            // Después de cargar en flightList, copiar a observableFlights
+            observableFlights.clear(); // Limpiar por si acaso
+            if (!flightList.isEmpty()) {
+                for (int i = 0; i < flightList.size(); i++) {
+                    Node node = flightList.getNode(i); // Asegúrate que getNode(i) y size() son correctos
+                    if (node != null && node.data instanceof Flight) {
+                        observableFlights.add((Flight) node.data);
+                    } else {
+                        System.err.println("Advertencia: Objeto no válido encontrado al cargar vuelos a observable: " + (node != null ? node.data : "null"));
+                    }
                 }
             }
             System.out.println("Flights loaded into FlightService (CircularDoublyLinkedList): " + flightList.size());
         } catch (ListException e) {
             System.err.println("Error al cargar vuelos iniciales: " + e.getMessage());
             e.printStackTrace();
-
             this.flightList.clear();
             this.observableFlights.clear();
         } catch (IOException e) {
@@ -155,6 +162,7 @@ public class FlightService {
         Objects.requireNonNull(passenger, "Passenger cannot be null");
 
         Flight flight = findFlightByNumber(flightNumber);
+
         if (flight == null) {
             throw new ListException("Vuelo " + flightNumber + " no encontrado");
         }
