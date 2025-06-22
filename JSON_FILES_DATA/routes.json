@@ -1,0 +1,112 @@
+{
+  "R940942" : {
+    "routeId" : "R940942",
+    "airline" : "AirlineDX",
+    "durationHours" : 3.0,
+    "distanceKm" : 2839.0,
+    "price" : 523.0,
+    "departureTime" : [ 13, 51 ],
+    "arrivalTime" : [ 16, 51 ],
+    "originAirportCode" : 17,
+    "destinationAirportCode" : 29
+  },
+  "R636149" : {
+    "routeId" : "R636149",
+    "airline" : "AirlineNG",
+    "durationHours" : 5.0,
+    "distanceKm" : 5301.0,
+    "price" : 588.0,
+    "departureTime" : [ 17, 3 ],
+    "arrivalTime" : [ 22, 3 ],
+    "originAirportCode" : 11,
+    "destinationAirportCode" : 24
+  },
+  "R916477" : {
+    "routeId" : "R916477",
+    "airline" : "AirlineVI",
+    "durationHours" : 6.0,
+    "distanceKm" : 1569.0,
+    "price" : 532.0,
+    "departureTime" : [ 0, 55 ],
+    "arrivalTime" : [ 6, 55 ],
+    "originAirportCode" : 26,
+    "destinationAirportCode" : 24
+  },
+  "R754560" : {
+    "routeId" : "R754560",
+    "airline" : "AirlineJB",
+    "durationHours" : 1.0,
+    "distanceKm" : 869.0,
+    "price" : 230.0,
+    "departureTime" : [ 13, 43 ],
+    "arrivalTime" : [ 14, 43 ],
+    "originAirportCode" : 17,
+    "destinationAirportCode" : 24
+  },
+  "R119546" : {
+    "routeId" : "R119546",
+    "airline" : "AirlineXB",
+    "durationHours" : 3.0,
+    "distanceKm" : 2349.0,
+    "price" : 291.0,
+    "departureTime" : [ 1, 33 ],
+    "arrivalTime" : [ 4, 33 ],
+    "originAirportCode" : 11,
+    "destinationAirportCode" : 28
+  },
+  "R856574" : {
+    "routeId" : "R856574",
+    "airline" : "AirlineHC",
+    "durationHours" : 5.0,
+    "distanceKm" : 3587.0,
+    "price" : 723.0,
+    "departureTime" : [ 18, 59 ],
+    "arrivalTime" : [ 23, 59 ],
+    "originAirportCode" : 29,
+    "destinationAirportCode" : 17
+  },
+  "R180801" : {
+    "routeId" : "R180801",
+    "airline" : "AirlineKE",
+    "durationHours" : 8.0,
+    "distanceKm" : 1921.0,
+    "price" : 575.0,
+    "departureTime" : [ 20, 38 ],
+    "arrivalTime" : [ 4, 38 ],
+    "originAirportCode" : 29,
+    "destinationAirportCode" : 24
+  },
+  "R956498" : {
+    "routeId" : "R956498",
+    "airline" : "AirlineUS",
+    "durationHours" : 3.0,
+    "distanceKm" : 867.0,
+    "price" : 836.0,
+    "departureTime" : [ 0, 17 ],
+    "arrivalTime" : [ 3, 17 ],
+    "originAirportCode" : 11,
+    "destinationAirportCode" : 17
+  },
+  "R540817" : {
+    "routeId" : "R540817",
+    "airline" : "AirlineBX",
+    "durationHours" : 2.0,
+    "distanceKm" : 3053.0,
+    "price" : 381.0,
+    "departureTime" : [ 11, 57 ],
+    "arrivalTime" : [ 13, 57 ],
+    "originAirportCode" : 11,
+    "destinationAirportCode" : 17
+  },
+  "R721693" : {
+    "routeId" : "R721693",
+    "airline" : "AirlineGO",
+    "durationHours" : 10.0,
+    "distanceKm" : 4905.0,
+    "price" : 177.0,
+    "departureTime" : [ 0, 47 ],
+    "arrivalTime" : [ 10, 47 ],
+    "originAirportCode" : 17,
+    "destinationAirportCode" : 11
+  }
+}
