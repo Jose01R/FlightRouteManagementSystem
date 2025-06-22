@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,25 +30,25 @@ public class FlightService {
     private FlightData flightData;
     private CircularDoublyLinkedList flightList;
     private ObservableList<Flight> observableFlights;
-
     private AirplaneService airplaneService;
     private AirNetworkService routeService;
     private AirportService airportService;
-
+    private PassengerService passengerService;
     public FlightService(FlightData flightData,
                          AirplaneService airplaneService,
                          AirNetworkService routeService,
-                         AirportService airportService) {
+                         AirportService airportService,
+                         PassengerService passengerService) {
 
         this.flightData = Objects.requireNonNull(flightData, "FlightData cannot be null");
         this.airplaneService = Objects.requireNonNull(airplaneService, "AirplaneService cannot be null");
         this.routeService = Objects.requireNonNull(routeService, "AirNetworkService cannot be null");
         this.airportService = Objects.requireNonNull(airportService, "AirportService cannot be null");
-
+        this.passengerService = Objects.requireNonNull(passengerService, "PassengerService cannot be null");
         this.flightList = new CircularDoublyLinkedList();
         this.observableFlights = FXCollections.observableArrayList();
-        loadInitialFlights();
 
+        loadInitialFlights();
         // generateInitialRandomFlights(10);
     }
 
@@ -58,20 +59,28 @@ public class FlightService {
     private void loadInitialFlights() {
         try {
             Map<Integer, Flight> loadedMap = flightData.loadFlightsToMap();
-            this.flightList.clear();
-            this.observableFlights.clear();
-
             if (loadedMap != null && !loadedMap.isEmpty()) {
                 for (Flight flight : loadedMap.values()) {
+                    flight.replaceIdsWithPassengers(passengerService);
                     this.flightList.add(flight); //Agregamos Flight en la CircularDoublyLinkedList
-                    this.observableFlights.add(flight);
+                }
+            }
+            // Después de cargar en flightList, copiar a observableFlights
+            observableFlights.clear(); // Limpiar por si acaso
+            if (!flightList.isEmpty()) {
+                for (int i = 0; i < flightList.size(); i++) {
+                    Node node = flightList.getNode(i); // Asegúrate que getNode(i) y size() son correctos
+                    if (node != null && node.data instanceof Flight) {
+                        observableFlights.add((Flight) node.data);
+                    } else {
+                        System.err.println("Advertencia: Objeto no válido encontrado al cargar vuelos a observable: " + (node != null ? node.data : "null"));
+                    }
                 }
             }
             System.out.println("Flights loaded into FlightService (CircularDoublyLinkedList): " + flightList.size());
         } catch (ListException e) {
             System.err.println("Error al cargar vuelos iniciales: " + e.getMessage());
             e.printStackTrace();
-
             this.flightList.clear();
             this.observableFlights.clear();
         } catch (IOException e) {
@@ -155,6 +164,7 @@ public class FlightService {
         Objects.requireNonNull(passenger, "Passenger cannot be null");
 
         Flight flight = findFlightByNumber(flightNumber);
+
         if (flight == null) {
             throw new ListException("Vuelo " + flightNumber + " no encontrado");
         }
@@ -177,6 +187,7 @@ public class FlightService {
         if (passenger.getFlightHistory() == null) {
             passenger.setFlightHistory(new SinglyLinkedList());
         }
+
         //Almacenamos el número de vuelo, no el objeto Vuelo completo, para evitar referencias circulares
         if (!passenger.getFlightHistory().contains(flight.getNumber())) {
             passenger.getFlightHistory().add(flight.getNumber()); //Add int
@@ -431,5 +442,40 @@ public class FlightService {
             throw new ListException("Failed to save flight data after simulation: " + e.getMessage());
         }
         System.out.println("Vuelo " + flight.getNumber() + " completado. Pasajeros vaciados y vuelo registrado en historial del avión.");
+    }
+    public List<Flight> getAvailableFlights(String from, String to, LocalDate fromDate) {
+        List<Flight> availableFlights = new ArrayList<>(); // Para devolver los vuelos encontrados
+
+        try {
+            if (flightList != null && !flightList.isEmpty()) {
+                for (int i = 0; i < flightList.size(); i++) {
+                    Node node = flightList.getNode(i);
+                    if (node != null && node.data instanceof Flight) {
+                        Flight flight = (Flight) node.data;
+                        Route route = flight.getAssignedRoute();
+
+                        // --- Filtros ---
+                        boolean matchesOrigin = (from == null || from.isEmpty()) ||
+                                (route != null && String.valueOf(route.getOriginAirportCode()).equalsIgnoreCase(from));
+                        boolean matchesDestination = (to == null || to.isEmpty()) ||
+                                (route != null && String.valueOf(route.getDestinationAirportCode()).equalsIgnoreCase(to));
+                        boolean matchesDate = fromDate == null || flight.getDepartureTime().toLocalDate().equals(fromDate);
+                        boolean hasSeats = flight.getOccupancy() < flight.getCapacity();
+
+                        if (matchesOrigin && matchesDestination && matchesDate && hasSeats) {
+                            availableFlights.add(flight);
+                        }
+                    }
+                }
+            }
+        } catch (ListException e) {
+            System.err.println("Error al buscar vuelos disponibles: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Si quieres implementar ida/vuelta, puedes hacer otra búsqueda aquí para los vuelos de regreso:
+        // (Cambias origen <-> destino y usas toDate)
+
+        return availableFlights;
     }
 }

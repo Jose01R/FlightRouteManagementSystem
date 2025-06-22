@@ -1,49 +1,34 @@
 package domain.common;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // IMPORT THIS!
+import com.fasterxml.jackson.annotation.*;
 import domain.linkedlist.SinglyLinkedList;
+import domain.linkedlist.ListException;
+import domain.service.PassengerService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects; // For equals and hashCode
-
+import java.util.Objects;
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "number")
-@JsonIgnoreProperties(ignoreUnknown = true) // <--- ADD THIS LINE!
 public class Flight {
     private int number;
-
-    // --- ADJUSTMENT 1: Removed redundant origin/destination fields ---
-    // private String origin; // These are now derived from assignedRoute
-    // private String destination;
-
     private LocalDateTime departureTime;
     private int capacity;
     private int occupancy;
+    @JsonIgnore
+    private SinglyLinkedList pasajeros; // Contendrá objetos Passenger
 
-    @JsonIgnore // Ignora el campo SinglyLinkedList directo para la serialización/deserialización
-    private SinglyLinkedList pasajeros; // Now generic for Passenger objects
+    private boolean completed;
+    private Airplane assignedAirplane;
+    private Route assignedRoute;
 
-    private boolean completed; // Corrected typo
-    private Airplane assignedAirplane; // Jackson will use @JsonIdentityInfo from Airplane
-    private Route assignedRoute;       // Jackson will use @JsonIdentityInfo from Route
-
-
-    // --- Constructors ---
     public Flight(int number, LocalDateTime departureTime, int capacity,
                   Airplane assignedAirplane, Route assignedRoute) {
-        this(); // Call the no-arg constructor to initialize collections
+        this();
         this.number = number;
         this.capacity = capacity;
-        // this.occupancy = 0; // Handled by no-arg constructor
         this.departureTime = departureTime;
-        // this.pasajeros = new SinglyLinkedList(); // Handled by no-arg constructor
-        // this.completed = false; // Handled by no-arg constructor
         this.assignedAirplane = assignedAirplane;
         this.assignedRoute = assignedRoute;
     }
@@ -54,22 +39,17 @@ public class Flight {
         this.completed = false;
     }
 
-
-    // --- Getters and Setters for direct fields ---
     public int getNumber() { return number; }
     public void setNumber(int number) { this.number = number; }
-
     public LocalDateTime getDepartureTime() { return departureTime; }
     public void setDepartureTime(LocalDateTime departureTime) { this.departureTime = departureTime; }
     public int getCapacity() { return capacity; }
     public void setCapacity(int capacity) { this.capacity = capacity; }
     public int getOccupancy() { return occupancy; }
     public void setOccupancy(int occupancy) { this.occupancy = occupancy; }
-    public boolean isCompleted() { return completed; } // Jackson expects 'is' for boolean getters
+    public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    // --- Derived Getters (from assignedRoute) ---
-    // These are *not* direct fields in the Flight class, but expose route info.
     public String getOrigin() {
         return assignedRoute != null ? String.valueOf(assignedRoute.getOriginAirportCode()) : null;
     }
@@ -77,84 +57,113 @@ public class Flight {
         return assignedRoute != null ? String.valueOf(assignedRoute.getDestinationAirportCode()) : null;
     }
 
-    // --- JsonGetters to include derived origin/destination in JSON during serialization ---
     @JsonGetter("origin")
     public String getJsonOrigin() { return getOrigin(); }
 
     @JsonGetter("destination")
     public String getJsonDestination() { return getDestination(); }
 
+    public Airplane getAssignedAirplane() { return assignedAirplane; }
+    public void setAssignedAirplane(Airplane assignedAirplane) { this.assignedAirplane = assignedAirplane; }
+    public Route getAssignedRoute() { return assignedRoute; }
+    public void setAssignedRoute(Route assignedRoute) { this.assignedRoute = assignedRoute; }
 
-    // --- Getters/Setters for assigned objects ---
-    public Airplane getAssignedAirplane() {
-        return assignedAirplane;
-    }
-    public void setAssignedAirplane(Airplane assignedAirplane) {
-        this.assignedAirplane = assignedAirplane;
-    }
-
-    public Route getAssignedRoute() {
-        return assignedRoute;
-    }
-    public void setAssignedRoute(Route assignedRoute) {
-        this.assignedRoute = assignedRoute;
-    }
-
-    // --- Getters/Setters for 'pasajeros' (SinglyLinkedList) with custom JSON handling ---
+    @JsonIgnore
     public SinglyLinkedList getPasajeros() {
         return pasajeros;
     }
 
+    @JsonIgnore
     public void setPasajeros(SinglyLinkedList pasajeros) {
         this.pasajeros = pasajeros;
     }
 
+    // SERIALIZACIÓN: solo los ids de los pasajeros
     @JsonGetter("pasajeros")
-    public ArrayList<Object> getPasajerosAsList() {
+    public List<Integer> getPasajerosIds() {
+        List<Integer> ids = new ArrayList<>();
         if (pasajeros != null) {
-            // IMPORTANT: SinglyLinkedList.toList() must exist and work correctly
-            return pasajeros.toList();
+            try {
+                for (int i = 1; i <= pasajeros.size(); i++) {
+                    Object obj = pasajeros.getNode(i).getData();
+                    if (obj instanceof Passenger) {
+                        ids.add(((Passenger) obj).getId());
+                    }
+                }
+            } catch (ListException e) {
+                System.err.println("Error (Flight.getPasajerosIds): " + e.getMessage());
+            }
         }
-        return new ArrayList<>();
+        return ids;
     }
 
+    // DESERIALIZACIÓN: requiere el PassengerService para buscar los pasajeros por id
+    // Se recomienda llamar a este método MANUALMENTE después de deserializar y cargar los pasajeros globales.
     @JsonSetter("pasajeros")
-    public void setPasajerosFromList(List<Passenger> passengerList) {
-        this.pasajeros = new SinglyLinkedList(); // Initialize a new SLL
-        if (passengerList != null) {
-            for (Passenger p : passengerList) {
-                this.pasajeros.add(p); // Assuming SinglyLinkedList.add(Object element) works
+    public void setPasajerosFromIds(List<Integer> ids) {
+        // REQUIERE que PassengerService esté accesible aquí, así que omite la carga automática
+        // y utiliza un método helper después de deserializar para rellenar la SLL.
+        this.pasajeros = new SinglyLinkedList();
+        // Aquí solo almacena temporalmente los IDs, luego usa setPasajerosByService()
+        if (ids != null) {
+            for (Integer id : ids) {
+                this.pasajeros.add(id); // Temporal, luego se reemplazará por Passenger real
             }
         }
     }
 
-    // --- Standard Overrides ---
+    // MÉTODO HELPER: llama esto después de deserializar para reemplazar los ids por los Passenger reales
+    public void replaceIdsWithPassengers(PassengerService passengerService) {
+        if (this.pasajeros != null) {
+            SinglyLinkedList nuevaLista = new SinglyLinkedList();
+            try {
+                for (int i = 1; i <= this.pasajeros.size(); i++) {
+                    Object obj = this.pasajeros.getNode(i).getData();
+                    if (obj instanceof Integer) {
+                        Passenger p = passengerService.findPassengerById((Integer) obj);
+                        if (p != null) nuevaLista.add(p);
+                    } else if (obj instanceof Passenger) {
+                        nuevaLista.add(obj); // por si ya es Passenger
+                    }
+                }
+                this.pasajeros = nuevaLista;
+            } catch (ListException e) {
+                System.err.println("Error (Flight.replaceIdsWithPassengers): " + e.getMessage());
+            }
+        }
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Flight flight = (Flight) o;
-        return number == flight.number;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Flight other = (Flight) obj;
+        return this.number == other.number;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(number);
+        return Integer.hashCode(number);
     }
 
     @Override
     public String toString() {
-        return "Flight{" +
-                "number=" + number +
-                ", origin='" + getOrigin() + '\'' + // Use the getter
-                ", destination='" + getDestination() + '\'' + // Use the getter
-                ", departureTime=" + departureTime +
-                ", capacity=" + capacity +
-                ", occupancy=" + occupancy +
-                ", completed=" + completed +
-                ", assignedAirplaneSN='" + (assignedAirplane != null ? assignedAirplane.getSerialNumber() : "N/A") + '\'' +
-                ", assignedRouteNum='" + (assignedRoute != null ? assignedRoute.getRouteId() : "N/A") + '\'' +
-                '}';
+        try {
+            return "Flight{" +
+                    "number=" + number +
+                    ", origin='" + getOrigin() + '\'' +
+                    ", destination='" + getDestination() + '\'' +
+                    ", departureTime=" + departureTime +
+                    ", capacity=" + capacity +
+                    ", occupancy=" + occupancy +
+                    ", completed=" + completed +
+                    ", assignedAirplaneSN='" + (assignedAirplane != null ? assignedAirplane.getSerialNumber() : "N/A") + '\'' +
+                    ", assignedRouteNum='" + (assignedRoute != null ? assignedRoute.getRouteId() : "N/A") + '\'' +
+                    ", numPasajeros=" + (pasajeros != null ? pasajeros.size() : 0) +
+                    '}';
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void incrementOccupancy() {

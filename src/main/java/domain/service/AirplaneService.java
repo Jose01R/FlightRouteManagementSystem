@@ -5,6 +5,8 @@ import domain.common.Flight;
 import domain.linkedstack.LinkedStack;
 import domain.linkedlist.ListException;
 import data.AirplaneData;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import util.Utility;
 
 import java.io.IOException;
@@ -18,10 +20,21 @@ import java.util.stream.Collectors;
 public class AirplaneService {
 
     private Map<String, Airplane> airplanesMap; //String para el número de serie como key
+    private ObservableList<Airplane> observableAirplanes;
 
     public AirplaneService() {
         this.airplanesMap = new HashMap<>();
+        this.observableAirplanes= FXCollections.observableArrayList();
+        try {
+            generateInitialRandomAirplanes(10);
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        }
         loadAirplanes();
+    }
+
+    public ObservableList<Airplane> getObservableAirplanes() {
+        return observableAirplanes;
     }
 
     private void loadAirplanes() {
@@ -32,6 +45,7 @@ public class AirplaneService {
                 for (Airplane airplane : loadedList) {
                     airplanesMap.put(airplane.getSerialNumber(), airplane);
                 }
+                observableAirplanes.setAll(airplanesMap.values());
             }
             System.out.println("Airplanes loaded in AirplaneService: " + airplanesMap.size());
         } catch (IOException e) {
@@ -65,6 +79,7 @@ public class AirplaneService {
             throw new ListException("El avión con número de serie: " + airplane.getSerialNumber() + " ya existe");
         }
         airplanesMap.put(airplane.getSerialNumber(), airplane);
+        observableAirplanes.add(airplane);
 
         try {
             saveAirplanes();
@@ -98,6 +113,7 @@ public class AirplaneService {
         Airplane airplaneToDelete = airplanesMap.get(serialNumber); //Obtener una posible reversión
 
         airplanesMap.remove(serialNumber);
+        observableAirplanes.remove(airplaneToDelete);
 
         // --- Revertir si falla el guardado ---
         try {
@@ -125,6 +141,11 @@ public class AirplaneService {
 
         //Reemplazamos el objeto antiguo por el actualizado
         airplanesMap.put(updatedAirplane.getSerialNumber(), updatedAirplane);
+
+        int index = observableAirplanes.indexOf(oldAirplane);
+        if (index >= 0) {
+            observableAirplanes.set(index, updatedAirplane);
+        }
 
         // --- Revertir si falla el guardado ---
         try {
@@ -165,6 +186,7 @@ public class AirplaneService {
 
             try {
                 if (createAirplane(newAirplane)) {
+                    observableAirplanes.add(newAirplane);
                     generatedCount++;
                 }
             } catch (ListException e) {

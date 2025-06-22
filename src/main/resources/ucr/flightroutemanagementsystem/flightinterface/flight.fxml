@@ -22,10 +22,10 @@
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Registro de Vuelo" />
             <Label text="Número de vuelo:" />
             <TextField fx:id="flightNumberField" promptText="Ej: 101" style="-fx-background-radius: 8;" />
-            <Label text="Origen:" />
-            <TextField fx:id="originField" promptText="Ej: San José" style="-fx-background-radius: 8;" />
-            <Label text="Destino:" />
-            <TextField fx:id="destinationField" promptText="Ej: Toronto" style="-fx-background-radius: 8;" />
+            <Label text="Airplane" />
+         <ComboBox fx:id="airplaneComboBox" prefWidth="150.0" />
+            <Label text="Route" />
+         <ComboBox fx:id="routeComboBox" layoutX="35.0" layoutY="184.0" prefWidth="150.0" />
             <Label text="Capacidad:" />
             <TextField fx:id="capacityField" promptText="Ej: 100" style="-fx-background-radius: 8;" />
             <Label text="Fecha de salida:" />
@@ -59,7 +59,13 @@
     <center>
         <VBox prefHeight="552.0" prefWidth="502.0" spacing="10" style="-fx-padding: 25px;" VBox.vgrow="ALWAYS">
             <Label style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Vuelos Registrados" />
-            <TableView fx:id="flightTable" prefHeight="462.0" prefWidth="524.0" VBox.vgrow="ALWAYS">
+         <Pane prefHeight="46.0" prefWidth="320.0">
+            <children>
+               <TextField fx:id="searchByOrigenTf" layoutY="-3.0" prefHeight="25.0" prefWidth="110.0" promptText="Buscar por origen" />
+               <TextField fx:id="searchByArrivalTf" layoutX="120.0" layoutY="-3.0" prefHeight="25.0" prefWidth="131.0" promptText="Buscar por Destino" />
+            </children>
+         </Pane>
+            <TableView fx:id="flightTable" prefHeight="413.0" prefWidth="401.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="flightTableNumberColumn" text="N°" />
                     <TableColumn fx:id="flightTableOriginColumn" text="Origen" />
@@ -69,6 +75,7 @@
                     <TableColumn fx:id="flightTableOccupancyColumn" prefWidth="75.0" text="Ocupación" />
                     <!-- Nueva columna agregada -->
                     <TableColumn fx:id="flightTableStatusColumn" text="Status" />
+               <TableColumn fx:id="airPlaneIdColumn" text="AirPlaneID" />
                 </columns>
             </TableView>
 
@@ -80,7 +87,7 @@
          <Pane prefHeight="33.0" prefWidth="836.0">
             <children>
                     <Label layoutX="14.0" layoutY="-1.0" prefHeight="30.0" prefWidth="224.0" style="-fx-font-size: 20px; -fx-text-fill: #512da8; -fx-font-weight: bold;" text="Pasajeros Registrados" />
-               <TextField fx:id="searchTextField" layoutX="255.0" prefHeight="25.0" prefWidth="92.0" promptText="search by ID" />
+               <TextField fx:id="searchTextField" layoutX="255.0" prefHeight="25.0" prefWidth="92.0" promptText="Buscar por ID" />
             </children>
          </Pane>
             <TableView fx:id="passengerTable" prefHeight="171.0" prefWidth="836.0">

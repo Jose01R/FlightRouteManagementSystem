@@ -82,7 +82,7 @@ class FlightServiceTest {
 
         // Initialize FlightService with all required dependencies
         // The constructor of FlightService expects AirplaneService, AirNetworkService, AirportService
-        this.flightService = new FlightService(this.flightData, this.dummyAirplaneService, this.dummyAirNetworkService, this.dummyAirportService);
+        this.flightService = new FlightService(this.flightData, this.dummyAirplaneService, this.dummyAirNetworkService, this.dummyAirportService,this.passengerService);
 
         System.out.println("--- Setup: Services initialized ---");
     }
@@ -182,7 +182,7 @@ class FlightServiceTest {
         AirNetworkService newDummyAirNetworkService = new AirNetworkService(newDummyAirportService, new data.RouteData()); // Fresh dependencies
 
         FlightData newFlightData = new FlightData();
-        FlightService newFlightService = new FlightService(newFlightData, newDummyAirplaneService, newDummyAirNetworkService, newDummyAirportService);
+        FlightService newFlightService = new FlightService(newFlightData, newDummyAirplaneService, newDummyAirNetworkService, newDummyAirportService,this.passengerService);
 
         PassengerData newPassengerData = new PassengerData();
         PassengerService newPassengerService = new PassengerService(newPassengerData);
