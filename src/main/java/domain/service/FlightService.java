@@ -443,7 +443,7 @@ public class FlightService {
         }
         System.out.println("Vuelo " + flight.getNumber() + " completado. Pasajeros vaciados y vuelo registrado en historial del avión.");
     }
-    public List<Flight> getAvailableFlights(String from, String to, LocalDate fromDate, LocalDate toDate, boolean oneWay) {
+    public List<Flight> getAvailableFlights(String from, String to, LocalDate fromDate) {
         List<Flight> availableFlights = new ArrayList<>(); // Para devolver los vuelos encontrados
 
         try {

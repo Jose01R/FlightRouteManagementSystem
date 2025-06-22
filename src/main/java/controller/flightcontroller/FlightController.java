@@ -4,17 +4,11 @@ import data.FlightData;
 import data.PassengerData;
 import domain.btree.AVL;
 import domain.btree.TreeException;
-import domain.common.Airplane;
-import domain.common.Flight;
-import domain.common.Passenger;
-import domain.common.Route;
+import domain.common.*;
 import domain.linkedlist.CircularDoublyLinkedList;
 import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
-import domain.service.AirNetworkService;
-import domain.service.AirplaneService;
-import domain.service.FlightService;
-import domain.service.PassengerService;
+import domain.service.*;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -32,10 +26,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 
 public class FlightController {
 
@@ -104,16 +101,14 @@ public class FlightController {
     @FXML private TextField searchTextField;
     @FXML private TextField searchByOrigenTf;
     @FXML private TextField searchByArrivalTf;
-    private AVL avlPassengers;
     private PassengerService passengerService;
-    private PassengerData passengerData;
-    private FlightData flightData;
     private FlightService flightService;
+    private AirportService airportService;
     private AirplaneService airplaneService;
     private AirNetworkService airNetworkService;
     private CircularDoublyLinkedList circularDoublyLinkedList;
     private ScheduledExecutorService scheduler;
-
+    private Map<Integer, String> airportCodeToName = new HashMap<>();
     @FXML
     public void initialize() {
         // Configuración de CellValueFactory para las columnas de la tabla de Pasajeros
@@ -200,8 +195,18 @@ public class FlightController {
 
 
         flightTableNumberColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getNumber()).asObject());
-        flightTableOriginColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getOrigin()));
-        flightTableDestinationColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDestination()));
+        flightTableOriginColumn.setCellValueFactory(cell -> {
+            Flight flight = cell.getValue();
+            int code = flight.getAssignedRoute().getOriginAirportCode();
+            String name = getAirportNameByCode(code);
+            return new SimpleStringProperty(code + " - " + name);
+        });
+        flightTableDestinationColumn.setCellValueFactory(cell -> {
+            Flight flight = cell.getValue();
+            int code = flight.getAssignedRoute().getDestinationAirportCode();
+            String name = getAirportNameByCode(code);
+            return new SimpleStringProperty(code + " - " + name);
+        });
         flightTableDepartureTimeColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getDepartureTime()));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -247,12 +252,16 @@ public class FlightController {
         routeComboBox.setConverter(new StringConverter<Route>() {
             @Override
             public String toString(Route route) {
-                return (route != null) ? route.getOriginAirportCode() + " → " + route.getDestinationAirportCode() : "";
+                if (route == null) return "";
+                int originCode = route.getOriginAirportCode();
+                int destCode = route.getDestinationAirportCode();
+                String originName = getAirportNameByCode(originCode);
+                String destName = getAirportNameByCode(destCode);
+                return originCode + " - " + originName + " → " + destCode + " - " + destName;
             }
-
             @Override
             public Route fromString(String string) {
-                return null;
+                return null; // No se necesita
             }
         });
 
@@ -277,20 +286,33 @@ public class FlightController {
 
     }
 
-    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService) {
+    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
         this.passengerService = passengerService;
         this.flightService = flightService;
         this.airplaneService=airplaneService;
         this.airNetworkService= airNetworkService;
+        this.airportService= airportService;
         passengerTable.setItems(this.passengerService.getObservablePassengers());
         assignedFlightComboBox.setItems(this.flightService.getObservableFlights());
         flightTable.setItems(this.flightService.getObservableFlights());
         routeComboBox.setItems(airNetworkService.getObservableRoutes());
         airplaneComboBox.setItems(airplaneService.getObservableAirplanes());
 
+        airportCodeToName = new HashMap<>();
+        try {
+            for (Object obj : airportService.getAirportsByStatus("Active")) {
+                if (obj instanceof Airport airport) {
+                    airportCodeToName.put(airport.getCode(), airport.getName());
+                }
+            }
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-
+    private String getAirportNameByCode(int code) {
+        return airportCodeToName.getOrDefault(code, "Desconocido");
+    }
 
     @FXML
     void handleRegisterPassenger(ActionEvent event) {
@@ -298,7 +320,6 @@ public class FlightController {
             int passengerId = Integer.parseInt(passengerIdField.getText());
             String passengerName = passengerNameField.getText();
             String nationality = nationalityField.getText();
-
             if (passengerName.isEmpty() || nationality.isEmpty() ) {
                 showAlert(Alert.AlertType.ERROR, "Error de Entrada", "Todos los campos del pasajero son obligatorios.");
                 return;

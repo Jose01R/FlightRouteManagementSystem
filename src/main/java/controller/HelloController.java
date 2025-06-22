@@ -74,7 +74,7 @@ public class HelloController {
             TicketsController ticketsController = loader.getController();
 
             // Pasar los servicios al controlador real
-            ticketsController.setServices(this.passengerService, this.flightService, this.airplaneService, this.airNetworkService);
+            ticketsController.setServices(this.passengerService, this.flightService, this.airplaneService, this.airNetworkService,this.airportService);
 
             // Mostrar la pantalla en el centro del BorderPane
             this.bp.setCenter(root);
@@ -105,7 +105,7 @@ public class HelloController {
             FlightController flightController = loader.getController();
 
             // Pasar los servicios
-            flightController.setServices(this.passengerService, this.flightService,this.airplaneService,this.airNetworkService);
+            flightController.setServices(this.passengerService, this.flightService,this.airplaneService,this.airNetworkService,this.airportService);
 
             // Crear y mostrar la nueva ventana
             Scene scene = new Scene(root, 1410, 900);

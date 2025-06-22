@@ -1,26 +1,22 @@
 package controller.ticketscontroller;
+
+import domain.common.Airport;
 import domain.common.Flight;
 import domain.common.Passenger;
-import domain.service.AirNetworkService;
-import domain.service.AirplaneService;
-import domain.service.FlightService;
-import domain.service.PassengerService;
+import domain.service.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TicketsController {
 
@@ -34,41 +30,85 @@ public class TicketsController {
     private TextField fromTf;
 
     @FXML
-    private RadioButton oneWayRadioButtom;
-
-    @FXML
-    private RadioButton roundTripRadioButtom;
-
-    @FXML
-    private DatePicker toDatePicker;
-
-    @FXML
     private TextField toTf;
 
     private FlightService flightService;
     private PassengerService passengerService;
     private AirNetworkService airNetworkService;
     private AirplaneService airplaneService;
-    private Map<Flight, Label> occupancyLabels = new HashMap<>();
-    @FXML
-    public void initialize(){
+    private AirportService airportService;
 
-    }
-    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService) {
+    private Map<Flight, Label> occupancyLabels = new HashMap<>();
+    private Map<Integer, String> airportCodeToName = new HashMap<>();
+    private Map<String, Integer> airportNameToCode = new HashMap<>();
+
+    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
         this.passengerService = passengerService;
         this.flightService = flightService;
-        this.airplaneService=airplaneService;
-        this.airNetworkService= airNetworkService;
+        this.airplaneService = airplaneService;
+        this.airNetworkService = airNetworkService;
+        this.airportService = airportService;
+
+        cargarMapaAeropuertosActivos();
+
+        // Ahora que los mapas tienen datos, crea la lista de nombres y configura autocomplete
+        List<String> airportNames = new ArrayList<>(airportNameToCode.keySet());
+        setupAutoComplete(fromTf, airportNames);
+        setupAutoComplete(toTf, airportNames);
     }
+
+    @FXML
+    public void initialize() {
+
+    }
+
+    private void cargarMapaAeropuertosActivos() {
+        try {
+            ArrayList<Object> activos = airportService.getAirportsByStatus("Active");
+            airportCodeToName.clear();
+            airportNameToCode.clear();
+            for (Object obj : activos) {
+                if (obj instanceof Airport airport) {
+                    airportCodeToName.put(airport.getCode(), airport.getName());
+                    airportNameToCode.put(airport.getName(), airport.getCode());
+                }
+            }
+        } catch (Exception e) {
+            airportCodeToName.clear();
+            airportNameToCode.clear();
+        }
+    }
+
+    private String getAirportNameByCode(int code) {
+        return airportCodeToName.getOrDefault(code, "Desconocido");
+    }
+
+    private Integer getAirportCodeByName(String name) {
+        return airportNameToCode.get(name);
+    }
+
     @FXML
     void searchFlightOnAction(ActionEvent event) {
-        String from = fromTf.getText().trim();
-        String to = toTf.getText().trim();
+        String fromName = fromTf.getText().trim();
+        String toName = toTf.getText().trim();
         LocalDate fromDate = fromDatePicker.getValue();
-        LocalDate toDate = toDatePicker.getValue();
 
-        // Obtén la lista de vuelos válidos
-        List<Flight> vuelosDisponibles = flightService.getAvailableFlights(from, to, fromDate, toDate, oneWayRadioButtom.isSelected());
+        Integer fromCode = getAirportCodeByName(fromName);
+        Integer toCode = getAirportCodeByName(toName);
+
+        // Si alguno no se encuentra, muestra error
+        if (fromCode == null || toCode == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Seleccione aeropuertos válidos usando la lista de sugerencias.");
+            alert.showAndWait();
+            return;
+        }
+
+        // ¡Ahora sí! Busca solo por códigos
+        List<Flight> vuelosDisponibles = flightService.getAvailableFlights(
+                String.valueOf(fromCode),
+                String.valueOf(toCode),
+                fromDate
+        );
 
         VBox vuelosBox = new VBox(15);
         vuelosBox.setStyle("-fx-padding: 20; -fx-background-color: #f5f5f5;");
@@ -86,18 +126,17 @@ public class TicketsController {
             tarjetaVuelo.setPrefHeight(120);
             tarjetaVuelo.setMaxWidth(820);
 
-            // DATOS REALES DEL VUELO Y RUTA
             String duracion = calcularDuracionVuelo(vuelo);
             String horaSalida = vuelo.getDepartureTime().toLocalTime().toString();
             String horaLlegada = vuelo.getAssignedRoute().getArrivalTime().toString();
-            String origen = String.valueOf(vuelo.getAssignedRoute().getOriginAirportCode());
-            String destino = String.valueOf(vuelo.getAssignedRoute().getDestinationAirportCode());
+            String origen = getAirportNameByCode(vuelo.getAssignedRoute().getOriginAirportCode());
+            String destino = getAirportNameByCode(vuelo.getAssignedRoute().getDestinationAirportCode());
             String airline = vuelo.getAssignedRoute().getAirline();
             String avion = vuelo.getAssignedAirplane().getModel();
             String serial = vuelo.getAssignedAirplane().getSerialNumber();
             String precio = String.valueOf(vuelo.getAssignedRoute().getPrice());
 
-            Label occupancyLabel = new Label("Occupancy: " + vuelo.getOccupancy()+"     Capacity: "+vuelo.getCapacity());
+            Label occupancyLabel = new Label("Occupancy: " + vuelo.getOccupancy() + "     Capacity: " + vuelo.getCapacity());
             occupancyLabels.put(vuelo, occupancyLabel);
 
             VBox info = new VBox(8);
@@ -110,8 +149,8 @@ public class TicketsController {
                     new Label(origen + " → " + destino),
                     new Label("Aerolínea: " + airline + " | Avión: " + avion + " (" + serial + ")")
             );
-            for (javafx.scene.Node node : info.getChildren()) {
-                ((Label)node).setStyle("-fx-font-size: 15; -fx-text-fill: #333333;");
+            for (Node node : info.getChildren()) {
+                ((Label) node).setStyle("-fx-font-size: 15; -fx-text-fill: #333333;");
             }
 
             VBox precioBox = new VBox();
@@ -134,12 +173,14 @@ public class TicketsController {
 
         flightScrollPane.setContent(vuelosBox);
     }
+
     public void actualizarOcupacionVuelo(Flight vuelo) {
         Label label = occupancyLabels.get(vuelo);
         if (label != null) {
             label.setText("Occupancy: " + vuelo.getOccupancy());
         }
     }
+
     private String calcularDuracionVuelo(Flight vuelo) {
         if (vuelo == null || vuelo.getAssignedRoute() == null) return "N/A";
         LocalTime horaSalida = vuelo.getDepartureTime().toLocalTime();
@@ -150,6 +191,39 @@ public class TicketsController {
         long horas = minutos / 60;
         long mins = minutos % 60;
         return String.format("%dh %02dmin", horas, mins);
+    }
+
+    private void setupAutoComplete(TextField textField, List<String> suggestions) {
+        ContextMenu contextMenu = new ContextMenu();
+
+        textField.textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                contextMenu.hide();
+                return;
+            }
+            List<String> filtered = suggestions.stream()
+                    .filter(s -> s.toLowerCase().contains(newText.toLowerCase()))
+                    .toList();
+
+            if (filtered.isEmpty()) {
+                contextMenu.hide();
+            } else {
+                contextMenu.getItems().clear();
+                for (String s : filtered) {
+                    MenuItem item = new MenuItem(s);
+                    item.setOnAction(e -> {
+                        textField.setText(s);
+                        contextMenu.hide();
+                    });
+                    contextMenu.getItems().add(item);
+                }
+                contextMenu.show(textField, Side.BOTTOM, 0, 0);
+            }
+        });
+
+        textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) contextMenu.hide();
+        });
     }
 
     private void mostrarDialogoCompra(Flight vuelo) {
@@ -274,6 +348,12 @@ public class TicketsController {
             actualizarOcupacionVuelo(vuelo); // Si tienes método para refrescar la UI
         });
     }
-
+    @FXML
+    public void clearOnAction(){
+        toTf.clear();
+        fromTf.clear();
+        fromDatePicker.setValue(null);
+    }
 }
+
 
