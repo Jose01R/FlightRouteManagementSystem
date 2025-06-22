@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.time.LocalTime;
 import java.util.Objects;
 
-// --- ADJUSTMENT 1: Add JsonIdentityInfo ---
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "routeId")
 public class Route {
     private String routeId; // Ejm: AA123
@@ -56,10 +55,6 @@ public class Route {
     public int getOriginAirportCode() { return originAirportCode; }
     public int getDestinationAirportCode() { return destinationAirportCode; }
 
-    // --- Optional: Add setters if properties need to be mutable after creation ---
-    // public void setAirline(String airline) { this.airline = airline; }
-    // public void setDurationHours(double durationHours) { this.durationHours = durationHours; }
-    // ... etc.
 
     @Override
     public boolean equals(Object o) {
