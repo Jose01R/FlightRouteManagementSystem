@@ -65,7 +65,6 @@ public class LogInController {
 //                HelloApplication.loadMainApplicationScene(stage);
 //                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
 
-
                 //Se carga la vista dependiendo del rol
                 String fxmlPath = "";
                 switch (authenticatedUser.getRole()) {

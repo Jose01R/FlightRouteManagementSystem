@@ -11,6 +11,7 @@ import domain.common.Airport;
 import domain.linkedlist.DoublyLinkedList;
 import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
+import domain.service.AirportService;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import static domain.service.AirportsData.getElements;
 
 public class TopListPdf {
 //    public static void main(String[] args) throws DocumentException, FileNotFoundException {
@@ -66,7 +66,8 @@ public class TopListPdf {
 
         // Iterar sobre la lista de aeropuertos
         DoublyLinkedList list = new DoublyLinkedList();
-        list = getElements();
+        AirportService airportService = new AirportService();
+        list = airportService.getAllAirports();
 
         for (int i = 1; i <= list.size(); i++) {
             Airport a = (Airport) list.getNode(i).data;

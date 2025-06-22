@@ -60,7 +60,7 @@ public class HelloController {
 
     @FXML
     public void simulaciónVuelosOcupaciónOnAction(ActionEvent actionEvent) {
-        loadPage("fxml.");
+        loadPage("simulation.fxml");
     }
 
     @FXML

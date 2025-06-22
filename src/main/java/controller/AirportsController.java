@@ -4,6 +4,7 @@ import domain.common.Airport;
 import domain.linkedlist.DoublyLinkedList;
 import domain.linkedlist.ListException;
 import domain.linkedlist.SinglyLinkedList;
+import domain.service.AirportService;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -11,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.io.IOException;
 import java.util.Optional;
 
-import static domain.service.AirportsData.*;
+//import static domain.service.AirportsData.*;
 
 public class AirportsController
 {
@@ -98,7 +99,9 @@ public class AirportsController
 
         Airport newAirport = new Airport(id,name,country,status);
         try {
-            createAirport(newAirport);
+            AirportService airportService = new AirportService();
+            airportService.createAirport(newAirport);
+            //createAirport();
             idAirport.clear();
             nameAirport.clear();
             statusAirport.clear();
@@ -106,7 +109,7 @@ public class AirportsController
             util.FXUtility.alertInfo("Airport added", "The Airport " + name +" has been added").showAndWait();
             updateTableView();
 
-        } catch (IOException | ListException e) {
+        } catch (ListException e) {
             util.FXUtility.alertInfo("Error", e.getMessage()).showAndWait();
         } catch (NumberFormatException e) {
             util.FXUtility.alert("ERROR", "El ID debe ser un número entero.").showAndWait();
@@ -141,11 +144,8 @@ public class AirportsController
             return;
         }
 
-        try {
-            this.airportList = getElements(); //cargo la lista
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        AirportService airportService = new AirportService();
+        this.airportList = airportService.getAllAirports(); //cargo la lista
         Airport newAirport = new Airport(idToEdit); //busco si el aeropuerto existe
         boolean contains = false;//
         try {
@@ -179,7 +179,9 @@ public class AirportsController
 
             //esto ya edita el aeropuerto
             try {
-                boolean delete = editAirport(newAirport);
+
+                airportService = new AirportService();
+                boolean delete = airportService.updateAirport(newAirport);
 
                 if (delete){
                     alert.setContentText("The Airport with the ID: "+ idToEdit + " was edit");
@@ -192,8 +194,6 @@ public class AirportsController
                     alert.showAndWait();
                 }
             } catch (ListException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }else{
@@ -234,7 +234,8 @@ public class AirportsController
         }
 
         try {
-            boolean delete = deleteAirport(idToRemove);
+            AirportService airportService = new AirportService();
+            boolean delete = airportService.deleteAirport(idToRemove);
 
             if (delete){
                 alert.setContentText("The Airport with the ID: "+ idToRemove + " was deleted");
@@ -247,8 +248,6 @@ public class AirportsController
                 alert.showAndWait();
             }
         } catch (ListException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -279,7 +278,9 @@ public class AirportsController
         }
 
         try {
-            boolean changeStatus = changeStatusAirport(id);
+            AirportService airportService = new AirportService();
+
+            boolean changeStatus = airportService.changeAirportStatus(id);
 
             if (changeStatus){
                 alert.setContentText("The Airport with the ID: "+ id + " was change status");
@@ -292,8 +293,6 @@ public class AirportsController
                 alert.showAndWait();
             }
         } catch (ListException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -316,8 +315,10 @@ public class AirportsController
             try {
                 tableViewForStatus.getItems().clear();
 
+                AirportService airportService = new AirportService();
+
                 listForStatus = new SinglyLinkedList();
-                listForStatus = listAirports(status);
+                listForStatus = airportService.getAirportsByStatusAsSinglyLinkedList(status);
 
                 codeForStatus.setCellValueFactory(new PropertyValueFactory<>("code"));
                 nameForStatus.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -335,7 +336,7 @@ public class AirportsController
                     alert.showAndWait();
                 }
 
-            } catch (ListException | IOException e) {
+            } catch (ListException e) {
                 alert.setContentText(e.getMessage());
                 alert.setAlertType(Alert.AlertType.ERROR);
                 alert.showAndWait();
@@ -351,6 +352,7 @@ public class AirportsController
 
     @javafx.fxml.FXML
     public void searchOnAction(ActionEvent actionEvent) {
+        this.tableview.getItems().clear(); //clear table
         String pais = searchAirport.getText().trim();
 
         if(searchAirport.getText().isEmpty()){
@@ -359,7 +361,8 @@ public class AirportsController
         }
 
         try {
-            this.airportList = getElements(); //cargo la lista
+            AirportService airportService = new AirportService();
+            this.airportList = airportService.getAllAirports(); //cargo la lista
             this.listForCountry = new SinglyLinkedList();
 
             for (int i = 1; i <= airportList.size(); i++) {
@@ -399,29 +402,23 @@ public class AirportsController
                 alert.setContentText("Airports list is empty");
                 alert.showAndWait();
             }
-
-        } catch (IOException | ListException e) {
+        } catch (ListException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     //crear un metodo de que refresque el tableview
     private void updateTableView() throws ListException {
-        try {
-            this.tableview.getItems().clear(); //clear table
-            this.airportList = getElements(); //cargo la lista
+        this.tableview.getItems().clear(); //clear table
+        AirportService airportService = new AirportService();
+        this.airportList = airportService.getAllAirports(); //cargo la lista
 
-            if(airportList!=null && !airportList.isEmpty()){
-                for(int i=1; i<=airportList.size(); i++) {
-                    this.tableview.getItems().add((Airport) airportList.getNode(i).data);
-                }
+        if(airportList!=null && !airportList.isEmpty()){
+            for(int i=1; i<=airportList.size(); i++) {
+                this.tableview.getItems().add((Airport) airportList.getNode(i).data);
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+
     }
 
     @javafx.fxml.FXML
@@ -432,4 +429,5 @@ public class AirportsController
             throw new RuntimeException(e);
         }
     }
+
 }
