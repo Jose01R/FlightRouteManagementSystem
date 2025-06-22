@@ -244,7 +244,6 @@ public class TicketsController {
         cantidadDialog.getDialogPane().setContent(fields);
         cantidadDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Deshabilitar OK si no hay tiquetes
         Node okButton = cantidadDialog.getDialogPane().lookupButton(ButtonType.OK);
         if (disponibles <= 0) okButton.setDisable(true);
 
@@ -259,57 +258,107 @@ public class TicketsController {
 
         cantidadDialog.showAndWait().ifPresent(cantidad -> {
             for (int i = 1; i <= cantidad; i++) {
-                // Diálogo para datos de cada pasajero
+                // --- Diálogo por cada pasajero ---
                 Dialog<Passenger> pasajeroDialog = new Dialog<>();
                 pasajeroDialog.setTitle("Datos del pasajero " + i);
                 pasajeroDialog.setHeaderText("Ingrese los datos del pasajero #" + i);
 
-                TextField nombreField = new TextField();
-                nombreField.setPromptText("Nombre completo");
                 TextField idField = new TextField();
                 idField.setPromptText("Cédula o ID");
+                Label idError = new Label();
+                idError.setStyle("-fx-text-fill: red; -fx-font-size: 11;");
+
+                TextField nombreField = new TextField();
+                nombreField.setPromptText("Nombre completo");
+                Label nombreError = new Label();
+                nombreError.setStyle("-fx-text-fill: red; -fx-font-size: 11;");
+
                 TextField nacionalityField = new TextField();
                 nacionalityField.setPromptText("Nacionalidad");
+                Label nacionalidadError = new Label();
+                nacionalidadError.setStyle("-fx-text-fill: red; -fx-font-size: 11;");
 
-                VBox pasajeroFields = new VBox(10,
-                        new Label("Cédula/ID:"), idField,
-                        new Label("Nombre:"), nombreField,
-                        new Label("Nacionalidad:"), nacionalityField
+                VBox pasajeroFields = new VBox(6,
+                        new Label("Cédula/ID:"), idField, idError,
+                        new Label("Nombre:"), nombreField, nombreError,
+                        new Label("Nacionalidad:"), nacionalityField, nacionalidadError
                 );
                 pasajeroFields.setPadding(new Insets(10));
                 pasajeroDialog.getDialogPane().setContent(pasajeroFields);
                 pasajeroDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-                // Validación reactiva
                 Node pasajeroOk = pasajeroDialog.getDialogPane().lookupButton(ButtonType.OK);
                 pasajeroOk.setDisable(true);
 
-                Runnable validate = () -> pasajeroOk.setDisable(
-                        nombreField.getText().trim().isEmpty() ||
-                                idField.getText().trim().isEmpty() ||
-                                nacionalityField.getText().trim().isEmpty()
-                );
-                nombreField.textProperty().addListener((o, oldVal, newVal) -> validate.run());
+                Runnable validate = () -> {
+                    boolean valid = true;
+                    idError.setText("");
+                    nombreError.setText("");
+                    nacionalidadError.setText("");
+
+                    // Validar ID (no vacío y numérico)
+                    String idText = idField.getText().trim();
+                    if (idText.isEmpty()) {
+                        idError.setText("La cédula/ID es obligatoria.");
+                        valid = false;
+                    } else {
+                        try {
+                            Integer.parseInt(idText);
+                        } catch (NumberFormatException e) {
+                            idError.setText("Debe ser un número.");
+                            valid = false;
+                        }
+                    }
+
+                    // Validar nombre
+                    String nombreText = nombreField.getText().trim();
+                    if (nombreText.isEmpty()) {
+                        nombreError.setText("El nombre es obligatorio.");
+                        valid = false;
+                    } else if (nombreText.matches(".*\\d.*")) {
+                        nombreError.setText("El nombre no puede contener números.");
+                        valid = false;
+                    }
+
+                    // Validar nacionalidad
+                    String nacionalidadText = nacionalityField.getText().trim();
+                    if (nacionalidadText.isEmpty()) {
+                        nacionalidadError.setText("La nacionalidad es obligatoria.");
+                        valid = false;
+                    } else if (nacionalidadText.matches(".*\\d.*")) {
+                        nacionalidadError.setText("La nacionalidad no puede contener números.");
+                        valid = false;
+                    }
+
+                    pasajeroOk.setDisable(!valid);
+                };
+
                 idField.textProperty().addListener((o, oldVal, newVal) -> validate.run());
+                nombreField.textProperty().addListener((o, oldVal, newVal) -> validate.run());
                 nacionalityField.textProperty().addListener((o, oldVal, newVal) -> validate.run());
 
                 Platform.runLater(nombreField::requestFocus);
 
+                // Interceptar el botón OK para evitar cerrar el diálogo si los datos no son válidos
+                pasajeroDialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(
+                        ActionEvent.ACTION, event -> {
+                            validate.run();
+                            if (pasajeroOk.isDisable()) {
+                                event.consume(); // No cierra el diálogo
+                            }
+                        });
+
                 pasajeroDialog.setResultConverter(dialogButton -> {
-                    if (dialogButton == ButtonType.OK) {
-                        try {
-                            int id = Integer.parseInt(idField.getText().trim());
-                            return new Passenger(id, nombreField.getText().trim(), nacionalityField.getText().trim());
-                        } catch (NumberFormatException ex) {
-                            Alert error = new Alert(Alert.AlertType.ERROR, "La cédula/ID debe ser un número.");
-                            error.showAndWait();
-                            return null;
-                        }
+                    if (dialogButton == ButtonType.OK && !pasajeroOk.isDisable()) {
+                        return new Passenger(
+                                Integer.parseInt(idField.getText().trim()),
+                                nombreField.getText().trim(),
+                                nacionalityField.getText().trim()
+                        );
                     }
                     return null;
                 });
 
-                // Si se cancela en algún diálogo, se aborta todo el proceso
                 Passenger pasajero = pasajeroDialog.showAndWait().orElse(null);
                 if (pasajero == null) {
                     Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION, "Compra cancelada.");
@@ -317,16 +366,12 @@ public class TicketsController {
                     return;
                 }
                 try {
-                    // Buscar si ya existe el pasajero por ID
                     Passenger existente = passengerService.findPassengerById(pasajero.getId());
                     if (existente == null) {
-                        // No existe, registra y guarda
                         passengerService.registerPassenger(pasajero);
                     } else {
-                        // Si existe, tomar los datos del existente por si difieren
                         pasajero = existente;
                     }
-                    // Asignar pasajero al vuelo
                     boolean asignado = flightService.assignPassengerToFlight(vuelo.getNumber(), pasajero);
                     if (!asignado) {
                         Alert err = new Alert(Alert.AlertType.ERROR, "No se pudo asignar el pasajero al vuelo.");
@@ -340,12 +385,11 @@ public class TicketsController {
                 }
             }
 
-            // Confirmación
             Alert ok = new Alert(Alert.AlertType.INFORMATION,
                     "Compra completada. " + cantidad + " pasajero(s) registrados en el vuelo.");
             ok.showAndWait();
 
-            actualizarOcupacionVuelo(vuelo); // Si tienes método para refrescar la UI
+            Platform.runLater(() -> searchFlightOnAction(null));
         });
     }
     @FXML
