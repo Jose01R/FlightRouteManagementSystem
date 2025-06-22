@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -441,5 +442,40 @@ public class FlightService {
             throw new ListException("Failed to save flight data after simulation: " + e.getMessage());
         }
         System.out.println("Vuelo " + flight.getNumber() + " completado. Pasajeros vaciados y vuelo registrado en historial del avión.");
+    }
+    public List<Flight> getAvailableFlights(String from, String to, LocalDate fromDate, LocalDate toDate, boolean oneWay) {
+        List<Flight> availableFlights = new ArrayList<>(); // Para devolver los vuelos encontrados
+
+        try {
+            if (flightList != null && !flightList.isEmpty()) {
+                for (int i = 0; i < flightList.size(); i++) {
+                    Node node = flightList.getNode(i);
+                    if (node != null && node.data instanceof Flight) {
+                        Flight flight = (Flight) node.data;
+                        Route route = flight.getAssignedRoute();
+
+                        // --- Filtros ---
+                        boolean matchesOrigin = (from == null || from.isEmpty()) ||
+                                (route != null && String.valueOf(route.getOriginAirportCode()).equalsIgnoreCase(from));
+                        boolean matchesDestination = (to == null || to.isEmpty()) ||
+                                (route != null && String.valueOf(route.getDestinationAirportCode()).equalsIgnoreCase(to));
+                        boolean matchesDate = fromDate == null || flight.getDepartureTime().toLocalDate().equals(fromDate);
+                        boolean hasSeats = flight.getOccupancy() < flight.getCapacity();
+
+                        if (matchesOrigin && matchesDestination && matchesDate && hasSeats) {
+                            availableFlights.add(flight);
+                        }
+                    }
+                }
+            }
+        } catch (ListException e) {
+            System.err.println("Error al buscar vuelos disponibles: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Si quieres implementar ida/vuelta, puedes hacer otra búsqueda aquí para los vuelos de regreso:
+        // (Cambias origen <-> destino y usas toDate)
+
+        return availableFlights;
     }
 }

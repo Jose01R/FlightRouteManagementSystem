@@ -341,6 +341,7 @@ public class FlightController {
 
             boolean assignedSuccessfully = flightService.assignPassengerToFlight(flightFound.getNumber(), passenger);
 
+
             if (assignedSuccessfully) {
                 showAlert(Alert.AlertType.INFORMATION, "Éxito", "Pasajero registrado y asignado al vuelo " + flightFound.getNumber() + ".");
             } else {
@@ -424,6 +425,7 @@ public class FlightController {
         alert.showAndWait();
     }
 
+    @FXML
     public void handleAssignedFlightToExistingPassenger(ActionEvent event) {
 
         String passengerIdText = passengerIdField.getText();

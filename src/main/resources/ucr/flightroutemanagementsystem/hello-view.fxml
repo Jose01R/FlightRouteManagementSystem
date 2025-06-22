@@ -53,7 +53,7 @@
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="421.0" layoutY="55.0" mnemonicParsing="false" onAction="#pasajerosOnAction" prefHeight="50.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Compra tiquetes" textFill="WHITE">
+            <Button layoutX="421.0" layoutY="55.0" mnemonicParsing="false" onAction="#ticketsOnAction" prefHeight="50.0" prefWidth="265.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Compra tiquetes" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>

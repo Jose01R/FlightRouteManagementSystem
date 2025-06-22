@@ -1,6 +1,7 @@
 package controller;
 
 import controller.flightcontroller.FlightController;
+import controller.ticketscontroller.TicketsController;
 import domain.service.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -64,8 +65,23 @@ public class HelloController {
     }
 
     @FXML
-    public void pasajerosOnAction(ActionEvent actionEvent) {
-        loadPage("/ucr/flightroutemanagementsystem/ticketsinterface/tickets.fxml");
+    public void ticketsOnAction(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/ticketsinterface/tickets.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador real del FXML
+            TicketsController ticketsController = loader.getController();
+
+            // Pasar los servicios al controlador real
+            ticketsController.setServices(this.passengerService, this.flightService, this.airplaneService, this.airNetworkService);
+
+            // Mostrar la pantalla en el centro del BorderPane
+            this.bp.setCenter(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
