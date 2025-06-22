@@ -1,0 +1,30 @@
+{
+  "12" : {
+    "number" : 12,
+    "departureTime" : [ 2025, 6, 21, 10, 30 ],
+    "capacity" : 200,
+    "occupancy" : 1,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN1282",
+      "model" : "Airbus A350",
+      "totalCapacity" : 300,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R402318",
+      "airline" : "AirlineAQ",
+      "durationHours" : 10.0,
+      "distanceKm" : 5250.0,
+      "price" : 482.0,
+      "departureTime" : [ 8, 16 ],
+      "arrivalTime" : [ 18, 16 ],
+      "originAirportCode" : 17,
+      "destinationAirportCode" : 29
+    },
+    "origin" : "17",
+    "destination" : "29",
+    "pasajeros" : [ 305630386 ]
+  }
+}

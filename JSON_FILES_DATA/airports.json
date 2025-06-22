@@ -1,0 +1,37 @@
+[ {
+  "code" : 11,
+  "name" : "Aeropuerto de Dortmund",
+  "country" : "Alemania",
+  "status" : "Active",
+  "boardingQueue" : [ ]
+}, {
+  "code" : 17,
+  "name" : "Aeropuerto de Milán-Malpensa",
+  "country" : "Italia",
+  "status" : "Active",
+  "boardingQueue" : [ ]
+}, {
+  "code" : 24,
+  "name" : "Aeropuerto de Dublín",
+  "country" : "Irlanda",
+  "status" : "Active",
+  "boardingQueue" : [ ]
+}, {
+  "code" : 26,
+  "name" : "Aeropuerto de Bucarest-Henri Coandă",
+  "country" : "Rumanía",
+  "status" : "Active",
+  "boardingQueue" : [ ]
+}, {
+  "code" : 28,
+  "name" : "Aeropuerto de Varsovia-Chopin",
+  "country" : "Polonia",
+  "status" : "Active",
+  "boardingQueue" : [ ]
+}, {
+  "code" : 29,
+  "name" : "Aeropuerto de Copenhague-Kastrup",
+  "country" : "Dinamarca",
+  "status" : "Active",
+  "boardingQueue" : [ ]
+} ]
