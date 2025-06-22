@@ -352,7 +352,7 @@ public class AirportsController
 
     @javafx.fxml.FXML
     public void searchOnAction(ActionEvent actionEvent) {
-        this.tableview.getItems().clear(); //clear table
+        this.tableViewForStatus.getItems().clear(); //clear table
         String pais = searchAirport.getText().trim();
 
         if(searchAirport.getText().isEmpty()){
@@ -425,6 +425,7 @@ public class AirportsController
     public void updateOnAction(ActionEvent actionEvent) {
         try {
             updateTableView();
+            this.tableViewForStatus.getItems().clear();
         } catch (ListException e) {
             throw new RuntimeException(e);
         }

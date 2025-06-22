@@ -48,17 +48,21 @@ public class Simulation
         Set<String> used = new HashSet<>();
 
         try {
-            int o = 1;
             AirportService airports = new AirportService();
             DoublyLinkedList list = airports.getAllAirports();
-            while (listGraph.size() <= 10) {
+            int sentinel = 1;
+            while (listGraph.size() <= 10 && sentinel<=10) {
+                int o = util.Utility.randomMinMax(1,20);
                 //String v = util.Utility.getAirport();
                 Airport airport = (Airport) list.getNode(o).data;
                 String v = airport.getName();
-                if (used.add(v)){
+                if (listGraph.isEmpty()){//valida que el name Airport no se repita
                     listGraph.addVertex(v);
+                    sentinel++;
+                } else if (used.add(v) && !listGraph.containsVertex(airport.getName())){//valida que el name Airport no se repita
+                    listGraph.addVertex(v);
+                    sentinel++;
                 }
-                o++;
             }
 
             Object[] vertices = getGraphVertices();
@@ -67,7 +71,7 @@ public class Simulation
                 for (int i = 0; i < numEdges; i++) {
                     Object source = vertices[util.Utility.random(vertices.length)];
                     Object destination = vertices[util.Utility.random(vertices.length)];
-                    Object weight = util.Utility.randomMinMax(101, 150);
+                    Object weight = util.Utility.randomMinMax(101, 150);//cambiar
 
                     if (source!=destination)//para evitar ciclos
                         listGraph.addEdgeWeight(source, destination, weight);
@@ -139,11 +143,11 @@ public class Simulation
                 vertexPositions.put(vertexData, new double[]{x, y});
 
                 Circle circle = new Circle(x, y, 20, Color.BLUE);
-                circle.setStroke(Color.BLACK);
+                circle.setStroke(Color.LIGHTBLUE);
                 circle.setStrokeWidth(2);
                 Text text = new Text(String.valueOf(vertexData));
                 text.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-                text.setFill(Color.WHITE);
+                text.setFill(Color.BLACK);
                 text.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
                 text.setLayoutX(x - text.getBoundsInLocal().getWidth() / 2);

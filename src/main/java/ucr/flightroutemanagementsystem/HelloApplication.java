@@ -1,11 +1,9 @@
 package ucr.flightroutemanagementsystem;
 
-import controller.HelloController;
+import controller.login.AdminHelloController;
 // import controller.flightcontroller.FlightController; // Not directly used here, can remove if not needed elsewhere
 
-import domain.graph.GraphException; // New import for AirNetworkService constructor
-import domain.linkedlist.ListException; // New import for service constructors
-import domain.linkedqueue.QueueException; // New import for AirportService
+import controller.login.UserHelloController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,8 +24,6 @@ import data.RouteData;
 import domain.service.PassengerService;
 import domain.service.FlightService;
 import domain.service.AirplaneService;
-import domain.service.AirportService;
-import domain.service.AirNetworkService;
 
 public class HelloApplication extends Application {
 
@@ -83,11 +79,31 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-    public static void loadMainApplicationScene(Stage stage) throws IOException {
-        FXMLLoader helloFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+    public static void loadMainApplicationSceneAdmin(Stage stage) throws IOException {
+        FXMLLoader helloFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/loginuser/admin-hello-view.fxml"));
         Scene helloScene = new Scene(helloFxmlLoader.load());
 
-        HelloController controller = helloFxmlLoader.getController();
+        AdminHelloController controller = helloFxmlLoader.getController();
+        // Pass ALL initialized services to the HelloController
+        controller.setServices(passengerService, flightService, airplaneService, airNetworkService, airportService);
+
+        String css = HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/stylesheet.css").toExternalForm();
+        helloScene.getStylesheets().add(css);
+
+        String alertCss = HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/alert_styles.css").toExternalForm();
+        helloScene.getStylesheets().add(alertCss);
+
+        stage.setTitle("Airport Operations System");
+        stage.setScene(helloScene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    public static void loadMainApplicationSceneUser(Stage stage) throws IOException {
+        FXMLLoader helloFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/loginuser/user-hello-view.fxml"));
+        Scene helloScene = new Scene(helloFxmlLoader.load());
+
+        UserHelloController controller = helloFxmlLoader.getController();
         // Pass ALL initialized services to the HelloController
         controller.setServices(passengerService, flightService, airplaneService, airNetworkService, airportService);
 

@@ -235,8 +235,16 @@ public class Utility {
                         return countryComparison;
                     }
 
+                    // Primero comparar por nombre del aeropuerto (alfabéticamente)
+                    int nameAirportComparison = a1.getName().compareToIgnoreCase(a2.getName());
+                    if (nameAirportComparison != 0) {
+                        return nameAirportComparison;
+                    }
+
                     // Si los países son iguales, comparar por código numérico
                     return Integer.compare(a1.getCode(), a2.getCode());
+
+
 
             }
 

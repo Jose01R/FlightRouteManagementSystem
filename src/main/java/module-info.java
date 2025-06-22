@@ -26,5 +26,7 @@ module ucr.flightroutemanagementsystem {
     opens controller.ticketscontroller;
     opens domain.linkedqueue to com.google.gson;
     opens data to com.google.gson;
+    exports controller.login;
+    opens controller.login to javafx.fxml;
 
 }

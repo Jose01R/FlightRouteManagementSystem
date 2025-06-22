@@ -1,4 +1,4 @@
-package controller;
+package controller.login;
 
 import controller.flightcontroller.FlightController;
 import controller.ticketscontroller.TicketsController;
@@ -6,6 +6,7 @@ import domain.service.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -16,7 +17,7 @@ import ucr.flightroutemanagementsystem.HelloApplication;
 
 import java.io.IOException;
 
-public class HelloController {
+public class UserHelloController {
 
     @FXML
     private BorderPane bp;
@@ -48,8 +49,16 @@ public class HelloController {
     }
 
     @FXML
-    void Exit(ActionEvent event) {
-        System.exit(0);
+    void Exit(ActionEvent event) throws IOException {
+        //System.exit(0);
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader loginFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/logininterface/login.fxml"));
+        Scene loginScene = new Scene(loginFxmlLoader.load());
+
+        stage.setTitle("Airport Operations System - Login");
+        stage.setScene(loginScene);
+        stage.setResizable(false);
+        stage.show();
     }
 
     @FXML
@@ -84,10 +93,10 @@ public class HelloController {
         }
     }
 
-    @FXML
-    public void aeropuertosOnAction(ActionEvent actionEvent) {
-        loadPage("airports.fxml");
-    }
+//    @FXML
+//    public void aeropuertosOnAction(ActionEvent actionEvent) {
+//        loadPage("airports.fxml");
+//    }
 
 
     @FXML

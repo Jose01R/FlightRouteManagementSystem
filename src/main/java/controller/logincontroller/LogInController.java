@@ -63,7 +63,7 @@ public class LogInController {
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 //                HelloApplication.loadMainApplicationScene(stage);
-//                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/hello-view.fxml"));
+//                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/admin-hello-view.fxml"));
 
                 //Se carga la vista dependiendo del rol
                 String fxmlPath = "";
@@ -75,7 +75,7 @@ public class LogInController {
                             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
                             try {
-                                HelloApplication.loadMainApplicationScene(stage);
+                                HelloApplication.loadMainApplicationSceneAdmin(stage);
                             } catch (IOException e) {
                                 util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
                                 System.err.println("IOException durante la carga de la escena: " + e.getMessage());
@@ -88,21 +88,21 @@ public class LogInController {
                         break;
 
                     case USER:
-//                        if (authenticatedUser != null) {
-//                            util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
-//
-//                            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//
-//                            try {
-//                                HelloApplication.loadMainApplicationScene(stage);
-//                            } catch (IOException e) {
-//                                util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
-//                                System.err.println("IOException durante la carga de la escena: " + e.getMessage());
-//                            }
-//
-//                        } else {
-//                            util.FXUtility.alert("Inicio de Sesión Fallido", "Correo electrónico o contraseña inválidos.");
-//                        }
+                        if (authenticatedUser != null) {
+                            util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
+
+                            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+                            try {
+                                HelloApplication.loadMainApplicationSceneUser(stage);
+                            } catch (IOException e) {
+                                util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
+                                System.err.println("IOException durante la carga de la escena: " + e.getMessage());
+                            }
+
+                        } else {
+                            util.FXUtility.alert("Inicio de Sesión Fallido", "Correo electrónico o contraseña inválidos.");
+                        }
 
                         break;
 

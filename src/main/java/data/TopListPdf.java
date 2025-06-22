@@ -1,4 +1,4 @@
-/*package data;
+package data;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -46,7 +46,7 @@ public class TopListPdf {
 
     public static void main(String[] args) throws DocumentException, IOException, IOException, ListException {
         // Crear documento y archivo PDF en carpeta data
-        String fileName = "C:\\Repositorios\\Proyecto-Algoritmos y Estruc de Datos\\FlightRouteManagementSystem\\src\\main\\java\\data\\Prueba Top Aeropuertos.pdf";
+        String fileName = "C:\\Repositorios\\Proyecto-Algoritmos y Estruc de Datos\\FlightRouteManagementSystem\\Estadistica.pdf";
 
         Document doc = new Document();
         PdfWriter.getInstance(doc, new FileOutputStream(fileName));
@@ -54,7 +54,7 @@ public class TopListPdf {
 
         // Título
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
-        Paragraph title = new Paragraph("Lista de Aeropuertos", titleFont);
+        Paragraph title = new Paragraph("Estadisticas", titleFont);
         doc.add(title);
 
         // Crear tabla con 4 columnas
@@ -82,4 +82,4 @@ public class TopListPdf {
 
         System.out.println("PDF generado: " + new java.io.File(fileName).getAbsolutePath());
     }
-}*/
+}

@@ -11,7 +11,7 @@
    <center>
       <Pane prefHeight="527.0" prefWidth="1423.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane prefHeight="56.0" prefWidth="1425.0" style="-fx-background-color: #0aabba;">
+            <Pane prefHeight="56.0" prefWidth="1423.0" style="-fx-background-color: #0aabba;">
                <children>
                   <Text fill="#f7f7f7" layoutX="583.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✈Simulation✈" textAlignment="CENTER" wrappingWidth="253.14923095703125">
                      <font>
@@ -20,12 +20,17 @@
                   </Text>
                </children>
             </Pane>
-            <ImageView fitHeight="589.0" fitWidth="1430.0" layoutX="-1.0" layoutY="55.0">
+            <ImageView fitHeight="589.0" fitWidth="1380.0" layoutX="-1.0" layoutY="55.0">
                <image>
                   <Image url="@../../../../../../../../Users/luiss/Downloads/mapaDelMundo.jpg" />
                </image>
             </ImageView>
-            <Pane fx:id="graph" layoutY="53.0" prefHeight="585.0" prefWidth="1427.0" />
+            <ImageView fitHeight="589.0" fitWidth="1423.0" layoutX="-1.0" layoutY="55.0">
+               <image>
+                  <Image url="@../../images/world-map-with-countries-names-free-vector.jpg" />
+               </image>
+            </ImageView>
+            <Pane fx:id="graph" layoutX="1.0" layoutY="44.0" prefHeight="599.0" prefWidth="1423.0" />
          </children>
       </Pane>
    </center>
