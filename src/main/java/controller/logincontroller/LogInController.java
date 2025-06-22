@@ -1,5 +1,6 @@
 package controller.logincontroller;
 
+import controller.registrationcontroller.RegistrationController;
 import data.UserData;
 import domain.common.User;
 import domain.linkedlist.ListException;
@@ -18,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import ucr.flightroutemanagementsystem.HelloApplication;
+import util.FXUtility;
 
 import java.io.IOException;
 import java.util.Optional; //Para manejar el resultado de TextInputDialog
@@ -52,6 +54,12 @@ public class LogInController {
 
         if (email.isEmpty() || password.isEmpty()) {
             util.FXUtility.alert("Error de Inicio de Sesión", "Por favor, ingresa tanto el correo electrónico como la contraseña.");
+            return;
+        }
+
+        //validamos formato del email
+        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+            FXUtility.alert("Error de Email", "Por favor, ingrese un formato de correo electrónico válido.");
             return;
         }
 
@@ -176,6 +184,35 @@ public class LogInController {
             }
         } else {
             util.FXUtility.alertWarning("Cancelado", "Operación de recuperación de contraseña cancelada.");
+        }
+    }
+
+    @FXML
+    private void registerOnAction(ActionEvent event) {
+        try {
+            String fxmlPath = "/ucr/flightroutemanagementsystem/register.fxml";
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load(); // Load the FXML
+
+            //Obtener la instancia del controlador *después* de cargar el FXML
+            RegistrationController registrationController = loader.getController();
+
+            //Pasar las instancias de service a RegistrationController para acceder desde aca
+            //Accedemos a los campos estáticos de HelloApplication
+            if (registrationController != null) {
+                registrationController.setServices(HelloApplication.getUserData(), HelloApplication.getPassengerService());
+            }
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Registrar nuevo usuario");
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            FXUtility.alert("Error de Navegación", "No se pudo cargar la pantalla de registro: " + e.getMessage());
+            System.err.println("IOException durante la carga de la escena de registro: " + e.getMessage());
         }
     }
 
