@@ -10,10 +10,9 @@ import domain.linkedstack.StackException; // Keep if push/pop can throw this
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 // @JsonIdentityInfo is important if Airplane objects are referenced multiple times
-// in your JSON data (e.g., by multiple Flights) to avoid duplication and loops.
+// in your JSON data to avoid duplication and loops.
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "serialNumber")
 public class Airplane {
     private String serialNumber;
@@ -21,22 +20,19 @@ public class Airplane {
     private int totalCapacity;
     private String currentStatus;
 
-    // --- ADJUSTMENT: Make LinkedStack generic for better type safety ---
     @JsonIgnore
-    private LinkedStack flightHistory; // Stack for completed flights
+    private LinkedStack flightHistory; //Pila de vuelos completados
 
     public Airplane(String serialNumber, String model, int totalCapacity) {
         this.serialNumber = serialNumber;
         this.model = model;
         this.totalCapacity = totalCapacity;
         this.currentStatus = "In Service";
-        // --- ADJUSTMENT: Initialize generic LinkedStack ---
         this.flightHistory = new LinkedStack();
     }
 
     public Airplane() {
         this.currentStatus = "In Service";
-        // --- ADJUSTMENT: Initialize generic LinkedStack ---
         this.flightHistory = new LinkedStack();
     }
 
@@ -46,45 +42,36 @@ public class Airplane {
 
     // --- Getters and Setters ---
 
-    // --- ADJUSTMENT: Make getter generic ---
     public LinkedStack getFlightHistory() {
         return flightHistory;
     }
 
-    // --- ADJUSTMENT: Make setter generic ---
     public void setFlightHistory(LinkedStack flightHistory) {
         this.flightHistory = flightHistory;
     }
 
-    // --- Updated JSON methods for flightHistory ---
-    // @JsonGetter will be used by Jackson to serialize the flightHistory stack
-    // into a List for JSON.
+
+    //Jackson usará @JsonGetter para serializar la pila del historial de vuelo en una lista para JSON
     @JsonGetter("flightHistory")
     public ArrayList<Object> getFlightHistoryAsList() {
         if (flightHistory != null) {
-            // --- CRITICAL ASSUMPTION: LinkedStack.toList() exists and works ---
-            // This method in your LinkedStack class should iterate through the stack
-            // and return an ArrayList of its elements (type T).
-            return flightHistory.toList(); // Assuming toList() returns ArrayList<Flight> if generic
+            return flightHistory.toList();
         }
-        return new ArrayList<>(); // Return empty list if stack is null
+        return new ArrayList<>(); //Devuelve una lista vacía si la pila es nula
     }
 
-    // @JsonSetter will be used by Jackson to deserialize a List from JSON
-    // back into a LinkedStack.
+    //Jackson usará @JsonSetter para deserializar una lista desde JSON y volver a un LinkedStack
     @JsonSetter("flightHistory")
     public void setFlightHistoryFromList(List<Flight> flightList) {
         this.flightHistory = new LinkedStack();
         if (flightList != null) {
+            //Iterar a través de la lista y hacer push de elementos a la pila
             for (Flight f : flightList) {
-                if (f != null) {
-                    try {
-                        this.flightHistory.push(f);
-                    } catch (StackException e) {
-                        System.out.println("Error pushing flight to history: " + e.getMessage());
-                    }
-                } else {
-                    System.out.println("⚠️ Warning: Skipped null flight during deserialization");
+                try {
+                    this.flightHistory.push(f);
+                } catch (StackException e) {
+                    //volver a generar Exception (por ejemplo, si se excedió la capacidad de la pila)
+                    throw new RuntimeException("Error pushing flight to history during deserialization: " + e.getMessage(), e);
                 }
             }
         }
@@ -123,18 +110,6 @@ public class Airplane {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Airplane airplane)) return false;
-        return Objects.equals(serialNumber, airplane.serialNumber);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(serialNumber);
-    }
-
-    @Override
     public String toString() {
         String historySize = "0";
         if (flightHistory != null) {
@@ -145,7 +120,7 @@ public class Airplane {
                 ", model='" + model + '\'' +
                 ", totalCapacity=" + totalCapacity +
                 ", currentStatus='" + currentStatus + '\'' +
-                ", flightHistorySize=" + historySize + // Conciser way to show history
+                ", flightHistorySize=" + historySize +
                 '}';
     }
 }
