@@ -17,9 +17,7 @@ public class Airport {
     private String country;
     private String status; // "active = 1" o "inactive = 0"
 
-    // --- Original Fields (marked with @JsonIgnore for custom handling) ---
-    // @JsonIgnore tells Jackson to ignore this field during default serialization/deserialization.
-    // We'll provide custom getter/setter for its JSON representation.
+    // @JsonIgnore tells Jackson to ignore this field during default serialization/deserialization
     @JsonIgnore
     private SinglyLinkedList departuresBoard; // For departure information
 
