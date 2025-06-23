@@ -1,8 +1,14 @@
 package controller.login;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import controller.RoutesBetweenAirports;
 import controller.flightcontroller.FlightController;
 import controller.ticketscontroller.TicketsController;
+import data.RouteData;
+import domain.common.Airport;
+import domain.linkedlist.ListException;
 import domain.service.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,7 +22,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ucr.flightroutemanagementsystem.HelloApplication;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class AdminHelloController {
 
@@ -80,6 +88,116 @@ public class AdminHelloController {
         this.bp.setCenter(ap);
     }
 
+    @FXML
+    public void reportesOnAction(ActionEvent actionEvent) throws DocumentException, IOException, IOException, ListException {
+//        List<Passenger> passengerList = this.passengerService.getAllPassengers();
+//        CircularDoublyLinkedList circularDoublyLinkedList = this.flightService.getFlightList();
+//        List<Route> routeList = this.airNetworkService.getAllRoutes();
+//        DoublyLinkedList doublyLinkedList = this.airportService.getAllAirports();
+
+        this.airNetworkService = new AirNetworkService(airportService, new RouteData());
+
+        List<Airport> topAirports = airNetworkService.getTop5AirportsByRouteCount(); // Obtenemos los 5 aeropuertos con más rutas
+
+        // Crear documento y archivo PDF en carpeta data
+        String fileName = "C:\\Repositorios\\Proyecto-Algoritmos y Estruc de Datos\\FlightRouteManagementSystem\\pdf\\Estadistica.pdf";
+
+        Document doc = new Document();
+        PdfWriter.getInstance(doc, new FileOutputStream(fileName));
+        doc.open();
+
+        // Título
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+        Paragraph title = new Paragraph("Top 5 aeropuertos con más vuelos salientes", titleFont);
+        doc.add(title);
+
+        // Crear tabla con 4 columnas
+        PdfPTable table1 = new PdfPTable(4);
+        table1.addCell("Code");
+        table1.addCell("Name");
+        table1.addCell("Country");
+        table1.addCell("Status");
+
+        // Iterar sobre la lista de aeropuertos
+        System.out.println("Top 5 aeropuertos con más vuelos salientes");
+        for (int i = 0; i < topAirports.size(); i++) {
+            int id = topAirports.get(i).getCode();
+            String name = topAirports.get(i).getName();
+            String country = topAirports.get(i).getCountry();
+            String status = topAirports.get(i).getStatus();
+
+            table1.addCell(String.valueOf(id));
+            table1.addCell(name);
+            table1.addCell(country);
+            table1.addCell(status);
+        }
+        doc.add(table1);
+
+
+        title = new Paragraph("Rutas más usadas", titleFont);
+        doc.add(title);
+
+        // Crear tabla con 4 columnas
+        PdfPTable table2 = new PdfPTable(7);
+        table2.addCell("Route Id");
+        table2.addCell("Airline");
+        table2.addCell("Duration Hours");
+        table2.addCell("Distance Km");
+        table2.addCell("Price");
+        table2.addCell("Departure Time");
+        table2.addCell("Arrive Time");
+
+
+        // Iterar sobre la lista de rutas más usadas
+        //System.out.println("La cantidad de rutas es de : "+routeList.size());
+//        for (int i = 1; i < routeList.size(); i++) {
+//            String id = routeList.get(i).getRouteId();
+//            String airline = routeList.get(i).getAirline();
+//            double durationHours = routeList.get(i).getDurationHours();
+//            double distanceKm =  routeList.get(i).getDistanceKm();
+//            double price =  routeList.get(i).getPrice();
+//            LocalTime departureTime = routeList.get(i).getDepartureTime();
+//            LocalTime arriveTime = routeList.get(i).getArrivalTime();
+//
+//
+//            table2.addCell(id);
+//            table2.addCell(airline);
+//            table2.addCell(String.valueOf(durationHours));
+//            table2.addCell(String.valueOf(distanceKm));
+//            table2.addCell(String.valueOf(price));
+//            table2.addCell(String.valueOf(departureTime));
+//            table2.addCell(String.valueOf(arriveTime));
+//        }
+//
+//        doc.add(table2);
+
+        title = new Paragraph("Pasajeros con más vuelos realizados", titleFont);
+        doc.add(title);
+
+        // Crear tabla con 4 columnas
+        PdfPTable table3 = new PdfPTable(3);
+        table3.addCell("ID");
+        table3.addCell("Name");
+        table3.addCell("Nationality");
+        //iterar en la lista y meter la tabla en el doc
+
+
+
+
+        title = new Paragraph("Porcentaje de ocupación promedio por vuelo", titleFont);
+        doc.add(title);
+
+        // Crear tabla con 4 columnas
+        PdfPTable table4 = new PdfPTable(2);
+        table4.addCell("ID");
+        table4.addCell("Name");
+        table4.addCell("Nationality");
+        //iterar en la lista y meter la tabla en el doc
+
+        doc.close();
+
+        System.out.println("PDF generado: " + new java.io.File(fileName).getAbsolutePath());
+    }
 
     @FXML
     public void simulaciónVuelosOcupaciónOnAction(ActionEvent actionEvent) {
@@ -109,12 +227,6 @@ public class AdminHelloController {
     @FXML
     public void aeropuertosOnAction(ActionEvent actionEvent) {
         loadPage("airports.fxml");
-    }
-
-
-    @FXML
-    public void reportesOnAction(ActionEvent actionEvent) {
-        loadPage("fxml.");
     }
 
     @FXML

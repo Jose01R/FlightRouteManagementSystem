@@ -10,18 +10,13 @@ import com.itextpdf.text.pdf.PdfWriter;
 import domain.common.Airport;
 import domain.linkedlist.DoublyLinkedList;
 import domain.linkedlist.ListException;
-import domain.linkedlist.SinglyLinkedList;
 import domain.service.AirportService;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 
-public class TopListPdf {
+public class PruebaPdf {
 //    public static void main(String[] args) throws DocumentException, FileNotFoundException {
 //        Document doc = new Document();
 //        String fileName = "C:\\Repositorios\\Proyecto-Algoritmos y Estruc de Datos\\FlightRouteManagementSystem\\src\\main\\java\\data\\Prueba Top Aeropuertos.pdf";

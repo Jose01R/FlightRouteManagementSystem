@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.Button?> <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="643.0" prefWidth="1423.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Simulation">
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="643.0" prefWidth="1423.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Simulation">
    <center>
       <Pane prefHeight="527.0" prefWidth="1423.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,14 +21,9 @@
                   </Text>
                </children>
             </Pane>
-            <ImageView fitHeight="589.0" fitWidth="1380.0" layoutX="-1.0" layoutY="55.0">
+            <ImageView fx:id="image" fitHeight="589.0" fitWidth="1425.0" layoutX="-1.0" layoutY="55.0">
                <image>
-                  <Image url="@../../../../../../../../images/world-map-with-countries-names-free-vector.jpg" />
-               </image>
-            </ImageView>
-            <ImageView fitHeight="589.0" fitWidth="1423.0" layoutX="-1.0" layoutY="55.0">
-               <image>
-                  <Image url="@../../images/world-map-with-countries-names-free-vector.jpg" />
+                  <Image url="@../../images/earth-11595.jpg" />
                </image>
             </ImageView>
             <Pane fx:id="graph" layoutX="1.0" layoutY="44.0" prefHeight="599.0" prefWidth="1423.0" />

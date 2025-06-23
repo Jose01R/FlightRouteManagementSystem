@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -34,9 +35,9 @@ import java.util.stream.Collectors;
 
 public class Simulation {
     @FXML
-    private BorderPane bp;
-    @FXML
     private Pane graph;
+    @FXML
+    private ImageView image;
     @FXML
     private Button btnShowTopAirportRoutes;
 
@@ -55,12 +56,13 @@ public class Simulation {
     private AirplaneService airplaneService;
     private PassengerService passengerService;
 
-
     @FXML
     public void initialize() {
         setupMouseZoom(); // Configuramos el zoom con la rueda del ratón
         vertexCircles = new HashMap<>(); // Inicializamos el mapa de círculos para vértices
         graph.getTransforms().add(scaleTransform); // Añadimos la transformación de escala al panel del grafo
+        image.getTransforms().add(scaleTransform); // Añadimos la transformación de escala al imagen del grafo
+
         listGraph = new DirectedSinglyLinkedListGraph(); // Creamos una nueva instancia de nuestro grafo
 
         try {
@@ -205,9 +207,9 @@ public class Simulation {
             // Primero, intentamos asignar posiciones fijas para aeropuertos específicos para un layout más organizado
             if (airport != null) {
                 switch (airport.getName()) {
-                    case "Aeropuerto de Dortmund": x = 500; y = 235; positionFound = true; break;
+                    case "Aeropuerto de Dortmund": x = 600; y = 170; positionFound = true; break;
                     case "Aeropuerto de Aalborg": x = 880; y = 185; positionFound = true; break;
-                    case "Aeropuerto de La Coruña": x = 500; y = 100; positionFound = true; break;
+                    case "Aeropuerto de La Coruña": x = 600; y = 210; positionFound = true; break;
                     case "Aeropuerto de Marsella-Provenza": x = 820; y = 295; positionFound = true; break;
                     case "Aeropuerto de Oporto": x = 755; y = 325; positionFound = true; break;
                     case "Aeropuerto de Zúrich": x = 870; y = 280; positionFound = true; break;
@@ -258,15 +260,15 @@ public class Simulation {
             vertexPositions.put(vertexCode, new double[]{x, y}); // Guardamos la posición del vértice
 
             // Dibujamos el círculo que representa el aeropuerto
-            Circle circle = new Circle(x, y, 15, Color.LIGHTBLUE); // Aumentamos ligeramente el radio para mayor visibilidad
-            circle.setStroke(Color.BLUE);
+            Circle circle = new Circle(x, y, 15, Color.WHITE);
+            circle.setStroke(Color.LIGHTBLUE);
             circle.setStrokeWidth(2);
             circle.setId("airport_circle_" + airportCode);
 
             // Creamos el texto con el nombre del aeropuerto
             Text text = new Text(airport != null ? airport.getName() : String.valueOf(airportCode));
             text.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-            text.setFill(Color.BLACK);
+            text.setFill(Color.WHITE);
             text.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;"); // Aumentamos ligeramente el tamaño de la fuente
 
             // Ajustamos la posición del texto para que quede centrado debajo del círculo
@@ -401,7 +403,7 @@ public class Simulation {
         double adjustedEndY = destPos[1] - destNodeRadius * Math.sin(angle);
 
         Line line = new Line(adjustedStartX, adjustedStartY, adjustedEndX, adjustedEndY);
-        line.setStroke(Color.BLACK);
+        line.setStroke(Color.LIGHTBLUE);
         line.setStrokeWidth(1.5);
 
         String edgeKey = sourceData.toString() + "->" + destData.toString();
@@ -418,7 +420,7 @@ public class Simulation {
         });
 
         line.setOnMouseExited(e -> {
-            line.setStroke(Color.BLACK);
+            line.setStroke(Color.LIGHTBLUE);
             line.setStrokeWidth(1.5);
         });
 
@@ -456,7 +458,7 @@ public class Simulation {
 
         Arc arc = new Arc(arcCenterX, arcCenterY, loopRadius, loopRadius, startAngle, 270);
         arc.setType(ArcType.OPEN);
-        arc.setStroke(Color.BLACK);
+        arc.setStroke(Color.LIGHTBLUE);
         arc.setStrokeWidth(1.5);
         arc.setFill(Color.TRANSPARENT);
 
@@ -467,7 +469,7 @@ public class Simulation {
         });
 
         arc.setOnMouseExited(e -> {
-            arc.setStroke(Color.BLACK);
+            arc.setStroke(Color.LIGHTBLUE);
             arc.setStrokeWidth(1.5);
         });
 
@@ -547,6 +549,17 @@ public class Simulation {
     // Configuramos la funcionalidad de zoom con la rueda del ratón
     private void setupMouseZoom() {
         graph.setOnScroll((ScrollEvent event) -> {
+            double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1; // Calculamos el factor de zoom
+            double newScale = scaleTransform.getX() * zoomFactor; // Calculamos la nueva escala
+            // Limitamos el zoom para que no sea excesivo
+            if (newScale < 0.2 || newScale > 5) return;
+            scaleTransform.setX(newScale); // Aplicamos la nueva escala a X
+            scaleTransform.setY(newScale); // Aplicamos la nueva escala a Y
+            scaleTransform.setPivotX(event.getX()); // Establecemos el punto de pivote para el zoom (donde está el ratón)
+            scaleTransform.setPivotY(event.getY());
+            event.consume(); // Consumimos el evento para evitar que se propague
+        });
+        image.setOnScroll((ScrollEvent event) -> {
             double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1; // Calculamos el factor de zoom
             double newScale = scaleTransform.getX() * zoomFactor; // Calculamos la nueva escala
             // Limitamos el zoom para que no sea excesivo
