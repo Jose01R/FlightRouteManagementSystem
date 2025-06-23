@@ -19,11 +19,8 @@ import util.Utility;
 
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AirNetworkService {
     private DirectedSinglyLinkedListGraph airportGraph; //Grafo representa red de aeropuertos y rutas
@@ -43,7 +40,7 @@ public class AirNetworkService {
         this.observableRoutes = FXCollections.observableArrayList();
         try {
             //Genera rutas aleatorias iniciales
-            generateInitialRandomRoutes(10);
+            generateInitialRandomRoutes(20);
         } catch (ListException | GraphException e) {
             throw new RuntimeException(e);
         }
@@ -489,6 +486,54 @@ public class AirNetworkService {
         } catch (QueueException e) {
             throw new GraphException("Error processing shortest path with Priority Queue: " + e.getMessage());
         }
+    }
+
+    /**
+     * Finds and returns the top 5 airports with the highest number of associated routes
+     * (either as origin or destination).
+     * @return A list of the top 5 (or fewer if not enough) airports, sorted by route count descending.
+     * Returns an empty list if no airports or routes exist.
+     */
+    public List<Airport> getTop5AirportsByRouteCount() throws ListException {
+        Map<Airport, Integer> airportRouteCounts = new HashMap<>();
+
+        // Initialize counts for all airports to 0
+        List<Object> allAirportsObjects = airportService.getAllAirportsAsList();
+        for (Object obj : allAirportsObjects) {
+            if (obj instanceof Airport) {
+                airportRouteCounts.put((Airport) obj, 0);
+            }
+        }
+
+        // Iterate through all routes and increment counts for origin and destination airports
+        for (Route route : routesMap.values()) {
+            Airport origin = airportService.getAirportByCode(route.getOriginAirportCode());
+            Airport destination = airportService.getAirportByCode(route.getDestinationAirportCode());
+
+            if (origin != null) {
+                airportRouteCounts.put(origin, airportRouteCounts.getOrDefault(origin, 0) + 1);
+            }
+            if (destination != null && !destination.equals(origin)) { // Avoid double-counting if origin == destination (though routes should prevent this)
+                airportRouteCounts.put(destination, airportRouteCounts.getOrDefault(destination, 0) + 1);
+            }
+        }
+
+        // Sort the map entries by count in descending order and limit to top 5
+        List<Map.Entry<Airport, Integer>> sortedEntries = airportRouteCounts.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+
+        List<Airport> topAirports = new ArrayList<>();
+        for (int i = 0; i < Math.min(5, sortedEntries.size()); i++) {
+            topAirports.add(sortedEntries.get(i).getKey());
+        }
+
+        System.out.println("Top 5 Airports by Route Count:");
+        for (Airport airport : topAirports) {
+            System.out.println("- " + airport.getName() + " (" + airport.getCode() + "): " + airportRouteCounts.get(airport) + " routes.");
+        }
+
+        return topAirports;
     }
 
     public void removeAirportFromGraph(int airportCode) throws GraphException, ListException {
