@@ -1,9 +1,37 @@
 {
+  "11" : {
+    "number" : 11,
+    "departureTime" : [ 2025, 6, 24, 10, 30 ],
+    "capacity" : 130,
+    "occupancy" : 1,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN8641",
+      "model" : "Boeing 737",
+      "totalCapacity" : 250,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R669831",
+      "airline" : "AirlineAF",
+      "durationHours" : 2.0,
+      "distanceKm" : 3882.0,
+      "price" : 52.0,
+      "departureTime" : [ 2, 46 ],
+      "arrivalTime" : [ 4, 46 ],
+      "originAirportCode" : 12,
+      "destinationAirportCode" : 14
+    },
+    "origin" : "12",
+    "destination" : "14",
+    "pasajeros" : [ 306970825 ]
+  },
   "12" : {
     "number" : 12,
     "departureTime" : [ 2025, 6, 21, 10, 30 ],
     "capacity" : 200,
-    "occupancy" : 1,
+    "occupancy" : 2,
     "completed" : false,
     "assignedAirplane" : {
       "serialNumber" : "SN1282",
@@ -25,6 +53,34 @@
     },
     "origin" : "17",
     "destination" : "29",
-    "pasajeros" : [ 305630386 ]
+    "pasajeros" : [ 305630386, 305630817 ]
+  },
+  "15" : {
+    "number" : 15,
+    "departureTime" : [ 2025, 6, 29, 11, 0 ],
+    "capacity" : 45,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN4496",
+      "model" : "Embraer E190",
+      "totalCapacity" : 180,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R918233",
+      "airline" : "AirlineHZ",
+      "durationHours" : 3.0,
+      "distanceKm" : 3508.0,
+      "price" : 465.0,
+      "departureTime" : [ 20, 57 ],
+      "arrivalTime" : [ 23, 57 ],
+      "originAirportCode" : 24,
+      "destinationAirportCode" : 30
+    },
+    "origin" : "24",
+    "destination" : "30",
+    "pasajeros" : [ ]
   }
 }

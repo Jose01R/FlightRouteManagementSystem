@@ -10,6 +10,7 @@ import domain.service.AirNetworkService;
 import domain.service.AirportService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -23,8 +24,6 @@ import java.util.*;
 public class Simulation
 {
     @javafx.fxml.FXML
-    private BorderPane bp;
-    @javafx.fxml.FXML
     private Pane graph;
     private DirectedSinglyLinkedListGraph listGraph;
 
@@ -37,12 +36,15 @@ public class Simulation
     private AirportService airportService;
     private RouteData routeData;
     private AirNetworkService airNetworkService;
+    @FXML
+    private ImageView image;
 
     @FXML
     public void initialize() {
         setupMouseZoom();
         vertexCircles = new HashMap<>();
         graph.getTransforms().add(scaleTransform);
+        image.getTransforms().add(scaleTransform);
         listGraph = new DirectedSinglyLinkedListGraph();
         drawGraph();
     }
@@ -63,6 +65,7 @@ public class Simulation
                 int o = util.Utility.randomMinMax(1,20);
                 //String v = util.Utility.getAirport();
                 Airport airport = (Airport) list.getNode(o).data;
+
                 String v = airport.getName();
                 if (listGraph.isEmpty()){//valida que el name Airport no se repita
                     listGraph.addVertex(v);
@@ -124,32 +127,30 @@ public class Simulation
                 Random rand = new Random();
 
                 switch (name) {
-                    case "Aeropuerto de Dortmund": x = 500; y = 235; break; // Alemania
-                    case "Aeropuerto de Aalborg": x = 880; y = 185; break; // Dinamarca
-                    case "Aeropuerto de La Coruña": x = 500; y = 100; break; // España
-                    case "Aeropuerto de Marsella-Provenza": x = 820; y = 295; break; // Francia
-                    case "Aeropuerto de Oporto": x = 755; y = 325; break; // Portugal
-                    case "Aeropuerto de Zúrich": x = 870; y = 280; break; // Suiza
-                    case "Aeropuerto de Milán-Malpensa": x = 890; y = 300; break; // Italia
-                    case "Aeropuerto de Bruselas": x = 840; y = 240; break; // Bélgica
-                    case "Aeropuerto de Estocolmo-Arlanda": x = 940; y = 145; break; // Suecia
-                    case "Aeropuerto de Viena-Schwechat": x = 910; y = 270; break; // Austria
-                    case "Aeropuerto de Praga": x = 890; y = 255; break; // Chequia
-                    case "Aeropuerto de Ámsterdam-Schiphol": x = 830; y = 225; break; // Países Bajos
-                    case "Aeropuerto de Helsinki-Vantaa": x = 975; y = 110; break; // Finlandia
-                    case "Aeropuerto de Dublín": x = 720; y = 230; break; // Irlanda
-                    case "Aeropuerto de Oslo-Gardermoen": x = 930; y = 130; break; // Noruega
-                    case "Aeropuerto de Bucarest-Henri Coandă": x = 980; y = 300; break; // Rumanía
-                    case "Aeropuerto de Budapest-Ferenc Liszt": x = 955; y = 285; break; // Hungría
-                    case "Aeropuerto de Varsovia-Chopin": x = 960; y = 240; break; // Polonia
-                    case "Aeropuerto de Copenhague-Kastrup": x = 910; y = 200; break; // Dinamarca
-                    case "Aeropuerto de Sofía": x = 995; y = 320; break; // Bulgaria
+                    case "Aeropuerto de Dortmund": x = 650; y = 300; break; // Alemania
+                    case "Aeropuerto de Aalborg": x = 710; y = 195; break; // Dinamarca
+                    case "Aeropuerto de La Coruña": x = 650; y = 200; break; // España
+                    case "Aeropuerto de Marsella-Provenza": x = 700; y = 210; break; // Francia
+                    case "Aeropuerto de Oporto": x = 640; y = 215; break; // Portugal
+                    case "Aeropuerto de Zúrich": x = 735; y = 200; break; // Suiza
+                    case "Aeropuerto de Milán-Malpensa": x = 720; y = 400; break; // Italia
+                    case "Aeropuerto de Bruselas": x = 840; y = 240; break; // Bélgica //no se donde
+                    case "Aeropuerto de Estocolmo-Arlanda": x = 940; y = 145; break; // Suecia //no se donde
+                    case "Aeropuerto de Viena-Schwechat": x = 910; y = 270; break; // Austria //no se donde
+                    case "Aeropuerto de Praga": x = 890; y = 255; break; // Chequia //no se donde
+                    case "Aeropuerto de Ámsterdam-Schiphol": x = 830; y = 225; break; // Países Bajos //no se donde
+                    case "Aeropuerto de Helsinki-Vantaa": x = 975; y = 110; break; // Finlandia //no se donde
+                    case "Aeropuerto de Dublín": x = 720; y = 230; break; // Irlanda //no se donde
+                    case "Aeropuerto de Oslo-Gardermoen": x = 930; y = 130; break; // Noruega //no se donde
+                    case "Aeropuerto de Bucarest-Henri Coandă": x = 980; y = 300; break; // Rumanía //no se donde
+                    case "Aeropuerto de Budapest-Ferenc Liszt": x = 955; y = 285; break; // Hungría //no se donde
+                    case "Aeropuerto de Varsovia-Chopin": x = 960; y = 240; break; // Polonia //no se donde esta
+                    case "Aeropuerto de Copenhague-Kastrup": x = 770; y = 195; break; // Dinamarca
+                    case "Aeropuerto de Sofía": x = 995; y = 320; break; // Bulgaria //no se
                     default:
                         x = rand.nextInt(1423);
                         y = rand.nextInt(589);
                 }
-
-
 
 
                 vertexPositions.put(vertexData, new double[]{x, y});
@@ -346,6 +347,16 @@ public class Simulation
 
     private void setupMouseZoom() {
         graph.setOnScroll((ScrollEvent event) -> {
+            double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1; // Zoom out vs. zoom in
+            double newScale = scaleTransform.getX() * zoomFactor;
+            if (newScale < 0.2 || newScale > 5) return; // Limit zoom range to prevent too small/large views
+            scaleTransform.setX(newScale);
+            scaleTransform.setY(newScale);
+            scaleTransform.setPivotX(event.getX());
+            scaleTransform.setPivotY(event.getY());
+            event.consume(); // Consume the event to prevent parent scrolling
+        });
+        image.setOnScroll((ScrollEvent event) -> {
             double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1; // Zoom out vs. zoom in
             double newScale = scaleTransform.getX() * zoomFactor;
             if (newScale < 0.2 || newScale > 5) return; // Limit zoom range to prevent too small/large views

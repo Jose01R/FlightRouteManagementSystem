@@ -57,8 +57,6 @@ public class AirportsController
 
     @javafx.fxml.FXML
     public void initialize() {
-        alert = util.FXUtility.alert("Airports List", "Display Airports");
-        alert.setAlertType(Alert.AlertType.INFORMATION);
         codeColumn.setCellValueFactory(new PropertyValueFactory<>("code"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));

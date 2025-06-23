@@ -42,12 +42,7 @@
                   <Font name="Arial" size="30.0" />
                </font>
             </Button>
-            <Button layoutX="156.0" layoutY="55.0" mnemonicParsing="false" onAction="#ticketsOnAction" prefHeight="58.0" prefWidth="514.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 0px;" text="Compra tiquetes" textFill="WHITE">
-               <font>
-                  <Font name="Arial" size="30.0" />
-               </font>
-            </Button>
-            <Button layoutX="666.0" layoutY="55.0" mnemonicParsing="false" onAction="#vuelosOnAction" prefHeight="58.0" prefWidth="463.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 2px;" text="Vuelos" textFill="WHITE">
+            <Button layoutX="156.0" layoutY="55.0" mnemonicParsing="false" onAction="#ticketsOnAction" prefHeight="58.0" prefWidth="973.0" style="-fx-background-color: #286673; -fx-border-color: white; -fx-border-width: 0px 0px 2px 0px;" text="Compra tiquetes" textFill="WHITE">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>

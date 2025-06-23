@@ -20,6 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 
 public class FlightController {
 
+    private Stage stage;
+
     @FXML
     private ComboBox<Flight> assignedFlightComboBox;
 
@@ -47,8 +50,6 @@ public class FlightController {
 
     @FXML
     private TextField departureTimeField;
-
-
 
     @FXML
     private TableColumn<Passenger,String > flightColumn;
@@ -73,7 +74,8 @@ public class FlightController {
     private TableColumn<Flight, Integer> flightTableOccupancyColumn;
     @FXML
     private TableColumn<Flight, String> flightTableStatusColumn;
-    @FXML TableColumn<Flight,String>airPlaneIdColumn;
+    @FXML
+    private TableColumn<Flight,String>airPlaneIdColumn;
     @FXML
     private TableColumn<Passenger,Integer> idColumn;
     @FXML
@@ -600,5 +602,12 @@ public class FlightController {
         flightTable.refresh();
     }
 
-
+//    public void close(Stage stage) {
+//        this.stage = stage;
+//    }
+//
+//    @FXML
+//    public void exit(ActionEvent actionEvent) {
+//        stage.close();
+//    }
 }

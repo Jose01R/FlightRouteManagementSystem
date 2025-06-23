@@ -1,185 +1,198 @@
 package controller;
 
-import domain.graph.EdgeWeight;
-import domain.graph.GraphException;
-import domain.graph.SinglyLinkedListGraph;
-import domain.graph.Vertex;
+import domain.common.*;
+import domain.linkedlist.CircularDoublyLinkedList;
 import domain.linkedlist.ListException;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
+import domain.service.*;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class RoutesBetweenAirports
 {
+    @FXML
+    private TableView<Flight> flightTable;
+    @FXML
+    private TableColumn<Flight, Integer> flightTableNumberColumn;
+    @FXML
+    private TableColumn<Flight, String> flightTableOriginColumn;
+    @FXML
+    private TableColumn<Flight, String> flightTableDestinationColumn;
+    @FXML
+    private TableColumn<Flight, LocalDateTime> flightTableDepartureTimeColumn;
+    @FXML
+    private TableColumn<Flight, Integer> flightTableCapacityColumn;
+    @FXML
+    private TableColumn<Flight, Integer> flightTableOccupancyColumn;
+    @FXML
+    private TableColumn<Flight, String> flightTableStatusColumn;
+    @FXML
+    private TableColumn<Flight,String>airPlaneIdColumn;
     @javafx.fxml.FXML
-    private BorderPane bp;
+    private TextField searchByOrigenTf;
     @javafx.fxml.FXML
-    private Pane graphPane;
+    private TextField searchByArrivalTf;
 
-    private final Map<String, Line> edgeMap = new HashMap<>();
-    private SinglyLinkedListGraph graph;
+
+    private FlightService flightService;
+    private AirportService airportService;
+    private AirplaneService airplaneService;
+    private AirNetworkService airNetworkService;
+    private CircularDoublyLinkedList circularDoublyLinkedList;
+    private ScheduledExecutorService scheduler;
+    private Map<Integer, String> airportCodeToName = new HashMap<>();
+
+    private Stage stage;
 
     @javafx.fxml.FXML
     public void initialize() {
-        graph = new SinglyLinkedListGraph(); // Inicializa para SinglyLinkedListGraph
+
+        flightTableStatusColumn.setCellValueFactory(cellData -> {
+            boolean completed = cellData.getValue().isCompleted();
+            String status = completed ? "Completado" : "Activo";
+            return new ReadOnlyStringWrapper(status);
+        });
+
+        airPlaneIdColumn.setCellValueFactory(cellData -> {
+            Airplane airplane = cellData.getValue().getAssignedAirplane();
+            if (airplane != null) {
+                String info = airplane.getSerialNumber() + " (" + airplane.getModel() + ")";
+                return new SimpleStringProperty(info);
+            } else {
+                return new SimpleStringProperty("Sin avión");
+            }
+        });
+
+        flightTableNumberColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getNumber()).asObject());
+        flightTableOriginColumn.setCellValueFactory(cell -> {
+            Flight flight = cell.getValue();
+            int code = flight.getAssignedRoute().getOriginAirportCode();
+            String name = getAirportNameByCode(code);
+            return new SimpleStringProperty(code + " - " + name);
+        });
+        flightTableDestinationColumn.setCellValueFactory(cell -> {
+            Flight flight = cell.getValue();
+            int code = flight.getAssignedRoute().getDestinationAirportCode();
+            String name = getAirportNameByCode(code);
+            return new SimpleStringProperty(code + " - " + name);
+        });
+        flightTableDepartureTimeColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getDepartureTime()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        flightTableDepartureTimeColumn.setCellFactory(column -> new TableCell<Flight, LocalDateTime>() {
+            @Override
+            protected void updateItem(LocalDateTime item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.format(formatter));
+                }
+            }
+        });
+        flightTableCapacityColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getCapacity()).asObject());
+        flightTableOccupancyColumn.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getOccupancy()).asObject());
+
+
+        searchByOrigenTf.textProperty().addListener((obs, oldText, newText) -> {
+            reorderFlightTableView(searchByOrigenTf.getText(), searchByArrivalTf.getText());
+        });
+
+        searchByArrivalTf.textProperty().addListener((obs, oldText, newText) -> {
+            reorderFlightTableView(searchByOrigenTf.getText(), searchByArrivalTf.getText());
+        });
+
+    }
+
+    private String getAirportNameByCode(int code) {
+        return airportCodeToName.getOrDefault(code, "Desconocido");
+    }
+
+    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
+        //this.passengerService = passengerService;
+        this.flightService = flightService;
+        this.airplaneService=airplaneService;
+        this.airNetworkService= airNetworkService;
+        this.airportService= airportService;
+//        passengerTable.setItems(this.passengerService.getObservablePassengers());
+//        assignedFlightComboBox.setItems(this.flightService.getObservableFlights());
+        flightTable.setItems(this.flightService.getObservableFlights());
+//        routeComboBox.setItems(airNetworkService.getObservableRoutes());
+//        airplaneComboBox.setItems(airplaneService.getObservableAirplanes());
+
+        airportCodeToName = new HashMap<>();
         try {
-            generateGraph();
-        } catch (ListException | GraphException e) {
+            for (Object obj : airportService.getAirportsByStatus("Active")) {
+                if (obj instanceof Airport airport) {
+                    airportCodeToName.put(airport.getCode(), airport.getName());
+                }
+            }
+        } catch (ListException e) {
             throw new RuntimeException(e);
         }
-
     }
 
+    private void reorderFlightTableView(String originInput, String destinationInput) {
+        ObservableList<Flight> filteredList = FXCollections.observableArrayList();
+        ObservableList<Flight> allFlights = flightService.getObservableFlights();
 
-    //para dibujar los grafos dirigidos
-    private void generateGraph() throws ListException, GraphException {
-        graph = new SinglyLinkedListGraph(); // Inicializa para SinglyLinkedListGraph
-        Set<String> used = new HashSet<>();
+        // Convertir entradas a string para comparar y buscar (pueden ser números o texto)
+        String origin = originInput != null ? originInput.trim().toLowerCase() : "";
+        String destination = destinationInput != null ? destinationInput.trim().toLowerCase() : "";
 
-        graph.addVertex(util.Utility.getAirport());
+        // Coincidencias preferidas primero
+        for (Flight f : allFlights) {
+            Route route = f.getAssignedRoute();
+            String routeOrigin = route != null ? String.valueOf(route.getOriginAirportCode()).toLowerCase() : "";
+            String routeDestination = route != null ? String.valueOf(route.getDestinationAirportCode()).toLowerCase() : "";
 
-        // Agrega vértices
-        while (graph.size() <= 10) {
-            String v = util.Utility.getAirport();
-            if (used.add(v)) {
-                graph.addVertex(v);
+            boolean matchesOrigin = routeOrigin.startsWith(origin);
+            boolean matchesDestination = routeDestination.startsWith(destination);
+
+            if ((origin.isEmpty() || matchesOrigin) && (destination.isEmpty() || matchesDestination)) {
+                filteredList.add(f);
             }
         }
 
-        // Obtener todos los vértices para iterar a través de ellos.
-        // Esto es un poco más complejo con SinglyLinkedList, ya que no puedes obtener directamente un array.
-        // Iteraremos a través de la lista enlazada para obtener pares de vértices.
-        for (int i = 1; i <= graph.size(); i++) {
+        // Luego el resto
+        for (Flight f : allFlights) {
+            Route route = f.getAssignedRoute();
+            String routeOrigin = route != null ? String.valueOf(route.getOriginAirportCode()).toLowerCase() : "";
+            String routeDestination = route != null ? String.valueOf(route.getDestinationAirportCode()).toLowerCase() : "";
 
-            for (int j = i + 1; j <= graph.size(); j++) {
-                Object a = ((Vertex) graph.getVertexList().getNode(i).data).data;
-                Object b = ((Vertex) graph.getVertexList().getNode(j).data).data;
+            boolean matchesOrigin = routeOrigin.startsWith(origin);
+            boolean matchesDestination = routeDestination.startsWith(destination);
 
-                if (util.Utility.randomBoolean()) {
-                    int weight = util.Utility.randomMinMax(1000,2000);
-                    graph.addEdgeWeight(a, b, weight); //
-                }
+            if (!((origin.isEmpty() || matchesOrigin) && (destination.isEmpty() || matchesDestination))) {
+                filteredList.add(f);
             }
         }
 
-        drawGraph();
+        flightTable.setItems(filteredList);
+        flightTable.refresh();
     }
 
-    private void drawGraph() {
-        graphPane.getChildren().clear();
-        edgeMap.clear();
-        // edgeLabels.clear(); // Si tenías etiquetas de aristas, también deberías borrarlas
+    public void close(Stage stage) {
+        this.stage = stage;
+    }
 
-        int count = 0;
-        try {
-            count = graph.size();
-        } catch (ListException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        if (count == 0) {
-            return; // No hay vértices para dibujar
-        }
-
-        double centerX = 300, centerY = 250, radius = 200;
-        Map<Object, double[]> vertexPositions = new HashMap<>();
-
-        // Calcula las posiciones para los vértices en un círculo
-        for (int i = 1; i <= count; i++) {
-            try {
-                // **CORRECCIÓN AQUÍ:** Accede directamente a graph.vertexList
-                Vertex currentVertex = (Vertex) graph.getVertexList().getNode(i).data;
-                double angle = 2 * Math.PI * (i - 1) / count;
-                double x = centerX + radius * Math.cos(angle);
-                double y = centerY + radius * Math.sin(angle);
-                vertexPositions.put(currentVertex.data, new double[]{x, y});
-            } catch (ListException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Dibuja las aristas
-        for (int i = 1; i <= count; i++) {
-            try {
-                // **CORRECCIÓN AQUÍ:** Accede directamente a graph.vertexList
-                Vertex fromVertex = (Vertex) graph.getVertexList().getNode(i).data;
-                double[] fromPos = vertexPositions.get(fromVertex.data);
-
-                // Itera a través de la edgesList del vértice actual
-                for (int k = 1; k <= fromVertex.edgesList.size(); k++) {
-                    EdgeWeight edgeWeight = (EdgeWeight) fromVertex.edgesList.getNode(k).data;
-                    Object toVertexData = edgeWeight.getEdge();
-                    Object weight = edgeWeight.getWeight();
-
-                    double[] toPos = vertexPositions.get(toVertexData);
-
-                    Line edge = new Line(fromPos[0], fromPos[1], toPos[0], toPos[1]);
-                    edge.setStroke(Color.GREEN);
-                    edge.setStrokeWidth(2);
-
-                    Object from = fromVertex.data;
-                    Object to = toVertexData;
-
-//                    edge.setOnMouseEntered(e -> {
-//                        edge.setStroke(Color.RED);
-//                        edge.setStrokeWidth(5);
-//                        edgeInfoLabel.setText("Arista entre los vértices " + from + " - " + to +
-//                                " | Peso: " + weight);
-//                    });
-//
-//                    edge.setOnMouseExited(e -> {
-//                        edge.setStroke(Color.PURPLE);
-//                        edge.setStrokeWidth(2);
-//                        edgeInfoLabel.setVisible(true);
-//                        edgeInfoLabel.setText("");
-//                    });
-
-                    String key;
-                    if (util.Utility.compare(from.toString(), to.toString()) < 0) {
-                        key = from.toString() + "-" + to.toString();
-                    } else {
-                        key = to.toString() + "-" + from.toString();
-                    }
-
-                    if (!edgeMap.containsKey(key)) {
-                        edgeMap.put(key, edge);
-                        graphPane.getChildren().add(edge);
-                    }
-                }
-            } catch (ListException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // Dibuja los vértices (nodos y etiquetas)
-        for (int i = 1; i <= count; i++) {
-            try {
-                // **CORRECCIÓN AQUÍ:** Accede directamente a graph.vertexList
-                Vertex currentVertex = (Vertex) graph.getVertexList().getNode(i).data;
-                double[] pos = vertexPositions.get(currentVertex.data);
-
-                Circle node = new Circle(pos[0], pos[1], 20);
-                node.setFill(Color.LIGHTBLUE);
-                node.setStroke(Color.DARKBLUE);
-
-                Label label = new Label(currentVertex.data.toString());
-                label.setLayoutX(pos[0] - 10);
-                label.setLayoutY(pos[1] - 10);
-
-                graphPane.getChildren().addAll(node, label);
-            } catch (ListException e) {
-                e.printStackTrace();
-            }
-        }
+    @FXML
+    public void exit(ActionEvent actionEvent) {
+        stage.close();
     }
 
 

@@ -20,12 +20,8 @@
                   </Text>
                </children>
             </Pane>
-            <ImageView fitHeight="589.0" fitWidth="1380.0" layoutX="-1.0" layoutY="55.0">
-               <image>
-                  <Image url="@../../../../../../../../Users/luiss/Downloads/mapaDelMundo.jpg" />
-               </image>
-            </ImageView>
-            <ImageView fitHeight="589.0" fitWidth="1423.0" layoutX="-1.0" layoutY="55.0">
+
+            <ImageView fx:id="image" fitHeight="589.0" fitWidth="1423.0" layoutX="-1.0" layoutY="55.0">
                <image>
                   <Image url="@../../images/world-map-with-countries-names-free-vector.jpg" />
                </image>

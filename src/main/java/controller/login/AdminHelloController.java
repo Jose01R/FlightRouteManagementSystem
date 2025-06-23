@@ -1,5 +1,6 @@
 package controller.login;
 
+import controller.RoutesBetweenAirports;
 import controller.flightcontroller.FlightController;
 import controller.ticketscontroller.TicketsController;
 import domain.service.*;
@@ -129,11 +130,22 @@ public class AdminHelloController {
             flightController.setServices(this.passengerService, this.flightService,this.airplaneService,this.airNetworkService,this.airportService);
 
             // Crear y mostrar la nueva ventana
-            Scene scene = new Scene(root, 1410, 900);
+            Scene scene = new Scene(root, 1410, 900); //1410
             Stage stage = new Stage();
             stage.setTitle("Gestión de Vuelos");
             stage.setScene(scene);
             stage.show();
+
+            // Hacer que la ventana sea movible
+            final Delta dragDelta = new Delta();
+            root.setOnMousePressed(event -> {
+                dragDelta.x = event.getSceneX();
+                dragDelta.y = event.getSceneY();
+            });
+            root.setOnMouseDragged(event -> {
+                stage.setX(event.getScreenX() - dragDelta.x);
+                stage.setY(event.getScreenY() - dragDelta.y);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -142,6 +154,41 @@ public class AdminHelloController {
 
     @FXML
     public void rutasEntreAeropuertosOnAction(ActionEvent actionEvent) {
-        loadPage("fxml.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/routes_Between_Airports.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador del archivo flight.fxml
+            RoutesBetweenAirports routesBetweenAirports = loader.getController();
+
+            // Pasar los servicios
+            routesBetweenAirports.setServices(this.passengerService, this.flightService,this.airplaneService,this.airNetworkService,this.airportService);
+
+            // Crear y mostrar la nueva ventana
+            Scene scene = new Scene(root, 1230, 700); //1410
+            Stage stage = new Stage();
+            stage.setTitle("Gestión de Rutas entre Aeropuertos");
+            stage.setScene(scene);
+            stage.show();
+
+            // Hacer que la ventana sea movible
+            final Delta dragDelta = new Delta();
+            root.setOnMousePressed(event -> {
+                dragDelta.x = event.getSceneX();
+                dragDelta.y = event.getSceneY();
+            });
+            root.setOnMouseDragged(event -> {
+                stage.setX(event.getScreenX() - dragDelta.x);
+                stage.setY(event.getScreenY() - dragDelta.y);
+            });
+
+            routesBetweenAirports.close(stage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class Delta {
+        double x, y;
     }
 }
