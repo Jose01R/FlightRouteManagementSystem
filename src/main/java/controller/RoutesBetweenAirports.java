@@ -63,7 +63,7 @@ public class RoutesBetweenAirports
 
         flightTableStatusColumn.setCellValueFactory(cellData -> {
             boolean completed = cellData.getValue().isCompleted();
-            String status = completed ? "Completado" : "Activo";
+            String status = completed ? "Completed" : "Active";
             return new ReadOnlyStringWrapper(status);
         });
 
@@ -73,7 +73,7 @@ public class RoutesBetweenAirports
                 String info = airplane.getSerialNumber() + " (" + airplane.getModel() + ")";
                 return new SimpleStringProperty(info);
             } else {
-                return new SimpleStringProperty("Sin avión");
+                return new SimpleStringProperty("Without airplane");
             }
         });
 
@@ -119,7 +119,7 @@ public class RoutesBetweenAirports
     }
 
     private String getAirportNameByCode(int code) {
-        return airportCodeToName.getOrDefault(code, "Desconocido");
+        return airportCodeToName.getOrDefault(code, "Unknown");
     }
 
     public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
