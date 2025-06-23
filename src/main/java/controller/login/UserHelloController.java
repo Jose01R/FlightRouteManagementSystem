@@ -7,8 +7,14 @@ import controller.RoutesBetweenAirports;
 import controller.ticketscontroller.TicketsController;
 import data.RouteData;
 import domain.common.Airport;
+import domain.common.Flight;
+import domain.common.Route;
+import domain.graph.DirectedSinglyLinkedListGraph;
+import domain.graph.GraphException;
 import domain.linkedlist.ListException;
 import domain.service.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +29,10 @@ import ucr.flightroutemanagementsystem.HelloApplication;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UserHelloController {
 
@@ -42,6 +51,8 @@ public class UserHelloController {
     private AirplaneService airplaneService;
     private AirNetworkService airNetworkService;
     private AirportService airportService;
+
+    private Map<Integer, String> airportCodeToName = new HashMap<>();
 
     public void recibirDatos(String name, String rol) {//recibe el nombre del usuario y su rol
         this.name = name;
@@ -65,6 +76,17 @@ public class UserHelloController {
         this.airplaneService = airplaneService;
         this.airNetworkService = airNetworkService;
         this.airportService = airportService;
+
+        airportCodeToName = new HashMap<>();
+        try {
+            for (Object obj : airportService.getAirportsByStatus("Active")) {
+                if (obj instanceof Airport airport) {
+                    airportCodeToName.put(airport.getCode(), airport.getName());
+                }
+            }
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML
@@ -87,7 +109,7 @@ public class UserHelloController {
     }
 
     @FXML
-    public void reportesOnAction(ActionEvent actionEvent) throws DocumentException, IOException, IOException, ListException {
+    public void reportesOnAction(ActionEvent actionEvent) throws DocumentException, IOException, IOException, ListException, GraphException {
 //        List<Passenger> passengerList = this.passengerService.getAllPassengers();
 //        CircularDoublyLinkedList circularDoublyLinkedList = this.flightService.getFlightList();
 //        List<Route> routeList = this.airNetworkService.getAllRoutes();
@@ -135,39 +157,50 @@ public class UserHelloController {
         title = new Paragraph("Rutas más utilizadas", titleFont);
         doc.add(title);
 
-        // Crear tabla con 7 columnas
-        PdfPTable table2 = new PdfPTable(7);
-        table2.addCell("Route Id");
-        table2.addCell("Airline");
-        table2.addCell("Duration Hours");
-        table2.addCell("Distance Km");
-        table2.addCell("Price");
-        table2.addCell("Departure Time");
-        table2.addCell("Arrive Time");
-
+        // Crear tabla con 4 columnas
+        PdfPTable table2 = new PdfPTable(4);
+        table2.addCell("Ruta de Origen");
+        table2.addCell("ID Ruta");
+        table2.addCell("Ruta de Destino");
+        table2.addCell("Ruta de Distancia");
 
         // Iterar sobre la lista de rutas más usadas
-        //System.out.println("La cantidad de rutas es de : "+routeList.size());
-//        for (int i = 1; i < routeList.size(); i++) {
-//            String id = routeList.get(i).getRouteId();
-//            String airline = routeList.get(i).getAirline();
-//            double durationHours = routeList.get(i).getDurationHours();
-//            double distanceKm =  routeList.get(i).getDistanceKm();
-//            double price =  routeList.get(i).getPrice();
-//            LocalTime departureTime = routeList.get(i).getDepartureTime();
-//            LocalTime arriveTime = routeList.get(i).getArrivalTime();
-//
-//
-//            table2.addCell(id);
-//            table2.addCell(airline);
-//            table2.addCell(String.valueOf(durationHours));
-//            table2.addCell(String.valueOf(distanceKm));
-//            table2.addCell(String.valueOf(price));
-//            table2.addCell(String.valueOf(departureTime));
-//            table2.addCell(String.valueOf(arriveTime));
-//        }
-//
-//        doc.add(table2);
+        ObservableList<Flight> allFlights = flightService.getObservableFlights();
+        //tomo los 5 aeropuertos top
+        DirectedSinglyLinkedListGraph topRoutesGraph = new DirectedSinglyLinkedListGraph();
+        System.out.println("La cantidad de rutas es de : "+ allFlights.size());
+        for (Airport airport : topAirports) {
+            topRoutesGraph.addVertex(airport.getCode());
+        }
+
+//        for (Flight f : allFlights) {
+            // Luego, iteramos sobre los aeropuertos principales para encontrar y añadir sus rutas al grafo
+            for (Airport airport : topAirports) {
+                List<Route> routesFromThisAirport = airNetworkService.getAllRoutes().stream()
+                        .filter(route -> route.getOriginAirportCode() == airport.getCode())
+                        .collect(Collectors.toList());
+
+                if (!routesFromThisAirport.isEmpty()) {
+                    for (Route route : routesFromThisAirport) {
+                        // Aseguramos que el aeropuerto de destino también esté en el grafo, incluso si no es uno de los "top"
+                        if (!topRoutesGraph.containsVertex(route.getDestinationAirportCode())) {
+                            topRoutesGraph.addVertex(route.getDestinationAirportCode());
+                        }
+                        topRoutesGraph.addEdgeWeight(route.getOriginAirportCode(), route.getDestinationAirportCode(), route.getDistanceKm());
+
+                        Airport destinationAirport = airportService.getAirportByCode(route.getDestinationAirportCode());
+
+                        table2.addCell(airport.getName() +" ("+airport.getCode()+")");
+                        table2.addCell(route.getRouteId());
+                        table2.addCell(destinationAirport.getName()+" ("+destinationAirport.getCode()+")");
+                        table2.addCell(String.valueOf(route.getDistanceKm())+" km");
+                    }
+                }
+            }
+
+        //}
+
+        doc.add(table2);
 
         title = new Paragraph("Pasajeros con más vuelos realizados", titleFont);
         doc.add(title);
@@ -195,6 +228,10 @@ public class UserHelloController {
         doc.close();
 
         System.out.println("PDF generado: " + new java.io.File(fileName).getAbsolutePath());
+    }
+
+    private String getAirportNameByCode(int code) {
+        return airportCodeToName.getOrDefault(code, "Desconocido");
     }
 
     @FXML

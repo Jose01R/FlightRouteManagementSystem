@@ -1,61 +1,61 @@
 [ {
-  "serialNumber" : "SN5188",
-  "model" : "Airbus A350",
-  "totalCapacity" : 180,
-  "currentStatus" : "In Service",
-  "flightHistory" : [ ]
-}, {
-  "serialNumber" : "SN1172",
+  "serialNumber" : "SN6431",
   "model" : "Airbus A320",
-  "totalCapacity" : 300,
+  "totalCapacity" : 200,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
-  "serialNumber" : "SN8809",
-  "model" : "Boeing 787",
-  "totalCapacity" : 250,
+  "serialNumber" : "SN1271",
+  "model" : "Airbus A350",
+  "totalCapacity" : 200,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
-  "serialNumber" : "SN6594",
-  "model" : "Boeing 737",
+  "serialNumber" : "SN1194",
+  "model" : "Airbus A350",
+  "totalCapacity" : 200,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN4285",
+  "model" : "Airbus A350",
+  "totalCapacity" : 200,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN1283",
+  "model" : "Embraer E190",
   "totalCapacity" : 150,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
-  "serialNumber" : "SN7481",
-  "model" : "Boeing 737",
-  "totalCapacity" : 180,
+  "serialNumber" : "SN6704",
+  "model" : "Airbus A350",
+  "totalCapacity" : 100,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
-  "serialNumber" : "SN3604",
+  "serialNumber" : "SN5802",
+  "model" : "Boeing 737",
+  "totalCapacity" : 100,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN1201",
+  "model" : "Airbus A350",
+  "totalCapacity" : 200,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN3375",
+  "model" : "Airbus A350",
+  "totalCapacity" : 150,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN9037",
   "model" : "Boeing 787",
-  "totalCapacity" : 300,
-  "currentStatus" : "In Service",
-  "flightHistory" : [ ]
-}, {
-  "serialNumber" : "SN6271",
-  "model" : "Airbus A320",
-  "totalCapacity" : 250,
-  "currentStatus" : "In Service",
-  "flightHistory" : [ ]
-}, {
-  "serialNumber" : "SN8848",
-  "model" : "Boeing 737",
-  "totalCapacity" : 300,
-  "currentStatus" : "In Service",
-  "flightHistory" : [ ]
-}, {
-  "serialNumber" : "SN2202",
-  "model" : "Embraer E190",
-  "totalCapacity" : 180,
-  "currentStatus" : "In Service",
-  "flightHistory" : [ ]
-}, {
-  "serialNumber" : "SN2892",
-  "model" : "Boeing 737",
-  "totalCapacity" : 250,
+  "totalCapacity" : 200,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 } ]
