@@ -95,7 +95,10 @@ public class TicketsController {
 
         Integer fromCode = getAirportCodeByName(fromName);
         Integer toCode = getAirportCodeByName(toName);
-
+        if (fromDate.isBefore(LocalDate.now())) {
+            util.FXUtility.alertWarning( "Fecha inválida", "La fecha de salida no puede ser anterior al día de hoy.");
+            return;
+        }
         // Si alguno no se encuentra, muestra error
         if (fromCode == null || toCode == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Seleccione aeropuertos válidos usando la lista de sugerencias.");
@@ -103,7 +106,7 @@ public class TicketsController {
             return;
         }
 
-        // ¡Ahora sí! Busca solo por códigos
+        // Busca solo por códigos
         List<Flight> vuelosDisponibles = flightService.getAvailableFlights(
                 String.valueOf(fromCode),
                 String.valueOf(toCode),
@@ -174,12 +177,6 @@ public class TicketsController {
         flightScrollPane.setContent(vuelosBox);
     }
 
-    public void actualizarOcupacionVuelo(Flight vuelo) {
-        Label label = occupancyLabels.get(vuelo);
-        if (label != null) {
-            label.setText("Occupancy: " + vuelo.getOccupancy());
-        }
-    }
 
     private String calcularDuracionVuelo(Flight vuelo) {
         if (vuelo == null || vuelo.getAssignedRoute() == null) return "N/A";
