@@ -9,5 +9,7 @@ Claves para LogIn:
 Fuentes utilizadas:
 
 https://www.tutorialspoint.com/jackson_annotations/jackson_annotations_jsonignore.htm
+
 https://www.arquitecturajava.com/java-json-con-jackson/
+
 https://keepcoding.io/blog/que-es-jackson-en-java-y-como-funciona/
