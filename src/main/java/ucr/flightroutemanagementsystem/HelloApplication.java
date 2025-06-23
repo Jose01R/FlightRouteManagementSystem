@@ -4,6 +4,7 @@ import controller.login.AdminHelloController;
 // import controller.flightcontroller.FlightController; // Not directly used here, can remove if not needed elsewhere
 
 import controller.login.UserHelloController;
+import data.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,13 +13,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 // Import all Data classes
-import data.PassengerData;
-import data.FlightData;
-import data.AirplaneData;
 import domain.service.AirportService; // Changed from AirportData to AirportsData for consistency
 import domain.service.AirNetworkService;
-import data.AirportsData;
-import data.RouteData;
 
 // Import all Service classes
 import domain.service.PassengerService;
@@ -40,21 +36,26 @@ public class HelloApplication extends Application {
     private static AirplaneService airplaneService;
     private static AirportService airportService;
     private static AirNetworkService airNetworkService;
+    private static UserData userData;
 
+    public static PassengerService getPassengerService() {
+        return passengerService;
+    }
+
+    public static UserData getUserData() {
+        return userData;
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
         // 1. Initialize all Data layer instances
         passengerData = new PassengerData();
         flightData = new FlightData();
-        airplaneData = new AirplaneData(); // Initialize AirplaneData
-        airportsData = new AirportsData(); // Initialize AirportsData
-        routeData = new RouteData();       // Initialize RouteData
+        airplaneData = new AirplaneData();
+        airportsData = new AirportsData();
+        routeData = new RouteData();
+        userData = new UserData();
 
-        // 2. Initialize Service layer instances in the correct order of dependencies
-        // AirportService does not have external data dependency in its constructor
-        // based on the AirplaneService code provided, it's handling data internally.
-        // If AirportService constructor *does* need AirportsData, adjust here.
         airportService = new AirportService();
 
         // AirplaneService now loads its own data internally
@@ -125,6 +126,11 @@ public class HelloApplication extends Application {
         System.out.println("La aplicación se está cerrando. Guardando datos...");
 
         // Save data for all services that manage persistence
+        if (userData != null) {
+            userData.saveUsersToFile();
+            System.out.println("Datos de usuarios guardados exitosamente.");
+        }
+
         if (passengerService != null) {
             passengerService.saveData();
             System.out.println("Datos de pasajeros guardados exitosamente.");

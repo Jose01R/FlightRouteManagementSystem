@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.OptionalInt;
 
 public class UserData {
     //Nombre del archivo
@@ -167,5 +168,23 @@ public class UserData {
      */
     public Map<Integer, User> getAllUsers() {
         return new HashMap<>(users); //Devuelve una copia para evitar modificaciones externas directas
+    }
+
+    /**
+     * Genera el siguiente ID único disponible para un nuevo usuario
+     * Encuentra el ID máximo en uso y lo incrementa en uno
+     * Si no existen usuarios, empieza desde 1
+     */
+    public int getNextAvailableId() {
+        if (users.isEmpty()) {
+            return 1; // empeiza en 1 si no existe ninguno
+        } else {
+            OptionalInt maxId = users.keySet().stream()
+                    .mapToInt(Integer::intValue) // Convertimos a intStream
+                    .max(); //encontramos el max id
+
+            //incrementamos en 1 si existen users
+            return maxId.orElse(0) + 1;
+        }
     }
 }
