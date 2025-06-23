@@ -53,13 +53,13 @@ public class LogInController {
         String password = passwordField.getText();
 
         if (email.isEmpty() || password.isEmpty()) {
-            util.FXUtility.alert("Error de Inicio de Sesión", "Por favor, ingresa tanto el correo electrónico como la contraseña.");
+            util.FXUtility.alert("Login Error", "Please enter both email and password.").showAndWait(); 
             return;
         }
 
         //validamos formato del email
         if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
-            FXUtility.alert("Error de Email", "Por favor, ingrese un formato de correo electrónico válido.");
+            FXUtility.alert("Email Error", "Please enter a valid email format.").showAndWait(); 
             return;
         }
 
@@ -78,38 +78,38 @@ public class LogInController {
                 switch (authenticatedUser.getRole()) {
                     case ADMINISTRATOR:
                         if (authenticatedUser != null) {
-                            util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
+                            util.FXUtility.alertInfo("Login Successful", "Welcome, " + authenticatedUser.getName() + "!").showAndWait(); 
 
                             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
                             try {
                                 HelloApplication.loadMainApplicationSceneAdmin(stage, authenticatedUser.getName(), String.valueOf(authenticatedUser.getRole()));
                             } catch (IOException e) {
-                                util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
-                                System.err.println("IOException durante la carga de la escena: " + e.getMessage());
+                                util.FXUtility.alert("Navigation Error", "Could not load the next screen: " + e.getMessage()).showAndWait(); 
+                                System.err.println("IOException during scene loading: " + e.getMessage());
                             }
 
                         } else {
-                            util.FXUtility.alert("Inicio de Sesión Fallido", "Correo electrónico o contraseña inválidos.");
+                            util.FXUtility.alert("Login Failed", "Invalid email or password.").showAndWait(); 
                         }
 
                         break;
 
                     case USER:
                         if (authenticatedUser != null) {
-                            util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
+                            util.FXUtility.alertInfo("Login Successful", "Welcome, " + authenticatedUser.getName() + "!").showAndWait(); 
 
                             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
                             try {
                                 HelloApplication.loadMainApplicationSceneUser(stage, authenticatedUser.getName(), String.valueOf(authenticatedUser.getRole()));
                             } catch (IOException e) {
-                                util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
-                                System.err.println("IOException durante la carga de la escena: " + e.getMessage());
+                                util.FXUtility.alert("Navigation Error", "Could not load the next screen: " + e.getMessage()).showAndWait(); 
+                                System.err.println("IOException during scene loading: " + e.getMessage());
                             }
 
                         } else {
-                            util.FXUtility.alert("Inicio de Sesión Fallido", "Correo electrónico o contraseña inválidos.");
+                            util.FXUtility.alert("Login Failed", "Invalid email or password.").showAndWait(); 
                         }
 
                         break;
@@ -127,23 +127,23 @@ public class LogInController {
                 //stage.show();
 
             } else {
-                util.FXUtility.alert("Inicio de Sesión Fallido", "Correo electrónico o contraseña inválidos.");
+                util.FXUtility.alert("Login Failed", "Invalid email or password.").showAndWait(); 
             }
         } catch (ListException e) {
-            util.FXUtility.alert("Error del Sistema", "Ocurrió un error interno del sistema durante el inicio de sesión: " + e.getMessage());
-            System.err.println("ListException durante el inicio de sesión: " + e.getMessage());
+            util.FXUtility.alert("System Error", "An internal system error occurred during login: " + e.getMessage()).showAndWait(); 
+            System.err.println("ListException during login: " + e.getMessage());
 
 
-        } 
+        }
     }
 
     @FXML
     private void forgotPasswordOnAction(ActionEvent event) {
         //Solicitamos email del usuario
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Recuperar Contraseña");
-        dialog.setHeaderText("¿Olvidaste tu contraseña?");
-        dialog.setContentText("Por favor, introduce tu correo electrónico:");
+        dialog.setTitle("Recover Password"); 
+        dialog.setHeaderText("Forgot your password?"); 
+        dialog.setContentText("Please enter your email address:"); 
 
         Optional<String> result = dialog.showAndWait();
 
@@ -155,9 +155,9 @@ public class LogInController {
             if (userToReset != null) {
                 //Pedimos nueva contraseña directamente
                 TextInputDialog newPassDialog = new TextInputDialog();
-                newPassDialog.setTitle("Restablecer Contraseña");
-                newPassDialog.setHeaderText("Usuario encontrado: " + userToReset.getName());
-                newPassDialog.setContentText("Introduce tu nueva contraseña:");
+                newPassDialog.setTitle("Reset Password"); 
+                newPassDialog.setHeaderText("User found: " + userToReset.getName()); 
+                newPassDialog.setContentText("Enter your new password:"); 
 
                 Optional<String> newPassResult = newPassDialog.showAndWait();
 
@@ -170,20 +170,20 @@ public class LogInController {
 
                     //Actualizamos el user en el archivo
                     if (userData.updateUser(userToReset)) {
-                        util.FXUtility.alertInfo("Éxito", "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.");
+                        util.FXUtility.alertInfo("Success", "Your password has been successfully reset. You can now log in with your new password.").showAndWait(); 
                         this.logInService = new LogInService(userData); //Recargamos la lsta circular con datos actualizados
                     } else {
-                        util.FXUtility.alert("Error", "No se pudo actualizar la contraseña. Intenta de nuevo.");
+                        util.FXUtility.alert("Error", "Could not update password. Please try again.").showAndWait(); 
                     }
                 } else {
-                    util.FXUtility.alertWarning("Cancelado", "Restablecimiento de contraseña cancelado.");
+                    util.FXUtility.alertWarning("Canceled", "Password reset canceled.").showAndWait(); 
                 }
 
             } else {
-                util.FXUtility.alert("Error", "No se encontró ningún usuario con el correo electrónico '" + email + "'.");
+                util.FXUtility.alert("Error", "No user found with the email address '" + email + "'.").showAndWait(); 
             }
         } else {
-            util.FXUtility.alertWarning("Cancelado", "Operación de recuperación de contraseña cancelada.");
+            util.FXUtility.alertWarning("Canceled", "Password recovery operation canceled.").showAndWait(); 
         }
     }
 
@@ -206,15 +206,13 @@ public class LogInController {
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("Registrar nuevo usuario");
+            stage.setTitle("Register New User"); 
             stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
-            FXUtility.alert("Error de Navegación", "No se pudo cargar la pantalla de registro: " + e.getMessage());
-            System.err.println("IOException durante la carga de la escena de registro: " + e.getMessage());
+            FXUtility.alert("Navigation Error", "Could not load the registration screen: " + e.getMessage()).showAndWait(); 
+            System.err.println("IOException during registration scene loading: " + e.getMessage());
         }
     }
-
-
 }

@@ -39,6 +39,7 @@ public class AirportsController
     private TextField searchAirport;
 
     private Alert alert;
+
     private DoublyLinkedList airportList;
     private SinglyLinkedList listForStatus;
     private SinglyLinkedList listForCountry;
@@ -61,6 +62,8 @@ public class AirportsController
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
+        //
+        alert = new Alert(Alert.AlertType.NONE);
         try{
             if(airportList!=null && !airportList.isEmpty()){
                 for(int i=1; i<=airportList.size(); i++) {
@@ -70,7 +73,7 @@ public class AirportsController
             //this.studentTableView.setItems(observableList);
             updateTableView();
         }catch(ListException ex){
-            alert.setContentText("Airports list is empty");
+            alert.setContentText("Airports list is empty"); 
             alert.showAndWait();
         }
     }
@@ -84,13 +87,13 @@ public class AirportsController
         String country = countryAirport.getText().trim();
 
         if(idAirport.getText().isEmpty() || nameAirport.getText().isEmpty() || statusAirport.getText().isEmpty() || countryAirport.getText().isEmpty()){
-            util.FXUtility.alert("ERROR", "Todos los campos deben ser completados.").showAndWait();
+            util.FXUtility.alert("ERROR", "All fields must be completed.").showAndWait(); 
             return;
         }
 
         // Verifica que el estado sea válido
         if (!status.equalsIgnoreCase("Active") && !status.equalsIgnoreCase("Inactive")) {
-            util.FXUtility.alert("ERROR", "El estado debe ser 'Active' o 'Inactive'.").showAndWait();
+            util.FXUtility.alert("ERROR", "Status must be 'Active' or 'Inactive'.").showAndWait(); 
             statusAirport.clear();
             return;
         }
@@ -104,17 +107,14 @@ public class AirportsController
             nameAirport.clear();
             statusAirport.clear();
             countryAirport.clear();
-            util.FXUtility.alertInfo("Airport added", "The Airport " + name +" has been added").showAndWait();
+            util.FXUtility.alertInfo("Airport added", "The Airport " + name +" has been added").showAndWait(); 
             updateTableView();
 
         } catch (ListException e) {
-            util.FXUtility.alertInfo("Error", e.getMessage()).showAndWait();
+            util.FXUtility.alertInfo("Error", e.getMessage()).showAndWait(); 
         } catch (NumberFormatException e) {
-            util.FXUtility.alert("ERROR", "El ID debe ser un número entero.").showAndWait();
+            util.FXUtility.alert("ERROR", "The ID must be an integer.").showAndWait(); 
         }
-
-
-
     }
 
     @javafx.fxml.FXML
@@ -126,7 +126,6 @@ public class AirportsController
 
         Optional<String> id = inputDialog.showAndWait();
 
-
         //detecta si se cerró el diálogo sin escribir nada, o presionó Cancelar
         if (!id.isPresent()) return;
 
@@ -136,7 +135,7 @@ public class AirportsController
         try {
             idToEdit = Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            alert.setContentText("Invalid ID format. Please enter a valid number.");
+            alert.setContentText("Invalid ID format. Please enter a valid number."); 
             alert.setAlertType(Alert.AlertType.ERROR);
             alert.showAndWait();
             return;
@@ -148,15 +147,15 @@ public class AirportsController
         boolean contains = false;//
         try {
             if(airportList!=null && !airportList.isEmpty()){
-               for(int i=1; i<=airportList.size(); i++) {
+                for(int i=1; i<=airportList.size(); i++) {
                     if(airportList.contains(newAirport)){
                         contains = true; //el aeropuerto si existe
                     }
-               }
-           }
-       } catch (ListException e) {
-           throw new RuntimeException(e);
-       }
+                }
+            }
+        } catch (ListException e) {
+            throw new RuntimeException(e);
+        }
 
         if (contains){
             inputDialog.setTitle("Edit Airport");
@@ -177,17 +176,16 @@ public class AirportsController
 
             //esto ya edita el aeropuerto
             try {
-
                 airportService = new AirportService();
                 boolean delete = airportService.updateAirport(newAirport);
 
                 if (delete){
-                    alert.setContentText("The Airport with the ID: "+ idToEdit + " was edit");
+                    alert.setContentText("The Airport with the ID: "+ idToEdit + " was edited."); 
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.showAndWait();
                     updateTableView();
                 }else{
-                    alert.setContentText("The Airport with the ID: "+ idToEdit + " not exists or failed edit");
+                    alert.setContentText("The Airport with the ID: "+ idToEdit + " does not exist or failed to edit."); 
                     alert.setAlertType(Alert.AlertType.INFORMATION);
                     alert.showAndWait();
                 }
@@ -195,7 +193,7 @@ public class AirportsController
                 throw new RuntimeException(e);
             }
         }else{
-            alert.setContentText("El aeropuerto no exite, por lo tanto, puede editar.");
+            alert.setContentText("The airport does not exist, therefore, it cannot be edited."); 
             alert.setAlertType(Alert.AlertType.INFORMATION);
             alert.showAndWait();
         }
@@ -225,7 +223,7 @@ public class AirportsController
         try {
             idToRemove = Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            alert.setContentText("Invalid ID format. Please enter a valid number.");
+            alert.setContentText("Invalid ID format. Please enter a valid number."); 
             alert.setAlertType(Alert.AlertType.ERROR);
             alert.showAndWait();
             return;
@@ -236,19 +234,18 @@ public class AirportsController
             boolean delete = airportService.deleteAirport(idToRemove);
 
             if (delete){
-                alert.setContentText("The Airport with the ID: "+ idToRemove + " was deleted");
+                alert.setContentText("The Airport with the ID: "+ idToRemove + " was deleted."); 
                 alert.setAlertType(Alert.AlertType.CONFIRMATION);
                 alert.showAndWait();
                 updateTableView();
             }else{
-                alert.setContentText("The Airport with the ID: "+ idToRemove + " not exists");
+                alert.setContentText("The Airport with the ID: "+ idToRemove + " does not exist."); 
                 alert.setAlertType(Alert.AlertType.INFORMATION);
                 alert.showAndWait();
             }
         } catch (ListException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @javafx.fxml.FXML
@@ -269,7 +266,7 @@ public class AirportsController
         try {
             id = Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            alert.setContentText("Invalid ID format. Please enter a valid number.");
+            alert.setContentText("Invalid ID format. Please enter a valid number."); 
             alert.setAlertType(Alert.AlertType.ERROR);
             alert.showAndWait();
             return;
@@ -281,12 +278,12 @@ public class AirportsController
             boolean changeStatus = airportService.changeAirportStatus(id);
 
             if (changeStatus){
-                alert.setContentText("The Airport with the ID: "+ id + " was change status");
+                alert.setContentText("The Airport with the ID: "+ id + " had its status changed."); 
                 alert.setAlertType(Alert.AlertType.CONFIRMATION);
                 alert.showAndWait();
                 updateTableView();
             }else{
-                alert.setContentText("The Airport with the ID: "+ id + " not exists");
+                alert.setContentText("The Airport with the ID: "+ id + " does not exist."); 
                 alert.setAlertType(Alert.AlertType.INFORMATION);
                 alert.showAndWait();
             }
@@ -298,8 +295,8 @@ public class AirportsController
     @javafx.fxml.FXML
     public void listAirportsForStatusOnAction(ActionEvent actionEvent) {
         TextInputDialog inputDialog = new TextInputDialog();
-        inputDialog.setTitle("List Airport For Status");
-        inputDialog.setHeaderText("Which airports do you want to see for their status?");
+        inputDialog.setTitle("List Airport By Status"); 
+        inputDialog.setHeaderText("Which airports do you want to see by their status?"); 
         inputDialog.setContentText("Status:");
 
         Optional<String> result = inputDialog.showAndWait();//status
@@ -330,7 +327,7 @@ public class AirportsController
                         }
                     }
                 }catch(ListException ex){
-                    alert.setContentText("Airports list is empty");
+                    alert.setContentText("Airports list is empty"); 
                     alert.showAndWait();
                 }
 
@@ -341,7 +338,7 @@ public class AirportsController
                 throw new RuntimeException(e);
             }
         }else{
-            alert.setContentText(status + "it is not valid, please enter \"Active\", \"Inactive\" or \"Ambos\"");
+            alert.setContentText(status + " is not valid, please enter \"Active\", \"Inactive\" or \"Both\"."); 
             alert.setAlertType(Alert.AlertType.INFORMATION);
             alert.showAndWait();
         }
@@ -354,7 +351,7 @@ public class AirportsController
         String pais = searchAirport.getText().trim();
 
         if(searchAirport.getText().isEmpty()){
-            util.FXUtility.alert("ERROR", "You must enter an ID to search for the Airport.").showAndWait();
+            util.FXUtility.alert("ERROR", "You must enter a country to search for airports.").showAndWait(); 
             return;
         }
 
@@ -371,7 +368,7 @@ public class AirportsController
             }
 
             if (listForCountry.isEmpty()){
-                util.FXUtility.alert("Information", "There is no airport in that country..").showAndWait();
+                util.FXUtility.alert("Information", "There are no airports in that country.").showAndWait(); 
                 return;
             }
 
@@ -397,7 +394,7 @@ public class AirportsController
                     }
                 }
             }catch(ListException ex){
-                alert.setContentText("Airports list is empty");
+                alert.setContentText("Airports list is empty"); 
                 alert.showAndWait();
             }
         } catch (ListException e) {
@@ -416,7 +413,6 @@ public class AirportsController
                 this.tableview.getItems().add((Airport) airportList.getNode(i).data);
             }
         }
-
     }
 
     @javafx.fxml.FXML
@@ -428,5 +424,4 @@ public class AirportsController
             throw new RuntimeException(e);
         }
     }
-
 }
