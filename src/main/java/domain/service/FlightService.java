@@ -1,10 +1,7 @@
 package domain.service;
 
 import data.FlightData;
-import domain.common.Airplane;
-import domain.common.Flight;
-import domain.common.Passenger;
-import domain.common.Route;
+import domain.common.*;
 import domain.linkedlist.CircularDoublyLinkedList;
 import domain.linkedlist.ListException;
 import domain.linkedlist.Node;
@@ -15,6 +12,7 @@ import domain.linkedstack.LinkedStack;
 import domain.linkedstack.StackException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import util.Utility;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FlightService {
     private FlightData flightData;
@@ -34,6 +33,7 @@ public class FlightService {
     private AirNetworkService routeService;
     private AirportService airportService;
     private PassengerService passengerService;
+
     public FlightService(FlightData flightData,
                          AirplaneService airplaneService,
                          AirNetworkService routeService,
@@ -49,7 +49,6 @@ public class FlightService {
         this.observableFlights = FXCollections.observableArrayList();
 
         loadInitialFlights();
-        // generateInitialRandomFlights(10);
     }
 
     public ObservableList<Flight> getObservableFlights() {
@@ -92,7 +91,6 @@ public class FlightService {
         Map<Integer, Flight> flightsToSave = new HashMap<>();
         try {
             if (flightList != null && !flightList.isEmpty()) {
-
                 for (int i = 0; i < flightList.size(); i++) {
                     Node node = flightList.getNode(i);
                     if (node != null && node.data instanceof Flight) {
@@ -107,11 +105,12 @@ public class FlightService {
             System.err.println("Error al preparar vuelos para guardar desde CircularDoublyLinkedList: " + e.getMessage());
             e.printStackTrace();
         }
+        // Si flightsToSave está vacío, esto sobrescribirá el archivo JSON con un objeto vacío o una lista vacía,
+        // logrando el efecto de "borrar lo anterior" si la lista en memoria se vació.
         flightData.saveFlightsFromMap(flightsToSave);
     }
 
     public boolean createFlight(Flight flight) throws ListException {
-
         Objects.requireNonNull(flight, "Flight object cannot be null");
 
         if (findFlightByNumber(flight.getNumber()) != null) {
@@ -160,7 +159,6 @@ public class FlightService {
     }
 
     public boolean assignPassengerToFlight(int flightNumber, Passenger passenger) throws ListException {
-
         Objects.requireNonNull(passenger, "Passenger cannot be null");
 
         Flight flight = findFlightByNumber(flightNumber);
@@ -228,7 +226,6 @@ public class FlightService {
             flightList.remove(index); //Elimina el antiguo vuelo por índice
             flightList.add(updatedFlight); //Añadimos el vuelo actualizado
 
-
             System.out.println("Vuelo " + updatedFlight.getNumber() + " actualizado correctamente en lista interna.");
 
             //Actualizamos ObservableList
@@ -273,8 +270,7 @@ public class FlightService {
             try {
                 saveData(); //Save changes
             } catch (IOException e) {
-
-                flightList.add(flightToDelete);
+                flightList.add(flightToDelete); // Si falla el guardado, intentamos revertir el borrado en memoria
                 observableFlights.add(flightToDelete);
                 System.err.println("Warning: Failed to save data after deleting flight: " + e.getMessage());
                 throw new ListException("Failed to save flight changes after deletion: " + e.getMessage());
@@ -287,6 +283,127 @@ public class FlightService {
     public CircularDoublyLinkedList getFlightList() {
         return flightList;
     }
+
+    // ---
+    // Método modificado para generar vuelos aleatorios
+    // ---
+    /**
+     * Genera vuelos aleatorios, priorizando los aeropuertos con la mayor cantidad de rutas.
+     * Si no hay suficientes rutas desde esos aeropuertos, selecciona rutas aleatorias en general.
+     * Al generar nuevos vuelos, **elimina los vuelos anteriores y guarda solo los nuevos en el JSON.**
+     *
+     * @param count El número de vuelos aleatorios a generar.
+     */
+    public void generateFlightsRandom(int count) throws ListException {
+        if (airplaneService == null || routeService == null || airportService == null) {
+            System.err.println("No se pueden generar vuelos aleatorios: AirplaneService, AirNetworkService o AirportService no inicializados.");
+            return;
+        }
+
+        List<Airplane> availableAirplanes = airplaneService.getAllAirplanes();
+        List<Route> allAvailableRoutes = routeService.getAllRoutes(); // Todas las rutas disponibles
+
+        if (availableAirplanes.isEmpty()) {
+            System.err.println("No hay aviones disponibles para generar vuelos. Genere aviones primero.");
+            return;
+        }
+        if (allAvailableRoutes.isEmpty()) {
+            System.err.println("No hay rutas disponibles para generar vuelos. Genere rutas primero.");
+            return;
+        }
+
+        System.out.println("Iniciando la generación de " + count + " vuelos aleatorios. Se eliminarán los vuelos anteriores.");
+
+        // PASO CLAVE: Borramos todos los vuelos existentes en memoria antes de añadir los nuevos.
+        flightList.clear(); // Vaciamos nuestra lista interna
+        observableFlights.clear(); // Vaciamos la lista observable para la UI
+
+        try {
+            // Guardamos el estado vacío en el JSON para eliminar los anteriores.
+            // Es vital que saveData() lance una IOException si falla aquí.
+            saveData();
+            System.out.println("Vuelos anteriores eliminados del sistema y del almacenamiento JSON.");
+        } catch (IOException e) {
+            System.err.println("Error crítico al borrar vuelos anteriores del JSON. La generación de nuevos vuelos podría fallar o estar incompleta: " + e.getMessage());
+            e.printStackTrace();
+            throw new ListException("No se pudieron limpiar los vuelos anteriores del almacenamiento, abortando generación: " + e.getMessage());
+        }
+
+        // 1. Obtener los 5 aeropuertos con la mayor cantidad de rutas
+        List<Airport> top5Airports = routeService.getTop5AirportsByRouteCount();
+        System.out.println("Top 5 Airports for random flight generation: " + top5Airports.stream().map(Airport::getName).collect(Collectors.joining(", ")));
+
+        int generatedCount = 0;
+        int maxAttempts = count * 3; // Aumentamos los intentos para asegurar 'count' vuelos únicos
+        int attempts = 0;
+
+        while (generatedCount < count && attempts < maxAttempts) {
+            attempts++;
+            int number = 1000 + Utility.random(9000); // Usamos util.Utility
+
+            Airplane selectedAirplane = availableAirplanes.get(Utility.random(availableAirplanes.size()));
+
+            Route selectedRoute = null;
+
+            // Intentar seleccionar una ruta que comience en uno de los top 5 aeropuertos
+            if (!top5Airports.isEmpty()) {
+                // Filtra las rutas que tienen como origen uno de los top 5 aeropuertos
+                List<Route> routesFromTopAirports = allAvailableRoutes.stream()
+                        .filter(route -> top5Airports.stream()
+                                .anyMatch(topAirport -> topAirport.getCode() == route.getOriginAirportCode()))
+                        .collect(Collectors.toList());
+
+                if (!routesFromTopAirports.isEmpty()) {
+                    selectedRoute = routesFromTopAirports.get(Utility.random(routesFromTopAirports.size()));
+                }
+            }
+
+            // Si no se encontró una ruta de los top 5 aeropuertos, o si top5Airports estaba vacío,
+            // selecciona una ruta aleatoria de todas las disponibles.
+            if (selectedRoute == null) {
+                selectedRoute = allAvailableRoutes.get(Utility.random(allAvailableRoutes.size()));
+            }
+
+            LocalDateTime departureTime = LocalDateTime.now()
+                    .plusDays(Utility.random(30)) // Hasta 30 días en el futuro
+                    .withHour(Utility.random(24))
+                    .withMinute(Utility.random(60));
+
+            int capacity = selectedAirplane.getTotalCapacity();
+
+            Flight newFlight = new Flight(number, departureTime, capacity, selectedAirplane, selectedRoute);
+            newFlight.setPasajeros(new SinglyLinkedList()); // Inicializamos la lista de pasajeros
+
+            // Verifica si el vuelo ya existe antes de crearlo para evitar duplicados por el número aleatorio
+            if (findFlightByNumber(newFlight.getNumber()) == null) {
+                // Solo agregamos el vuelo a las listas en memoria.
+                // createFlight ya no llama a saveData() por cada vuelo.
+                this.flightList.add(newFlight);
+                this.observableFlights.add(newFlight);
+                createFlight(newFlight);
+                generatedCount++; // Incrementa el contador solo si el vuelo se agregó con éxito
+            } else {
+                System.out.println("Warning: Flight number " + newFlight.getNumber() + " already exists (highly unlikely after clear). Trying another number.");
+            }
+        }
+
+        // ¡PUNTO CLAVE! Guardar todos los vuelos generados en un solo bloque al final.
+        try {
+            saveData(); // Llama a saveData UNA VEZ al final para guardar todos los vuelos nuevos.
+            System.out.println(generatedCount + " vuelos aleatorios generados y guardados exitosamente en JSON.");
+        } catch (IOException e) {
+            System.err.println("¡ERROR CRÍTICO! Fallo al guardar los vuelos generados al finalizar la operación: " + e.getMessage());
+            e.printStackTrace();
+            throw new ListException("Error final al guardar todos los vuelos generados en el JSON: " + e.getMessage());
+        }
+
+        if (generatedCount < count) {
+            System.err.println("Advertencia: Solo se pudieron generar " + generatedCount + " de " + count + " vuelos solicitados.");
+        }
+    }
+
+
+    //===================================== GENERA VUELOS RANDOM (ANTERIOR) ==========================================================================
 
     public void generateInitialRandomFlights(int count) {
         if (airplaneService == null || routeService == null) {
@@ -477,5 +594,39 @@ public class FlightService {
         // (Cambias origen <-> destino y usas toDate)
 
         return availableFlights;
+    }
+    /**
+     * Busca el siguiente vuelo disponible (por fecha y hora) con igual origen y destino,
+     * posterior al vuelo original, y que tenga espacio disponible.
+     */
+    public Flight findNextAvailableFlight(Flight vueloOriginal) {
+        if (vueloOriginal == null) return null;
+        try {
+            int origen = vueloOriginal.getAssignedRoute().getOriginAirportCode();
+            int destino = vueloOriginal.getAssignedRoute().getDestinationAirportCode();
+            LocalDateTime fechaHoraOriginal = vueloOriginal.getDepartureTime();
+            Flight nextFlight = null;
+
+            for (int i = 0; i < flightList.size(); i++) {
+                Node node = flightList.getNode(i);
+                if (node != null && node.data instanceof Flight) {
+                    Flight candidate = (Flight) node.data;
+                    if (candidate == vueloOriginal) continue; // No considerar el mismo vuelo
+                    if (candidate.getAssignedRoute().getOriginAirportCode() == origen
+                            && candidate.getAssignedRoute().getDestinationAirportCode() == destino
+                            && candidate.getDepartureTime().isAfter(fechaHoraOriginal)
+                            && candidate.getOccupancy() < candidate.getCapacity()) {
+                        // Si es el primero encontrado o es más temprano que el anterior candidato
+                        if (nextFlight == null || candidate.getDepartureTime().isBefore(nextFlight.getDepartureTime())) {
+                            nextFlight = candidate;
+                        }
+                    }
+                }
+            }
+            return nextFlight;
+        } catch (ListException e) {
+            System.err.println("Error al buscar siguiente vuelo disponible: " + e.getMessage());
+            return null;
+        }
     }
 }

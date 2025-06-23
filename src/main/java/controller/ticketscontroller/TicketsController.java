@@ -51,7 +51,7 @@ public class TicketsController {
 
         cargarMapaAeropuertosActivos();
 
-        // Ahora que los mapas tienen datos, crea la lista de nombres y configura autocomplete
+        //Ahora que los mapas tienen datos, crea la lista de nombres y configura autocomplete
         List<String> airportNames = new ArrayList<>(airportNameToCode.keySet());
         setupAutoComplete(fromTf, airportNames);
         setupAutoComplete(toTf, airportNames);
@@ -95,7 +95,10 @@ public class TicketsController {
 
         Integer fromCode = getAirportCodeByName(fromName);
         Integer toCode = getAirportCodeByName(toName);
-
+        if (fromDate.isBefore(LocalDate.now())) {
+            util.FXUtility.alertWarning( "Fecha inválida", "La fecha de salida no puede ser anterior al día de hoy.");
+            return;
+        }
         // Si alguno no se encuentra, muestra error
         if (fromCode == null || toCode == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Seleccione aeropuertos válidos usando la lista de sugerencias.");
@@ -103,7 +106,7 @@ public class TicketsController {
             return;
         }
 
-        // ¡Ahora sí! Busca solo por códigos
+        // Busca solo por códigos
         List<Flight> vuelosDisponibles = flightService.getAvailableFlights(
                 String.valueOf(fromCode),
                 String.valueOf(toCode),
@@ -174,12 +177,6 @@ public class TicketsController {
         flightScrollPane.setContent(vuelosBox);
     }
 
-    public void actualizarOcupacionVuelo(Flight vuelo) {
-        Label label = occupancyLabels.get(vuelo);
-        if (label != null) {
-            label.setText("Occupancy: " + vuelo.getOccupancy());
-        }
-    }
 
     private String calcularDuracionVuelo(Flight vuelo) {
         if (vuelo == null || vuelo.getAssignedRoute() == null) return "N/A";
@@ -231,10 +228,10 @@ public class TicketsController {
         cantidadDialog.setTitle("Comprar Tiquete(s)");
         cantidadDialog.setHeaderText("Compra de tiquetes para el vuelo " + vuelo.getNumber());
 
-        int disponibles = vuelo.getCapacity() - vuelo.getOccupancy();
+        // Permite elegir más tiquetes que los cupos disponibles en este vuelo
         Spinner<Integer> spinnerCantidad = new Spinner<>();
         spinnerCantidad.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                1, Math.max(1, disponibles), 1));
+                1, 20, 1)); // Puedes ajustar el 20 a un máximo razonable
         spinnerCantidad.setEditable(false);
 
         VBox fields = new VBox(10,
@@ -243,9 +240,6 @@ public class TicketsController {
         fields.setPadding(new Insets(10));
         cantidadDialog.getDialogPane().setContent(fields);
         cantidadDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        Node okButton = cantidadDialog.getDialogPane().lookupButton(ButtonType.OK);
-        if (disponibles <= 0) okButton.setDisable(true);
 
         Platform.runLater(spinnerCantidad::requestFocus);
 
@@ -257,11 +251,14 @@ public class TicketsController {
         });
 
         cantidadDialog.showAndWait().ifPresent(cantidad -> {
+            int pasajerosAsignados = 0;
+            int contadorPasajero = 1;
+            Flight vueloReferencia = vuelo; // Para buscar siguiente vuelo
             for (int i = 1; i <= cantidad; i++) {
                 // --- Diálogo por cada pasajero ---
                 Dialog<Passenger> pasajeroDialog = new Dialog<>();
-                pasajeroDialog.setTitle("Datos del pasajero " + i);
-                pasajeroDialog.setHeaderText("Ingrese los datos del pasajero #" + i);
+                pasajeroDialog.setTitle("Datos del pasajero " + contadorPasajero);
+                pasajeroDialog.setHeaderText("Ingrese los datos del pasajero #" + contadorPasajero);
 
                 TextField idField = new TextField();
                 idField.setPromptText("Cédula o ID");
@@ -309,7 +306,6 @@ public class TicketsController {
                             valid = false;
                         }
                     }
-
                     // Validar nombre
                     String nombreText = nombreField.getText().trim();
                     if (nombreText.isEmpty()) {
@@ -319,7 +315,6 @@ public class TicketsController {
                         nombreError.setText("El nombre no puede contener números.");
                         valid = false;
                     }
-
                     // Validar nacionalidad
                     String nacionalidadText = nacionalityField.getText().trim();
                     if (nacionalidadText.isEmpty()) {
@@ -329,7 +324,6 @@ public class TicketsController {
                         nacionalidadError.setText("La nacionalidad no puede contener números.");
                         valid = false;
                     }
-
                     pasajeroOk.setDisable(!valid);
                 };
 
@@ -339,7 +333,6 @@ public class TicketsController {
 
                 Platform.runLater(nombreField::requestFocus);
 
-                // Interceptar el botón OK para evitar cerrar el diálogo si los datos no son válidos
                 pasajeroDialog.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(
                         ActionEvent.ACTION, event -> {
                             validate.run();
@@ -372,21 +365,55 @@ public class TicketsController {
                     } else {
                         pasajero = existente;
                     }
-                    boolean asignado = flightService.assignPassengerToFlight(vuelo.getNumber(), pasajero);
+
+                    boolean asignado = false;
+                    Flight vueloParaAsignar = vueloReferencia;
+                    while (vueloParaAsignar != null && !asignado) {
+                        try {
+                            asignado = flightService.assignPassengerToFlight(vueloParaAsignar.getNumber(), pasajero);
+                            if (!asignado) {
+                                vueloParaAsignar = flightService.findNextAvailableFlight(vueloParaAsignar);
+                            }
+                        } catch (Exception e) {
+                            // Si es vuelo lleno, seguir, si no mostrar error y salir
+                            String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+                            if (msg.contains("lleno")) {
+                                vueloParaAsignar = flightService.findNextAvailableFlight(vueloParaAsignar);
+                            } else if (msg.contains("ya está asignado")) {
+                                Alert err = new Alert(Alert.AlertType.ERROR, "El pasajero ya está asignado a este vuelo.");
+                                err.showAndWait();
+                                return;
+                            } else {
+                                Alert err = new Alert(Alert.AlertType.ERROR, "Error al asignar pasajero: " + e.getMessage());
+                                err.showAndWait();
+                                return;
+                            }
+                        }
+                    }
                     if (!asignado) {
-                        Alert err = new Alert(Alert.AlertType.ERROR, "No se pudo asignar el pasajero al vuelo.");
+                        Alert err = new Alert(Alert.AlertType.ERROR, "No se pudo asignar el pasajero a ningún vuelo disponible con la misma ruta.");
                         err.showAndWait();
                         return;
                     }
+                    if (vueloParaAsignar != vueloReferencia) {
+                        Alert info = new Alert(Alert.AlertType.INFORMATION,
+                                "El pasajero fue asignado al siguiente vuelo disponible: "
+                                        + vueloParaAsignar.getNumber() + " (" + getAirportNameByCode(vueloParaAsignar.getAssignedRoute().getOriginAirportCode())
+                                        + " → " + getAirportNameByCode(vueloParaAsignar.getAssignedRoute().getDestinationAirportCode()) + ")");
+                        info.showAndWait();
+                    }
+                    vueloReferencia = vueloParaAsignar; // Para los siguientes pasajeros, seguir desde el último vuelo usado
+                    pasajerosAsignados++;
+                    contadorPasajero++;
                 } catch (Exception e) {
-                    Alert err = new Alert(Alert.AlertType.ERROR, "Error al asignar pasajero: " + e.getMessage());
+                    Alert err = new Alert(Alert.AlertType.ERROR, "Error al registrar pasajero: " + e.getMessage());
                     err.showAndWait();
                     return;
                 }
             }
 
             Alert ok = new Alert(Alert.AlertType.INFORMATION,
-                    "Compra completada. " + cantidad + " pasajero(s) registrados en el vuelo.");
+                    "Compra completada. " + pasajerosAsignados + " pasajero(s) registrados en el/los vuelo(s).");
             ok.showAndWait();
 
             Platform.runLater(() -> searchFlightOnAction(null));

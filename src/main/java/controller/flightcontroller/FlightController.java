@@ -418,7 +418,13 @@ public class FlightController {
                 return;
             }
 
+            // Validar fecha y hora no anteriores al momento actual
             LocalDateTime departureDateTime = LocalDateTime.of(selectedDate, selectedTime);
+            if (departureDateTime.isBefore(LocalDateTime.now())) {
+                showAlert(Alert.AlertType.ERROR, "Fecha y hora inválidas", "La fecha y hora de salida no pueden ser anteriores al momento actual.");
+                return;
+            }
+
             Flight flight = new Flight(flightNumber, departureDateTime, capacity,selectedAirplane, selectedRoute);
             flightService.createFlight(flight);
 
