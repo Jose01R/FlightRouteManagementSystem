@@ -1,11 +1,11 @@
 package domain.linkedlist;
 
-import util.Utility; // Asumiendo que tu clase Utility está en este paquete
+import util.Utility;
 
 public class CircularDoublyLinkedList implements List {
-    private Node first; // Apuntador al inicio de la lista
-    private Node last;  // Apuntador al último nodo de la lista
-    private int size;   // ¡CRUCIAL!: Mantiene el número actual de elementos
+    private Node first;
+    private Node last;
+    private int size;
 
     // Constructor
     public CircularDoublyLinkedList() {
@@ -15,20 +15,19 @@ public class CircularDoublyLinkedList implements List {
 
     @Override
     public int size() {
-        // Ahora, el método size() simplemente retorna el valor de la variable 'size'
-        // Esto es O(1) (constante) y mucho más eficiente.
+
         return size;
     }
 
     @Override
     public void clear() {
         this.first = this.last = null; // Anula la lista
-        this.size = 0; // Resetea el tamaño a 0
+        this.size = 0;
     }
 
     @Override
     public boolean isEmpty() {
-        return first == null; // O podrías usar 'return size == 0;'
+        return first == null;
     }
 
     @Override
@@ -37,7 +36,7 @@ public class CircularDoublyLinkedList implements List {
             throw new ListException("Circular Doubly Linked List is empty");
 
         Node aux = first;
-        // Recorre todos los elementos, incluyendo 'last', antes de volver a 'first'
+
         do {
             if (util.Utility.compare(aux.data, element) == 0) return true; // Ya lo encontró
             aux = aux.next; // Mueve aux al siguiente nodo
@@ -55,12 +54,12 @@ public class CircularDoublyLinkedList implements List {
             last.next = newNode;
             // Hace el doble enlace
             newNode.prev = last;
-            last = newNode; // Movemos el apuntador al último nodo
+            last = newNode;
         }
         // Al final hacemos el enlace circular y doble
         last.next = first;
         first.prev = last;
-        size++; // ¡Incrementa el tamaño!
+        size++;
     }
 
     @Override
@@ -77,7 +76,7 @@ public class CircularDoublyLinkedList implements List {
         // Hace el enlace circular y doble
         last.next = first;
         first.prev = last;
-        size++; // ¡Incrementa el tamaño!
+        size++;
     }
 
     @Override
@@ -86,7 +85,7 @@ public class CircularDoublyLinkedList implements List {
     }
 
     @Override
-    public void addInSortedList(Object element) throws ListException { // Se puede lanzar ListException si la comparación falla
+    public void addInSortedList(Object element) throws ListException {
         Node newNode = new Node(element);
 
         // Caso 1: La lista está vacía
@@ -139,7 +138,7 @@ public class CircularDoublyLinkedList implements List {
         Node current = first;
         boolean found = false;
 
-        // Busca el elemento (recorre todos los nodos)
+
         do {
             if (util.Utility.compare(current.data, element) == 0) {
                 found = true;
@@ -153,12 +152,12 @@ public class CircularDoublyLinkedList implements List {
             throw new ListException("Element " + element.toString() + " not found in the list.");
         }
 
-        // --- Elemento encontrado, procede con la eliminación ---
+
 
         // Caso especial: Solo hay un nodo en la lista, y es el que se va a eliminar
         if (size == 1) { // Si size es 1, current debe ser first y last
-            clear(); // Limpia la lista completamente (pone first=null, last=null, size=0)
-            return; // Sale del método
+            clear(); // Limpia la lista completamente
+            return;
         }
 
         // Caso: El elemento a eliminar es 'first' (y la lista tiene más de un elemento)
@@ -174,14 +173,14 @@ public class CircularDoublyLinkedList implements List {
         current.prev.next = current.next;
         current.next.prev = current.prev;
 
-        size--; // ¡Decrementa el tamaño!
+        size--;
 
-        // Asegura la circularidad para el nuevo 'first' y 'last' SI la lista no está vacía
+
         if (!isEmpty()) {
             last.next = first;
             first.prev = last;
         } else {
-            // Si la lista se vació por completo, asegúrate de que first y last sean null
+
             first = null;
             last = null;
         }
@@ -197,7 +196,7 @@ public class CircularDoublyLinkedList implements List {
 
         // Caso especial: Solo un nodo en la lista
         if (size == 1) {
-            clear(); // Limpia la lista (first=null, last=null, size=0)
+            clear();
             return value;
         }
 
@@ -206,7 +205,7 @@ public class CircularDoublyLinkedList implements List {
         last.next = first;    // Actualiza el enlace circular de 'last' al nuevo 'first'
         first.prev = last;    // Actualiza el enlace circular del nuevo 'first' a 'last'
 
-        size--; // ¡Decrementa el tamaño!
+        size--;
         return value;
     }
 
@@ -229,7 +228,7 @@ public class CircularDoublyLinkedList implements List {
         last.next = first;    // Actualiza el enlace circular del nuevo 'last' a 'first'
         first.prev = last;    // Actualiza el enlace circular de 'first' al nuevo 'last'
 
-        size--; // ¡Decrementa el tamaño!
+        size--;
         return value;
     }
 
@@ -238,10 +237,10 @@ public class CircularDoublyLinkedList implements List {
         if(isEmpty()) {
             throw new ListException("Circular Doubly Linked List is empty");
         }
-        // Usar un bucle basado en 'size' y 'getNode' con un índice 0-based
-        for (int i = 0; i < size(); i++) { // Bucle de 0 a size-1
-            for (int j = i + 1; j < size(); j++) { // Bucle de i+1 a size-1
-                // Obtener nodos por índice (getNode ahora es 0-based)
+
+        for (int i = 0; i < size(); i++) {
+            for (int j = i + 1; j < size(); j++) {
+
                 Node nodeI = getNode(i);
                 Node nodeJ = getNode(j);
 
@@ -251,7 +250,7 @@ public class CircularDoublyLinkedList implements List {
                 }
 
                 if (util.Utility.compare(nodeJ.data, nodeI.data) < 0) {
-                    // Intercambiar solo los datos (es más eficiente y menos propenso a errores en listas enlazadas)
+
                     Object temp = nodeI.data;
                     nodeI.data = nodeJ.data;
                     nodeJ.data = temp;
@@ -266,14 +265,14 @@ public class CircularDoublyLinkedList implements List {
             throw new ListException("Circular Doubly Linked List is empty");
         }
         Node aux = first;
-        int index = 0; // ¡Índice basado en 0!
+        int index = 0;
         do {
             if (util.Utility.compare(aux.data, element) == 0) {
                 return index;
             }
             index++;
             aux = aux.next;
-        } while (aux != first); // Recorre hasta que dé la vuelta completa
+        } while (aux != first);
         return -1; // Elemento no encontrado
     }
 
@@ -320,10 +319,9 @@ public class CircularDoublyLinkedList implements List {
         if (isEmpty()) {
             throw new ListException("Circular Doubly Linked List is empty");
         }
-        // Si solo hay un elemento y es el que buscamos, no tiene siguiente conceptualmente (o es el mismo).
-        // Dependiendo de tu definición, podrías devolver el mismo elemento o un mensaje.
+
         if (size == 1 && util.Utility.compare(first.data, element) == 0) {
-            return "Does not exist in Circular Doubly Linked List"; // O podrías devolver null, el mismo elemento, o lanzar excepción
+            return "Does not exist in Circular Doubly Linked List";
         }
 
         Node aux = first;
@@ -364,13 +362,12 @@ public class CircularDoublyLinkedList implements List {
             result.append(aux.data).append("\n");
             aux = aux.next;
             count++;
-            // Medida de seguridad: si el 'size' es incorrecto o hay un problema de enlace,
-            // evita un bucle infinito que no se detendría en 'first'
-            if (count > size + 5 && size > 0) { // Añadido check size > 0 para evitar division por cero o bucle
+
+            if (count > size + 5 && size > 0) {
                 result.append("... (posible bucle infinito o tamaño incorrecto)");
                 break;
             }
-        } while (aux != first); // Recorre hasta volver al primer nodo
+        } while (aux != first);
 
         return result.toString();
     }

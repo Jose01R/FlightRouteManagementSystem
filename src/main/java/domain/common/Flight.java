@@ -78,7 +78,7 @@ public class Flight {
         this.pasajeros = pasajeros;
     }
 
-    // SERIALIZACIÓN: solo los ids de los pasajeros
+    //solo los ids de los pasajeros
     @JsonGetter("pasajeros")
     public List<Integer> getPasajerosIds() {
         List<Integer> ids = new ArrayList<>();
@@ -97,12 +97,10 @@ public class Flight {
         return ids;
     }
 
-    // DESERIALIZACIÓN: requiere el PassengerService para buscar los pasajeros por id
-    // Se recomienda llamar a este método MANUALMENTE después de deserializar y cargar los pasajeros globales.
+    // requiere el PassengerService para buscar los pasajeros por id
     @JsonSetter("pasajeros")
     public void setPasajerosFromIds(List<Integer> ids) {
-        // REQUIERE que PassengerService esté accesible aquí, así que omite la carga automática
-        // y utiliza un método helper después de deserializar para rellenar la SLL.
+
         this.pasajeros = new SinglyLinkedList();
         // Aquí solo almacena temporalmente los IDs, luego usa setPasajerosByService()
         if (ids != null) {
@@ -112,7 +110,7 @@ public class Flight {
         }
     }
 
-    // MÉTODO HELPER: llama esto después de deserializar para reemplazar los ids por los Passenger reales
+
     public void replaceIdsWithPassengers(PassengerService passengerService) {
         if (this.pasajeros != null) {
             SinglyLinkedList nuevaLista = new SinglyLinkedList();
