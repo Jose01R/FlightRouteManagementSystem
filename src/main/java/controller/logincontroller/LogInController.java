@@ -59,7 +59,7 @@ public class LogInController {
             User authenticatedUser = logInService.login(email, password);
 
             if (authenticatedUser != null) {
-                util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
+                //util.FXUtility.alertInfo("Inicio de Sesión Exitoso", "¡Bienvenido/a, " + authenticatedUser.getName());
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 //                HelloApplication.loadMainApplicationScene(stage);
@@ -75,7 +75,7 @@ public class LogInController {
                             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
                             try {
-                                HelloApplication.loadMainApplicationSceneAdmin(stage);
+                                HelloApplication.loadMainApplicationSceneAdmin(stage, authenticatedUser.getName(), String.valueOf(authenticatedUser.getRole()));
                             } catch (IOException e) {
                                 util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
                                 System.err.println("IOException durante la carga de la escena: " + e.getMessage());
@@ -94,7 +94,7 @@ public class LogInController {
                             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
                             try {
-                                HelloApplication.loadMainApplicationSceneUser(stage);
+                                HelloApplication.loadMainApplicationSceneUser(stage, authenticatedUser.getName(), String.valueOf(authenticatedUser.getRole()));
                             } catch (IOException e) {
                                 util.FXUtility.alert("Error de Navegación", "No se pudo cargar la siguiente pantalla: " + e.getMessage());
                                 System.err.println("IOException durante la carga de la escena: " + e.getMessage());

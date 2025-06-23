@@ -79,14 +79,14 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-    public static void loadMainApplicationSceneAdmin(Stage stage) throws IOException {
+    public static void loadMainApplicationSceneAdmin(Stage stage, String name, String rol) throws IOException {
         FXMLLoader helloFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/loginuser/admin-hello-view.fxml"));
         Scene helloScene = new Scene(helloFxmlLoader.load());
 
         AdminHelloController controller = helloFxmlLoader.getController();
         // Pass ALL initialized services to the HelloController
         controller.setServices(passengerService, flightService, airplaneService, airNetworkService, airportService);
-
+        controller.recibirDatos(name, rol);
         String css = HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/stylesheet.css").toExternalForm();
         helloScene.getStylesheets().add(css);
 
@@ -99,14 +99,14 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-    public static void loadMainApplicationSceneUser(Stage stage) throws IOException {
+    public static void loadMainApplicationSceneUser(Stage stage, String name, String rol) throws IOException {
         FXMLLoader helloFxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/loginuser/user-hello-view.fxml"));
         Scene helloScene = new Scene(helloFxmlLoader.load());
 
         UserHelloController controller = helloFxmlLoader.getController();
         // Pass ALL initialized services to the HelloController
         controller.setServices(passengerService, flightService, airplaneService, airNetworkService, airportService);
-
+        controller.recibirDatos(name, rol);
         String css = HelloApplication.class.getResource("/ucr/flightroutemanagementsystem/stylesheet.css").toExternalForm();
         helloScene.getStylesheets().add(css);
 

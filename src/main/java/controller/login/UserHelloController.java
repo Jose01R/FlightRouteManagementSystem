@@ -26,6 +26,16 @@ public class UserHelloController {
     @FXML
     private AnchorPane ap;
 
+    private String name;
+    private String rol;
+
+    public void recibirDatos(String name, String rol) {//recibe el nombre del usuario y su rol
+        this.name = name;
+        this.rol = rol;
+        System.out.println("Nombre recibido: " + name);
+        System.out.println("Rol recibido: " + rol);
+    }
+
     private void loadPage(String page) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
         try {
@@ -63,10 +73,9 @@ public class UserHelloController {
 
     @FXML
     void Home(ActionEvent event) {
-        this.txtMessage.setText("Airport Operations System");
+        this.txtMessage.setText("Name User: " + name + "\n Rol: " + rol);
         this.bp.setCenter(ap);
     }
-
 
     @FXML
     public void simulaciónVuelosOcupaciónOnAction(ActionEvent actionEvent) {

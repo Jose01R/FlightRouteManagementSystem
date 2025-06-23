@@ -11,7 +11,7 @@
    <center>
       <AnchorPane fx:id="ap" prefHeight="651.0" prefWidth="1410.0" style="-fx-background-color: #417d8b;" BorderPane.alignment="CENTER">
          <children>
-            <Text fx:id="txtMessage" fill="#f7f7f7" layoutX="418.0" layoutY="338.0" strokeType="OUTSIDE" strokeWidth="0.0" text="System Airports Admin" textAlignment="CENTER" wrappingWidth="574.749267578125">
+            <Text fx:id="txtMessage" fill="#f7f7f7" layoutX="350.0" layoutY="307.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to Airport System for Admin" textAlignment="CENTER" wrappingWidth="720.8825073242188">
                <font>
                   <Font name="Arial Bold Italic" size="50.0" />
                </font>
