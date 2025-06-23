@@ -478,4 +478,38 @@ public class FlightService {
 
         return availableFlights;
     }
+    /**
+     * Busca el siguiente vuelo disponible (por fecha y hora) con igual origen y destino,
+     * posterior al vuelo original, y que tenga espacio disponible.
+     */
+    public Flight findNextAvailableFlight(Flight vueloOriginal) {
+        if (vueloOriginal == null) return null;
+        try {
+            int origen = vueloOriginal.getAssignedRoute().getOriginAirportCode();
+            int destino = vueloOriginal.getAssignedRoute().getDestinationAirportCode();
+            LocalDateTime fechaHoraOriginal = vueloOriginal.getDepartureTime();
+            Flight nextFlight = null;
+
+            for (int i = 0; i < flightList.size(); i++) {
+                Node node = flightList.getNode(i);
+                if (node != null && node.data instanceof Flight) {
+                    Flight candidate = (Flight) node.data;
+                    if (candidate == vueloOriginal) continue; // No considerar el mismo vuelo
+                    if (candidate.getAssignedRoute().getOriginAirportCode() == origen
+                            && candidate.getAssignedRoute().getDestinationAirportCode() == destino
+                            && candidate.getDepartureTime().isAfter(fechaHoraOriginal)
+                            && candidate.getOccupancy() < candidate.getCapacity()) {
+                        // Si es el primero encontrado o es más temprano que el anterior candidato
+                        if (nextFlight == null || candidate.getDepartureTime().isBefore(nextFlight.getDepartureTime())) {
+                            nextFlight = candidate;
+                        }
+                    }
+                }
+            }
+            return nextFlight;
+        } catch (ListException e) {
+            System.err.println("Error al buscar siguiente vuelo disponible: " + e.getMessage());
+            return null;
+        }
+    }
 }
