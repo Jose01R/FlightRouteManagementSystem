@@ -4,6 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import controller.RoutesBetweenAirports;
+import controller.Simulation;
 import controller.flightcontroller.FlightController;
 import controller.ticketscontroller.TicketsController;
 import data.RouteData;
@@ -105,7 +106,7 @@ public class AdminHelloController {
 
         List<Airport> topAirports = airNetworkService.getTop5AirportsByRouteCount(); // Obtenemos los 5 aeropuertos con más rutas
 
-        String fileName = "C:\\Users\\PC\\Documents\\INTELLIJ_IDEA_COMMUNITY\\PROYECTO\\FlightRouteManagementSystem\\pdf\\Estadistica.pdf";
+        String fileName = "C:\\Users\\XT\\Documents\\Algoritmos\\Proyecto-Grupo2\\Estadistica.pdf";
 
         Document doc = new Document();
         PdfWriter.getInstance(doc, new FileOutputStream(fileName));
@@ -316,7 +317,22 @@ public class AdminHelloController {
 
     @FXML
     public void simulaciónVuelosOcupaciónOnAction(ActionEvent actionEvent) {
-        loadPage("simulation.fxml");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/simulation.fxml"));
+            Parent root = loader.load();
+
+            //Obtener el controlador real del FXML
+            Simulation simulation = loader.getController();
+
+            //Pasar los servicios al controlador real
+            simulation.setServices(this.passengerService, this.flightService, this.airplaneService, this.airNetworkService,this.airportService);
+
+            // Mostrar la pantalla en el centro del BorderPane
+            this.bp.setCenter(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

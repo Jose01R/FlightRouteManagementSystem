@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -291,18 +292,20 @@ public class FlightController {
     public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
         this.passengerService = passengerService;
         this.flightService = flightService;
-        this.airplaneService=airplaneService;
-        this.airNetworkService= airNetworkService;
-        this.airportService= airportService;
+        this.airplaneService = airplaneService;
+        this.airNetworkService = airNetworkService;
+        this.airportService = airportService;
         passengerTable.setItems(this.passengerService.getObservablePassengers());
         assignedFlightComboBox.setItems(this.flightService.getObservableFlights());
         flightTable.setItems(this.flightService.getObservableFlights());
         routeComboBox.setItems(airNetworkService.getObservableRoutes());
         airplaneComboBox.setItems(airplaneService.getObservableAirplanes());
 
+        // Llena el mapa con TODOS los aeropuertos, no solo los activos
         airportCodeToName = new HashMap<>();
         try {
-            for (Object obj : airportService.getAirportsByStatus("Active")) {
+            ArrayList<Object> allAirports = airportService.getAllAirportsAsList();
+            for (Object obj : allAirports) {
                 if (obj instanceof Airport airport) {
                     airportCodeToName.put(airport.getCode(), airport.getName());
                 }

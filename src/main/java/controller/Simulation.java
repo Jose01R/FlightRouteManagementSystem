@@ -65,19 +65,17 @@ public class Simulation {
 
         listGraph = new DirectedSinglyLinkedListGraph(); // Creamos una nueva instancia de nuestro grafo
 
+    }
+    public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
+        this.airNetworkService=airNetworkService;
+        this.flightService=flightService;
+        this.passengerService=passengerService;
+        this.airplaneService=airplaneService;
+        this.airportService=airportService;
+        initializeData();
+    }
+    private void initializeData() {
         try {
-            // Inicializamos todos los servicios necesarios para la gestión de datos
-            this.airportService = new AirportService();
-            this.airplaneService = new AirplaneService();
-            this.passengerService = new PassengerService(new PassengerData());
-            this.airNetworkService = new AirNetworkService(airportService, new RouteData());
-            this.flightService = new FlightService(
-                    new FlightData(),
-                    airplaneService,
-                    airNetworkService,
-                    airportService,
-                    passengerService
-            );
 
             // Generamos datos iniciales si detectamos que las listas están vacías
             // Esto es útil para pruebas o la primera ejecución de la aplicación
@@ -112,7 +110,6 @@ public class Simulation {
             showAlert(Alert.AlertType.ERROR, "Error de Inicialización", "No se pudieron cargar o generar los datos iniciales: " + e.getMessage());
         }
     }
-
     /**
      * Dibuja el grafo con todos los aeropuertos y rutas cargados desde los servicios.
      */
