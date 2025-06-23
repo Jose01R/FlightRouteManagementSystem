@@ -172,7 +172,7 @@ public class AirplaneService {
      */
     public void generateInitialRandomAirplanes(int count) throws ListException {
         String[] models = {"Boeing 737", "Airbus A320", "Embraer E190", "Boeing 787", "Airbus A350"};
-        int[] capacities = {150, 180, 220, 250, 300};
+        int[] capacities = {100, 150, 200};
 
         int generatedCount = 0;
 
