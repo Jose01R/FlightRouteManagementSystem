@@ -1,16 +1,11 @@
 package controller.registrationcontroller;
 
-// Removed direct data imports as services will manage them
-// import data.PassengerData;
-// import data.UserData;
-
 import data.UserData;
 import domain.btree.TreeException;
 import domain.common.Passenger;
 import domain.common.User;
 import domain.common.UserRole;
 import domain.service.PassengerService;
-import domain.service.LogInService; // NEW: Import UserService
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,27 +34,24 @@ public class RegistrationController {
     @FXML
     private PasswordField confirmPasswordField;
 
-    // These will now be injected instances
-    private UserData userService; // NEW: Holds the shared UserService instance
-    private PassengerService passengerService; // Holds the shared PassengerService instance
+    // Instancias de servicios que serán inyectadas
+    private UserData userService;
+    private PassengerService passengerService;
 
-    // The constructor no longer initializes services.
-    // Services will be set via the setServices method.
+    // El constructor ya no inicializa servicios.
     public RegistrationController() {
-        // No longer initializing services directly here.
-        // This constructor might be empty or used for other simple setup.
+        // Constructor vacío o para configuración simple.
     }
 
     /**
-     * Sets the shared service instances for this controller.
-     * This method must be called by the FXMLLoader after loading the FXML.
-     * @param userService The application's main UserService instance.
-     * @param passengerService The application's main PassengerService instance.
+     * Establece las instancias compartidas de los servicios para este controlador.
+     * Este método debe ser llamado por el FXMLLoader después de cargar el FXML.
+     * @param userService La instancia principal del servicio de usuarios de la aplicación.
+     * @param passengerService La instancia principal del servicio de pasajeros de la aplicación.
      */
     public void setServices(UserData userService, PassengerService passengerService) {
         this.userService = userService;
         this.passengerService = passengerService;
-        // You can add validation here if needed, e.g., Objects.requireNonNull(userService);
     }
 
     @FXML
@@ -71,34 +63,34 @@ public class RegistrationController {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        // **IMPORTANT: Ensure services are set before proceeding**
+        // Validar que los servicios estén inicializados antes de proceder.
         if (userService == null || passengerService == null) {
-            FXUtility.alert("Error de Inicialización", "Los servicios de usuario y pasajero no se han cargado correctamente. Contacte al administrador.");
+            FXUtility.alert("Initialization Error", "User and passenger services were not loaded correctly. Please contact the administrator.").showAndWait();
             System.err.println("CRITICAL: UserService or PassengerService is null in RegistrationController.setServices was not called correctly.");
             return;
         }
 
-        // validacion campos vacios
+        // Validación de campos vacíos
         if (name.isEmpty() || email.isEmpty() || idCedula.isEmpty() || nationality.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            FXUtility.alert("Error de Registro", "Por favor, complete todos los campos, incluyendo el ID/Cédula.");
+            FXUtility.alert("Registration Error", "Please complete all fields, including ID/Cedula.").showAndWait();
             return;
         }
 
-        // validacion si contraseñas coinciden
+        // Validación de coincidencia de contraseñas
         if (!password.equals(confirmPassword)) {
-            FXUtility.alert("Error de Contraseña", "Las contraseñas no coinciden.");
+            FXUtility.alert("Password Error", "Passwords do not match.").showAndWait();
             return;
         }
 
-        // validamos formato del email
+        // Validación de formato de email
         if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
-            FXUtility.alert("Error de Email", "Por favor, ingrese un formato de correo electrónico válido.");
+            FXUtility.alert("Email Error", "Please enter a valid email format.").showAndWait();
             return;
         }
 
-        // verificamos si ya el email existe usando el servicio de usuario
-        if (userService.getUserByEmail(email) != null) { // Uses injected userService
-            FXUtility.alert("Error de Registro", "Ya existe un usuario con este correo electrónico.");
+        // Verificar si el email ya existe usando el servicio de usuario
+        if (userService.getUserByEmail(email) != null) {
+            FXUtility.alert("Registration Error", "A user with this email already exists.").showAndWait();
             return;
         }
 
@@ -106,64 +98,62 @@ public class RegistrationController {
         try {
             cedulaPassenger = Integer.parseInt(idCedula);
         } catch (NumberFormatException e) {
-            FXUtility.alert("Error de ID", "El ID/Cédula debe ser un número válido (solo números).");
+            FXUtility.alert("ID Error", "The ID/Cedula must be a valid number (numbers only).").showAndWait();
             return;
         }
 
-        // validamos si ya existe pasajero con ese ID de cédula usando el servicio de pasajero
-        if (passengerService.findPassengerById(cedulaPassenger) != null) { // Uses injected passengerService
-            FXUtility.alert("Error de Registro", "Ya existe un pasajero registrado con este ID/Cédula.");
+        // Validar si ya existe un pasajero con ese ID de cédula usando el servicio de pasajero
+        if (passengerService.findPassengerById(cedulaPassenger) != null) {
+            FXUtility.alert("Registration Error", "A passenger with this ID/Cedula is already registered.").showAndWait();
             return;
         }
 
         try {
-            // obtenemos id unico para el User usando el servicio de usuario
-            int newUserId = userService.getNextAvailableId(); // Uses injected userService
+            // Obtener un ID único para el nuevo usuario usando el servicio de usuario
+            int newUserId = userService.getNextAvailableId();
 
-            // Crear y registrar user
+            // Crear y registrar el nuevo usuario
             User newUser = new User(newUserId, name, password, email, UserRole.USER);
 
-            if (!userService.registerUser(newUser)) { // Uses injected userService
-                FXUtility.alert("Error de Registro de Usuario", "No se pudo registrar el usuario. Intente de nuevo.");
+            if (!userService.registerUser(newUser)) {
+                FXUtility.alert("User Registration Error", "Could not register the user. Please try again.").showAndWait();
                 return;
             }
 
-            // Crear y registrar passenger
+            // Crear y registrar el perfil del pasajero
             Passenger newPassenger = new Passenger(cedulaPassenger, name, nationality);
 
-            if (passengerService.registerPassenger(newPassenger)) { // Uses injected passengerService
-                FXUtility.alertInfo("Registro Exitoso", "¡Bienvenido/a, " + name + "! Tu cuenta y perfil de pasajero han sido creados.");
-                backToLoginOnAction(event); // Navigate back to login
+            if (passengerService.registerPassenger(newPassenger)) {
+                FXUtility.alertInfo("Registration Successful", "Welcome, " + name + "! Your account and passenger profile have been created.").showAndWait();
+                backToLoginOnAction(event); // Navegar de vuelta a la pantalla de inicio de sesión
             } else {
-                FXUtility.alert("Error de Registro de Pasajero", "No se pudo crear el perfil de pasajero. Se cancelará el registro de usuario.");
-                userService.deleteUser(newUserId); // Rollback user via userService
+                // Si falla el registro del pasajero, intentar revertir el registro del usuario
+                FXUtility.alert("Passenger Registration Error", "Could not create the passenger profile. User registration will be canceled.").showAndWait();
+                userService.deleteUser(newUserId);
             }
         } catch (TreeException e) {
-            FXUtility.alert("Error en el Servicio de Pasajeros", "Ocurrió un error al registrar el pasajero: " + e.getMessage());
+            FXUtility.alert("Passenger Service Error", "An error occurred while registering the passenger: " + e.getMessage()).showAndWait();
             e.printStackTrace();
 
             try {
-                // Rollback user registration if passenger registration failed
-                // Attempt to delete the user whose ID was just created.
-                // Assuming getNextAvailableId() gives the *next* available,
-                // so the one just used was (current next - 1).
+                // Revertir el registro del usuario si el registro del pasajero falló
+                // Se asume que getNextAvailableId() devuelve el *siguiente* ID disponible,
+                // por lo que el ID usado fue (siguiente disponible - 1).
                 int userIdToRollback = userService.getNextAvailableId() - 1;
-                // If userService.deleteUser() throws an exception, it will be caught by the outer catch.
-                userService.deleteUser(userIdToRollback);
+                userService.deleteUser(userIdToRollback); // Si esto lanza una excepción, será capturada por el catch externo.
                 System.err.println("Rolled back user with ID: " + userIdToRollback);
             } catch (Exception ex) {
                 System.err.println("CRITICAL: Failed to rollback user after passenger registration error: " + ex.getMessage());
             }
-        } catch (Exception e) { // General catch for any other unexpected errors
+        } catch (Exception e) { // Captura general para otros errores inesperados
             e.printStackTrace();
-            FXUtility.alert("Error del Sistema", "Ocurrió un error inesperado durante el registro: " + e.getMessage());
+            FXUtility.alert("System Error", "An unexpected error occurred during registration: " + e.getMessage()).showAndWait();
         }
     }
 
     @FXML
     private void backToLoginOnAction(ActionEvent event) {
         try {
-
             String fxmlPath = "/ucr/flightroutemanagementsystem/logininterface/login.fxml";
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -177,8 +167,8 @@ public class RegistrationController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            FXUtility.alert("Error de Navegación", "No se pudo cargar la pantalla de inicio de sesión: " + e.getMessage());
-            System.err.println("IOException durante la carga de la escena de inicio de sesión: " + e.getMessage());
+            FXUtility.alert("Navigation Error", "Could not load the login screen: " + e.getMessage()).showAndWait();
+            System.err.println("IOException during login scene loading: " + e.getMessage());
         }
     }
 }
