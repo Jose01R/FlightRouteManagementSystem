@@ -106,7 +106,7 @@ public class AdminHelloController {
 
         List<Airport> topAirports = airNetworkService.getTop5AirportsByRouteCount(); // Obtenemos los 5 aeropuertos con más rutas
 
-        String fileName = "C:\\Users\\XT\\Documents\\Algoritmos\\Proyecto-Grupo2\\Estadistica.pdf";
+        String fileName = "C:\\Users\\PC\\Documents\\INTELLIJ_IDEA_COMMUNITY\\PROYECTO\\FlightRouteManagementSystem\\pdf\\Estadistica.pdf";
 
         Document doc = new Document();
         PdfWriter.getInstance(doc, new FileOutputStream(fileName));
