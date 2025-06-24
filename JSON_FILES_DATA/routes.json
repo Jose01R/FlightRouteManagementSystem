@@ -1,4 +1,5 @@
 {
+
   "R196698" : {
     "routeId" : "R196698",
     "airline" : "AirlineGY",
@@ -183,9 +184,185 @@
     "price" : 316.0,
     "departureTime" : [ 19, 40 ],
     "arrivalTime" : [ 22, 40 ],
+=======
+  "R175504" : {
+    "routeId" : "R175504",
+    "airline" : "AirlineUU",
+    "durationHours" : 3.0,
+    "distanceKm" : 2611.0,
+    "price" : 543.0,
+    "departureTime" : [ 0, 46 ],
+    "arrivalTime" : [ 3, 46 ],
+    "originAirportCode" : 26,
+    "destinationAirportCode" : 12
+  },
+  "R299361" : {
+    "routeId" : "R299361",
+    "airline" : "AirlineZN",
+    "durationHours" : 6.0,
+    "distanceKm" : 5180.0,
+    "price" : 245.0,
+    "departureTime" : [ 18, 18 ],
+    "arrivalTime" : [ 0, 18 ],
+    "originAirportCode" : 25,
+    "destinationAirportCode" : 23
+  },
+  "R873551" : {
+    "routeId" : "R873551",
+    "airline" : "AirlineXX",
+    "durationHours" : 7.0,
+    "distanceKm" : 3262.0,
+    "price" : 918.0,
+    "departureTime" : [ 3, 31 ],
+    "arrivalTime" : [ 10, 31 ],
+    "originAirportCode" : 16,
+    "destinationAirportCode" : 17
+  },
+  "R689764" : {
+    "routeId" : "R689764",
+    "airline" : "AirlineLK",
+    "durationHours" : 3.0,
+    "distanceKm" : 4989.0,
+    "price" : 363.0,
+    "departureTime" : [ 14, 6 ],
+    "arrivalTime" : [ 17, 6 ],
+    "originAirportCode" : 20,
+    "destinationAirportCode" : 24
+  },
+  "R593806" : {
+    "routeId" : "R593806",
+    "airline" : "AirlineQQ",
+    "durationHours" : 5.0,
+    "distanceKm" : 2590.0,
+    "price" : 757.0,
+    "departureTime" : [ 6, 23 ],
+    "arrivalTime" : [ 11, 23 ],
+    "originAirportCode" : 21,
+    "destinationAirportCode" : 16
+  },
+  "R438396" : {
+    "routeId" : "R438396",
+    "airline" : "AirlinePL",
+    "durationHours" : 3.0,
+    "distanceKm" : 1577.0,
+    "price" : 478.0,
+    "departureTime" : [ 23, 39 ],
+    "arrivalTime" : [ 2, 39 ],
+    "originAirportCode" : 13,
+    "destinationAirportCode" : 22
+  },
+  "R12383" : {
+    "routeId" : "R12383",
+    "airline" : "AirlineKN",
+    "durationHours" : 8.0,
+    "distanceKm" : 2092.0,
+    "price" : 62.0,
+    "departureTime" : [ 11, 38 ],
+    "arrivalTime" : [ 19, 38 ],
+    "originAirportCode" : 12,
+    "destinationAirportCode" : 20
+  },
+  "R436246" : {
+    "routeId" : "R436246",
+    "airline" : "AirlineDB",
+    "durationHours" : 10.0,
+    "distanceKm" : 3038.0,
+    "price" : 873.0,
+    "departureTime" : [ 4, 45 ],
+    "arrivalTime" : [ 14, 45 ],
     "originAirportCode" : 17,
+    "destinationAirportCode" : 26
+  },
+  "R581000" : {
+    "routeId" : "R581000",
+    "airline" : "AirlineJD",
+    "durationHours" : 5.0,
+    "distanceKm" : 873.0,
+    "price" : 324.0,
+    "departureTime" : [ 23, 35 ],
+    "arrivalTime" : [ 4, 35 ],
+    "originAirportCode" : 26,
     "destinationAirportCode" : 28
   },
+  "R321492" : {
+    "routeId" : "R321492",
+    "airline" : "AirlineZO",
+    "durationHours" : 8.0,
+    "distanceKm" : 4089.0,
+    "price" : 704.0,
+    "departureTime" : [ 16, 12 ],
+    "arrivalTime" : [ 0, 12 ],
+    "originAirportCode" : 13,
+    "destinationAirportCode" : 20
+  },
+  "R657829" : {
+    "routeId" : "R657829",
+    "airline" : "AirlineSZ",
+    "durationHours" : 4.0,
+    "distanceKm" : 5024.0,
+    "price" : 769.0,
+    "departureTime" : [ 0, 20 ],
+    "arrivalTime" : [ 4, 20 ],
+    "originAirportCode" : 21,
+    "destinationAirportCode" : 24
+  },
+  "R543049" : {
+    "routeId" : "R543049",
+    "airline" : "AirlineNM",
+    "durationHours" : 1.0,
+    "distanceKm" : 5152.0,
+    "price" : 771.0,
+    "departureTime" : [ 7, 24 ],
+    "arrivalTime" : [ 8, 24 ],
+    "originAirportCode" : 19,
+    "destinationAirportCode" : 30
+  },
+  "R110" : {
+    "routeId" : "R110",
+    "airline" : "AirlineIG",
+    "durationHours" : 5.0,
+    "distanceKm" : 2731.0,
+    "price" : 868.0,
+    "departureTime" : [ 11, 53 ],
+    "arrivalTime" : [ 16, 53 ],
+    "originAirportCode" : 21,
+    "destinationAirportCode" : 30
+  },
+  "R349093" : {
+    "routeId" : "R349093",
+    "airline" : "AirlineKG",
+    "durationHours" : 10.0,
+    "distanceKm" : 3243.0,
+    "price" : 190.0,
+    "departureTime" : [ 7, 19 ],
+    "arrivalTime" : [ 17, 19 ],
+    "originAirportCode" : 20,
+    "destinationAirportCode" : 28
+  },
+  "R702564" : {
+    "routeId" : "R702564",
+    "airline" : "AirlineQB",
+    "durationHours" : 8.0,
+    "distanceKm" : 4021.0,
+    "price" : 503.0,
+    "departureTime" : [ 10, 3 ],
+    "arrivalTime" : [ 18, 3 ],
+    "originAirportCode" : 13,
+    "destinationAirportCode" : 22
+  },
+  "R616167" : {
+    "routeId" : "R616167",
+    "airline" : "AirlinePY",
+    "durationHours" : 10.0,
+    "distanceKm" : 2287.0,
+    "price" : 198.0,
+    "departureTime" : [ 4, 55 ],
+    "arrivalTime" : [ 14, 55 ],
+
+    "originAirportCode" : 17,
+    "destinationAirportCode" : 27
+  },
+
   "R768537" : {
     "routeId" : "R768537",
     "airline" : "AirlineHH",
@@ -216,6 +393,48 @@
     "price" : 668.0,
     "departureTime" : [ 7, 42 ],
     "arrivalTime" : [ 9, 42 ],
+  "R748321" : {
+    "routeId" : "R748321",
+    "airline" : "AirlineZA",
+    "durationHours" : 1.0,
+    "distanceKm" : 692.0,
+    "price" : 724.0,
+    "departureTime" : [ 20, 30 ],
+    "arrivalTime" : [ 21, 30 ],
+    "originAirportCode" : 20,
+    "destinationAirportCode" : 24
+  },
+  "R62654" : {
+    "routeId" : "R62654",
+    "airline" : "AirlineYE",
+    "durationHours" : 1.0,
+    "distanceKm" : 4693.0,
+    "price" : 318.0,
+    "departureTime" : [ 3, 19 ],
+    "arrivalTime" : [ 4, 19 ],
+    "originAirportCode" : 22,
+    "destinationAirportCode" : 16
+  },
+  "R673833" : {
+    "routeId" : "R673833",
+    "airline" : "AirlineEX",
+    "durationHours" : 6.0,
+    "distanceKm" : 3857.0,
+    "price" : 291.0,
+    "departureTime" : [ 3, 20 ],
+    "arrivalTime" : [ 9, 20 ],
+    "originAirportCode" : 21,
+    "destinationAirportCode" : 13
+  },
+  "R706025" : {
+    "routeId" : "R706025",
+    "airline" : "AirlineTX",
+    "durationHours" : 9.0,
+    "distanceKm" : 3243.0,
+    "price" : 397.0,
+    "departureTime" : [ 7, 50 ],
+    "arrivalTime" : [ 16, 50 ],
+
     "originAirportCode" : 11,
     "destinationAirportCode" : 24
   }
