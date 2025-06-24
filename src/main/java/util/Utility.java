@@ -230,6 +230,12 @@ public class Utility {
                     Airport a2 = (Airport) b;
 
                     // Primero comparar por país (alfabéticamente)
+                    int idComparison = a1.getCode() < a2.getCode() ? -1 :  a1.getCode() > a2.getCode() ? 1 : 0;
+                    if (idComparison != 0 || idComparison==0) {
+                        return idComparison;
+                    }
+
+                    // Primero comparar por país (alfabéticamente)
                     int countryComparison = a1.getCountry().compareToIgnoreCase(a2.getCountry());
                     if (countryComparison != 0) {
                         return countryComparison;

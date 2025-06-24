@@ -101,14 +101,21 @@ public class AirportsController
         Airport newAirport = new Airport(id,name,country,status);
         try {
             AirportService airportService = new AirportService();
-            airportService.createAirport(newAirport);
-            //createAirport();
-            idAirport.clear();
-            nameAirport.clear();
-            statusAirport.clear();
-            countryAirport.clear();
-            util.FXUtility.alertInfo("Airport added", "The Airport " + name +" has been added").showAndWait(); 
-            updateTableView();
+            boolean creado = airportService.createAirport(newAirport);
+            if (creado){
+                //createAirport();
+                idAirport.clear();
+                nameAirport.clear();
+                statusAirport.clear();
+                countryAirport.clear();
+                util.FXUtility.alertInfo("Airport added", "The Airport " + name +" has been added").showAndWait();
+                updateTableView();
+            }else{
+                util.FXUtility.alertInfo("Airport not added", "The Airport " + name +" hasn`t been added").showAndWait();
+                idAirport.clear();
+                nameAirport.clear();
+                countryAirport.clear();
+            }
 
         } catch (ListException e) {
             util.FXUtility.alertInfo("Error", e.getMessage()).showAndWait(); 

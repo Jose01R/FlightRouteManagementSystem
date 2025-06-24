@@ -67,7 +67,8 @@ public class AirportService {
     public boolean createAirport(Airport airport) throws ListException {
         if (!airportsDLL.isEmpty()) {
             if (airportsDLL.contains(airport)) {
-                throw new ListException("The airport with code: " + airport.getCode() + " already exists.");
+                return false;
+                //throw new ListException("The airport with code: " + airport.getCode() + " already exists.");
             }
         }
         airportsDLL.add(airport);//AGREGAMOS SI EL AIRPORT NO EXISTE

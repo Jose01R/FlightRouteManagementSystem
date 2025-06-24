@@ -1,4 +1,11 @@
 [ {
+  "serialNumber" : "SN1094",
+  "model" : "Boeing 737",
+  "totalCapacity" : 150,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN2590",
   "serialNumber" : "SN9369",
   "model" : "Airbus A320",
   "totalCapacity" : 100,
@@ -6,11 +13,34 @@
   "flightHistory" : [ ]
 }, {
   "serialNumber" : "SN8179",
+
   "model" : "Airbus A350",
   "totalCapacity" : 100,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
+
+  "serialNumber" : "SN7363",
+  "model" : "Airbus A350",
+  "totalCapacity" : 200,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN1733",
+  "model" : "Airbus A350",
+  "totalCapacity" : 100,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN9490",
+  "model" : "Boeing 737",
+  "totalCapacity" : 150,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN2939",
+  "model" : "Airbus A320",
+
   "serialNumber" : "SN5164",
   "model" : "Boeing 737",
   "totalCapacity" : 150,
@@ -31,16 +61,39 @@
 }, {
   "serialNumber" : "SN7080",
   "model" : "Boeing 737",
+
   "totalCapacity" : 200,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
+
+  "serialNumber" : "SN5037",
+  "model" : "Boeing 787",
+
   "serialNumber" : "SN4079",
+  "model" : "Boeing 737",
+
+  "totalCapacity" : 150,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+
+  "serialNumber" : "SN1806",
   "model" : "Boeing 737",
   "totalCapacity" : 150,
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 }, {
+  "serialNumber" : "SN6434",
+  "model" : "Airbus A350",
+  "totalCapacity" : 100,
+  "currentStatus" : "In Service",
+  "flightHistory" : [ ]
+}, {
+  "serialNumber" : "SN4400",
+  "model" : "Airbus A350",
+  "totalCapacity" : 100,
+
   "serialNumber" : "SN6995",
   "model" : "Airbus A320",
   "totalCapacity" : 100,
@@ -56,6 +109,7 @@
   "serialNumber" : "SN3520",
   "model" : "Boeing 787",
   "totalCapacity" : 200,
+
   "currentStatus" : "In Service",
   "flightHistory" : [ ]
 } ]
