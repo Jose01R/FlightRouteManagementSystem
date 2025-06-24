@@ -13,10 +13,6 @@ import domain.service.FlightService;
 import domain.service.AirplaneService;
 import domain.service.PassengerService;
 
-import data.PassengerData;
-import data.FlightData;
-import data.RouteData;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -30,6 +26,7 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import util.Utility;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,6 +53,12 @@ public class Simulation {
     private AirplaneService airplaneService;
     private PassengerService passengerService;
 
+    // Nuevo: Guardar el estado original de los elementos para poder "desresaltar"
+    private Map<String, Color> originalEdgeColors = new HashMap<>();
+    private Map<String, Double> originalEdgeWidths = new HashMap<>();
+    private Map<Object, Color> originalVertexColors = new HashMap<>();
+    private Map<Object, Color> originalVertexStrokeColors = new HashMap<>();
+
     @FXML
     public void initialize() {
         setupMouseZoom(); // Configuramos el zoom con la rueda del ratón
@@ -64,91 +67,105 @@ public class Simulation {
         image.getTransforms().add(scaleTransform); // Añadimos la transformación de escala al imagen del grafo
 
         listGraph = new DirectedSinglyLinkedListGraph(); // Creamos una nueva instancia de nuestro grafo
+    }
 
-    }
     public void setServices(PassengerService passengerService, FlightService flightService, AirplaneService airplaneService, AirNetworkService airNetworkService, AirportService airportService) {
-        this.airNetworkService=airNetworkService;
-        this.flightService=flightService;
-        this.passengerService=passengerService;
-        this.airplaneService=airplaneService;
-        this.airportService=airportService;
-        initializeData();
+        this.airNetworkService = airNetworkService;
+        this.flightService = flightService;
+        this.passengerService = passengerService;
+        this.airplaneService = airplaneService;
+        this.airportService = airportService;
+        initializeData(); // Llamamos a la inicialización de datos una vez que los servicios están listos
     }
+
     private void initializeData() {
         try {
+            // AirportService.loadAirports() ya se ejecuta en el constructor de AirportService
+            // y carga los aeropuertos desde AirportsData. Por lo tanto, no necesitamos una llamada explícita aquí.
 
-            // Generamos datos iniciales si detectamos que las listas están vacías
-            // Esto es útil para pruebas o la primera ejecución de la aplicación
-            if (airportService.getAllAirports().isEmpty()) {
-                System.out.println("Generando aeropuertos iniciales...");
-                airportService.generateInitialRandomAirports(20); // Generamos 20 aeropuertos aleatorios
-            }
+            // Generar datos iniciales si las listas están vacías (excepto aeropuertos, que ya cargamos)
             if (airplaneService.getAllAirplanes().isEmpty()) {
                 System.out.println("Generando aviones iniciales...");
-                airplaneService.generateInitialRandomAirplanes(10); // Generamos 10 aviones aleatorios
-            }
-            if (airNetworkService.getAllRoutes().isEmpty()) {
-                System.out.println("Generando rutas iniciales...");
-                airNetworkService.generateInitialRandomRoutes(30); // Generamos 30 rutas aleatorias
+                airplaneService.generateInitialRandomAirplanes(10);
             }
             if (passengerService.getAllPassengers().isEmpty()) {
                 System.out.println("Generando pasajeros iniciales...");
-                passengerService.generateInitialRandomPassengers(50); // Generamos 50 pasajeros aleatorios
+                passengerService.generateInitialRandomPassengers(50);
             }
             if (flightService.getFlightList().isEmpty()) {
                 System.out.println("Generando vuelos iniciales...");
-                flightService.generateFlightsRandom(25); // Generamos 25 vuelos aleatorios
+                flightService.generateFlightsRandom(25);
             }
 
-            // Al iniciar la aplicación, dibujamos el grafo con todas las rutas existentes
+            // Si no hay rutas cargadas, podemos crear algunas rutas 'base'
+            // para que Dijkstra tenga una red sobre la cual calcular.
+            if (airNetworkService.getAllRoutes().isEmpty()) {
+                System.out.println("No hay rutas iniciales. Generando algunas aleatorias para que el grafo tenga aristas.");
+                airNetworkService.generateInitialRandomRoutes(20);
+            }
+
+            // Al iniciar la aplicación, se dibuja el grafo con todas las rutas existentes.
             drawAllRoutesGraph();
 
         } catch (Exception e) {
-            // Capturamos cualquier error durante la inicialización y mostramos una alerta
             System.err.println("Error durante la inicialización del controlador: " + e.getMessage());
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error de Inicialización", "No se pudieron cargar o generar los datos iniciales: " + e.getMessage());
         }
     }
+
     /**
-     * Dibuja el grafo con todos los aeropuertos y rutas cargados desde los servicios.
+     * Dibuja el grafo principal mostrando todos los aeropuertos y las rutas existentes.
      */
     private void drawAllRoutesGraph() {
-        clearGraph(); // Limpiamos el grafo visual y los datos del grafo lógico antes de dibujar uno nuevo
-        try {
-            DoublyLinkedList allAirportsList = airportService.getAllAirports(); // Obtenemos la lista de todos los aeropuertos
-            List<Route> allRoutes = airNetworkService.getAllRoutes(); // Obtenemos la lista de todas las rutas
+        // clearGraph(); // NO LLAMAR clearGraph() AQUÍ si queremos mantener el grafo base
 
-            // Verificamos si hay suficientes datos para dibujar
-            if (allAirportsList.isEmpty() || allRoutes.isEmpty()) {
-                System.out.println("No hay suficientes aeropuertos o rutas para dibujar el grafo.");
+        try {
+            DoublyLinkedList allAirportsList = airportService.getAllAirports(); // Obtenemos todos los aeropuertos cargados
+            List<Airport> allAirports = allAirportsList.toList().stream()
+                    .filter(obj -> obj instanceof Airport)
+                    .map(obj -> (Airport) obj)
+                    .collect(Collectors.toList());
+
+            if (allAirports.isEmpty()) {
+                System.out.println("No hay aeropuertos para dibujar el grafo principal.");
+                showAlert(Alert.AlertType.INFORMATION, "Sin Aeropuertos", "No hay aeropuertos cargados para mostrar la simulación.");
                 return;
             }
 
-            // Recorremos la lista de aeropuertos para añadirlos como vértices a nuestro grafo de dibujo
-            for (int i = 1; i <= allAirportsList.size(); i++) {
-                Node node = allAirportsList.getNode(i);
-                if (node != null && node.data instanceof Airport) {
-                    Airport airport = (Airport) node.data;
-                    listGraph.addVertex(airport.getCode()); // Añadimos el código del aeropuerto como vértice
-                } else {
-                    System.err.println("Advertencia: Objeto no válido o nulo encontrado en allAirportsList en la posición " + i);
-                }
+            // Limpiamos los elementos visuales existentes y el grafo lógico si ya se había dibujado algo
+            // Esto asegura que cada vez que se llama a drawAllRoutesGraph (por ejemplo, al reiniciar la app),
+            // el grafo se dibuje desde cero.
+            graph.getChildren().clear();
+            vertexCircles.clear();
+            edgeMap.clear();
+            edgeWeightLabels.clear();
+            listGraph.clear();
+            originalEdgeColors.clear(); // Limpiamos también los estados originales
+            originalEdgeWidths.clear();
+            originalVertexColors.clear();
+            originalVertexStrokeColors.clear();
+
+
+            // Primero, añadimos todos los aeropuertos como vértices al grafo de dibujo.
+            for (Airport airport : allAirports) {
+                listGraph.addVertex(airport);
             }
 
-            // Recorremos todas las rutas para añadirlas como aristas a nuestro grafo de dibujo
+            // Agrega todas las aristas existentes en el AirNetworkService a nuestro grafo de dibujo
+            List<Route> allRoutes = airNetworkService.getAllRoutes();
             for (Route route : allRoutes) {
-                // Verificamos que ambos vértices (origen y destino) existan en el grafo antes de añadir la arista
-                if (listGraph.containsVertex(route.getOriginAirportCode()) &&
-                        listGraph.containsVertex(route.getDestinationAirportCode())) {
+                Airport origin = airportService.getAirportByCode(route.getOriginAirportCode());
+                Airport destination = airportService.getAirportByCode(route.getDestinationAirportCode());
+                if (origin != null && destination != null) {
                     try {
-                        // Añadimos la arista con el peso (distancia en km)
-                        listGraph.addEdgeWeight(route.getOriginAirportCode(), route.getDestinationAirportCode(), route.getDistanceKm());
+                        // Asegúrate de que los vértices existan antes de añadir la arista
+                        listGraph.addVertex(origin); // Solo para asegurarnos que estén si no se agregaron ya
+                        listGraph.addVertex(destination);
+                        listGraph.addEdgeWeight(origin, destination, route.getDistanceKm()); // Usar distancia para dibujar
                     } catch (GraphException e) {
-                        System.err.println("Error al agregar la arista para la ruta " + route.getRouteId() + ": " + e.getMessage());
+                        System.err.println("Error al añadir arista para dibujar todas las conexiones: " + e.getMessage());
                     }
-                } else {
-                    System.err.println("Advertencia: Se omite la ruta " + route.getRouteId() + " porque falta el vértice del aeropuerto de origen o destino.");
                 }
             }
 
@@ -156,10 +173,52 @@ public class Simulation {
             renderGraphOnPane(listGraph, airportService);
 
         } catch (ListException | GraphException e) {
-            System.err.println("Error al dibujar todas las rutas en el grafo: " + e.getMessage());
+            System.err.println("Error al dibujar el grafo principal: " + e.getMessage());
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error al Dibujar Grafo", "Ocurrió un error al intentar dibujar el grafo principal: " + e.getMessage());
         }
     }
+
+
+    /**
+     * Dibuja una ruta específica resaltando los aeropuertos y las aristas de esa ruta.
+     * Este método ya no es necesario para la nueva funcionalidad de "resaltar".
+     * Se mantiene por si acaso, pero no se usará en handleShowTopAirportRoutes.
+     */
+    private void drawSpecificPath(List<Integer> pathCodes, AirportService airportService, AirNetworkService airNetworkService, DirectedSinglyLinkedListGraph graphToRender) throws ListException, GraphException {
+        // Este método ahora se usará para dibujar una ruta *aislada* si fuera necesario,
+        // pero la lógica de handleShowTopAirportRoutes ha cambiado.
+        clearGraph();
+
+        // Primero, añadimos todos los aeropuertos de la ruta como vértices al grafo de dibujo.
+        for (Integer airportCode : pathCodes) {
+            Airport airport = airportService.getAirportByCode(airportCode);
+            if (airport != null) {
+                graphToRender.addVertex(airport);
+            }
+        }
+
+        // Luego, añadimos las aristas (rutas) que forman el camino más corto
+        for (int i = 0; i < pathCodes.size() - 1; i++) {
+            int originCode = pathCodes.get(i);
+            int destinationCode = pathCodes.get(i + 1);
+
+            Airport origin = airportService.getAirportByCode(originCode);
+            Airport destination = airportService.getAirportByCode(destinationCode);
+
+            // Busca la ruta específica en el AirNetworkService para obtener su distancia/peso
+            Route route = airNetworkService.getAllRoutes().stream()
+                    .filter(r -> r.getOriginAirportCode() == originCode && r.getDestinationAirportCode() == destinationCode)
+                    .findFirst()
+                    .orElse(null);
+
+            if (origin != null && destination != null && route != null) {
+                graphToRender.addEdgeWeight(origin, destination, route.getDistanceKm()); // O cualquier otra propiedad de Route para el peso
+            }
+        }
+        renderGraphOnPane(graphToRender, airportService); // Renderiza el grafo con la ruta específica
+    }
+
 
     private void clearGraph() {
         graph.getChildren().clear(); // Limpiamos todos los elementos visuales del panel del grafo
@@ -167,6 +226,10 @@ public class Simulation {
         edgeMap.clear();
         edgeWeightLabels.clear();
         listGraph.clear(); // Limpiamos la estructura de datos del grafo lógico
+        originalEdgeColors.clear(); // Limpiamos también los estados originales
+        originalEdgeWidths.clear();
+        originalVertexColors.clear();
+        originalVertexStrokeColors.clear();
     }
 
     // Método para renderizar el grafo en el panel de JavaFX
@@ -194,86 +257,81 @@ public class Simulation {
         Set<String> occupiedPositions = new HashSet<>();
 
         // Iteramos sobre todos los vértices para calcular sus posiciones y dibujarlos
-        for (Object vertexCode : currentVertices) {
-            int airportCode = (Integer) vertexCode;
-            Airport airport = airportService.getAirportByCode(airportCode); // Obtenemos el objeto aeropuerto por su código
+        for (Object vertexObj : currentVertices) {
+            Airport airport;
+            if (vertexObj instanceof Airport) {
+                airport = (Airport) vertexObj;
+            } else if (vertexObj instanceof Integer) { // Si el vértice es un código, lo buscamos
+                airport = airportService.getAirportByCode((Integer) vertexObj);
+            } else {
+                airport = null;
+            }
+
+            if (airport == null) {
+                System.err.println("Advertencia: No se pudo encontrar el objeto Airport para el vértice: " + vertexObj);
+                continue;
+            }
+
+            // Si el círculo ya existe, no lo volvemos a dibujar, solo actualizamos su estado si es necesario
+            if (vertexCircles.containsKey(airport)) {
+                continue; // El vértice ya está dibujado, no lo duplicamos.
+            }
 
             double x, y;
             boolean positionFound = false;
 
-            // Primero, intentamos asignar posiciones fijas para aeropuertos específicos para un layout más organizado
-            if (airport != null) {
-                switch (airport.getName()) {
-                    case "Aeropuerto de Dortmund": x = 600; y = 170; positionFound = true; break;
-                    case "Aeropuerto de Aalborg": x = 880; y = 185; positionFound = true; break;
-                    case "Aeropuerto de La Coruña": x = 600; y = 210; positionFound = true; break;
-                    case "Aeropuerto de Marsella-Provenza": x = 820; y = 295; positionFound = true; break;
-                    case "Aeropuerto de Oporto": x = 755; y = 325; positionFound = true; break;
-                    case "Aeropuerto de Zúrich": x = 870; y = 280; positionFound = true; break;
-                    case "Aeropuerto de Milán-Malpensa": x = 890; y = 300; positionFound = true; break;
-                    case "Aeropuerto de Bruselas": x = 840; y = 240; positionFound = true; break;
-                    case "Aeropuerto de Estocolmo-Arlanda": x = 940; y = 145; positionFound = true; break;
-                    case "Aeropuerto de Viena-Schwechat": x = 910; y = 270; positionFound = true; break;
-                    case "Aeropuerto de Praga": x = 890; y = 255; positionFound = true; break;
-                    case "Aeropuerto de Ámsterdam-Schiphol": x = 830; y = 225; positionFound = true; break;
-                    case "Aeropuerto de Helsinki-Vantaa": x = 975; y = 110; positionFound = true; break;
-                    case "Aeropuerto de Dublín": x = 720; y = 230; positionFound = true; break;
-                    case "Aeropuerto de Oslo-Gardermoen": x = 930; y = 130; positionFound = true; break;
-                    case "Aeropuerto de Bucarest-Henri Coandă": x = 980; y = 300; positionFound = true; break;
-                    case "Aeropuerto de Budapest-Ferenc Liszt": x = 955; y = 285; positionFound = true; break;
-                    case "Aeropuerto de Varsovia-Chopin": x = 960; y = 240; positionFound = true; break;
-                    case "Aeropuerto de Copenhague-Kastrup": x = 910; y = 200; positionFound = true; break;
-                    case "Aeropuerto de Sofía": x = 995; y = 320; positionFound = true; break;
-                    default:
-                        // Si no es un aeropuerto con posición fija, asignamos valores centinela para indicar que necesita posición dinámica
-                        x = -1; y = -1;
+            double safeRadius = 50; // Radio de seguridad para evitar superposiciones
+            int attempts = 0;
+            do {
+                x = rand.nextDouble() * (maxX - minX) + minX;
+                y = rand.nextDouble() * (maxY - minY) + minY;
+                String posKey = String.format("%.0f,%.0f", x / safeRadius, y / safeRadius); // Clave para la posición aproximada
+                if (!occupiedPositions.contains(posKey)) {
+                    occupiedPositions.add(posKey);
+                    positionFound = true;
                 }
-            } else {
-                x = -1; y = -1;
-            }
-
-            // Para los aeropuertos que no tienen posición fija, intentamos encontrar una posición aleatoria no superpuesta
+                attempts++;
+            } while (!positionFound && attempts < 100); // Intentar hasta 100 veces para encontrar una posición no superpuesta
             if (!positionFound) {
-                double safeRadius = 50; // Definimos un radio seguro para evitar que los círculos se superpongan demasiado
-                int attempts = 0; // Contamos los intentos para evitar bucles infinitos
-                do {
-                    // Generamos coordenadas aleatorias dentro del área definida por el padding
-                    x = rand.nextDouble() * (maxX - minX) + minX;
-                    y = rand.nextDouble() * (maxY - minY) + minY;
-                    // Creamos una "clave de posición" cuantizada para verificar la ocupación en una cuadrícula virtual
-                    String posKey = String.format("%.0f,%.0f", x / safeRadius, y / safeRadius);
-                    if (!occupiedPositions.contains(posKey)) {
-                        occupiedPositions.add(posKey); // Marcamos la posición como ocupada
-                        positionFound = true; // Indicamos que hemos encontrado una posición
-                    }
-                    attempts++;
-                } while (!positionFound && attempts < 100); // Limitamos los intentos
-                if (!positionFound) {
-                    // Si después de muchos intentos no encontramos una posición, mostramos una advertencia
-                    System.err.println("Advertencia: No se pudo encontrar una posición no superpuesta para " + vertexCode + " después de varios intentos.");
-                }
+                System.err.println("Advertencia: No se pudo encontrar una posición no superpuesta para " + airport.getCode() + " después de varios intentos. Usando una posición por defecto.");
+                x = minX + (maxX - minX) / 2; // Posición de fallback
+                y = minY + (maxY - minY) / 2;
             }
 
-            vertexPositions.put(vertexCode, new double[]{x, y}); // Guardamos la posición del vértice
+
+            vertexPositions.put(airport, new double[]{x, y}); // Guardamos la posición del vértice, usando el objeto Airport como clave
 
             // Dibujamos el círculo que representa el aeropuerto
             Circle circle = new Circle(x, y, 15, Color.WHITE);
             circle.setStroke(Color.LIGHTBLUE);
             circle.setStrokeWidth(2);
-            circle.setId("airport_circle_" + airportCode);
+            circle.setId("airport_circle_" + airport.getCode());
+
+            // Guardar estado original
+            originalVertexColors.put(airport, (Color) circle.getFill());
+            originalVertexStrokeColors.put(airport, (Color) circle.getStroke());
+
 
             // Creamos el texto con el nombre del aeropuerto
-            Text text = new Text(airport != null ? airport.getName() : String.valueOf(airportCode));
+            Text text = new Text(airport.getName());
             text.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
             text.setFill(Color.WHITE);
-            text.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;"); // Aumentamos ligeramente el tamaño de la fuente
+            text.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-            // Ajustamos la posición del texto para que quede centrado debajo del círculo
             text.setLayoutX(x - text.getBoundsInLocal().getWidth() / 2);
-            text.setLayoutY(y + circle.getRadius() + 15); // Añadimos un desplazamiento para que no se superponga con el círculo
+            text.setLayoutY(y + circle.getRadius() + 15);
 
-            graph.getChildren().addAll(circle, text); // Añadimos el círculo y el texto al panel del grafo
-            vertexCircles.put(vertexCode, circle); // Guardamos la referencia al círculo en el mapa
+            graph.getChildren().addAll(circle, text);
+            vertexCircles.put(airport, circle); // Guardamos la referencia al círculo en el mapa usando el objeto Airport
+
+            // Añadir manejador de eventos al círculo para mostrar información al hacer clic
+            circle.setOnMouseClicked(event -> {
+                showAlert(Alert.AlertType.INFORMATION, "Información del Aeropuerto",
+                        "Código: " + airport.getCode() + "\n" +
+                                "Nombre: " + airport.getName() + "\n" +
+                                "País: " + airport.getCountry() + "\n" +
+                                "Estado: " + airport.getStatus());
+            });
         }
 
         // Ahora, iteramos sobre los vértices del grafo para dibujar sus aristas
@@ -288,80 +346,144 @@ public class Simulation {
                         Node edgeNode = edgesOfSource.getNode(j);
                         if (edgeNode != null && edgeNode.getData() instanceof EdgeWeight) {
                             EdgeWeight edge = (EdgeWeight) edgeNode.getData();
-                            // Dibujamos la arista dirigida entre el origen y el destino con su peso
-                            drawDirectedEdge(sourceVertex.data, edge.getEdge(), edge.getWeight(), vertexPositions);
+                            // Dibuja la arista dirigida entre el origen y el destino con su peso
+                            // Aseguramos que sourceVertex.data y edge.getEdge() sean objetos Airport para el mapa
+                            drawDirectedEdge((Airport)sourceVertex.data, (Airport)edge.getEdge(), edge.getWeight(), vertexPositions);
                         } else {
                             System.err.println("Advertencia: Objeto no válido o nulo encontrado en edgesList en la posición " + j);
                         }
                     }
                 }
             } else {
-                System.err.println("Advertencia: Objeto no válido o nulo encontrado en vertexListSLL en la posición " + i);
+                System.err.println("Advertencia: Objeto no válido o nulo encontrado en SinglyLinkedList del grafo en la posición " + i);
             }
         }
     }
 
+
     @FXML
     private void handleShowTopAirportRoutes(ActionEvent event) {
-        clearGraph(); // Limpiamos el grafo actual para dibujar el nuevo subgrafo de rutas principales
+        // ** NO LLAMAR clearGraph() AQUÍ ** para que no se borre el grafo principal
+        // clearGraph();
 
-        // Verificamos que los servicios estén inicializados
+        // Primero, restaurar todos los elementos del grafo a su estado original (des-resaltar)
+        resetGraphHighlight();
+
         if (airNetworkService == null || airportService == null) {
             showAlert(Alert.AlertType.ERROR, "Error de Servicio", "Los servicios de red aérea o aeropuertos no están inicializados.");
             return;
         }
 
         try {
-            List<Airport> topAirports = airNetworkService.getTop5AirportsByRouteCount(); // Obtenemos los 5 aeropuertos con más rutas
+            // Obtener los top 5 aeropuertos y sus conteos de rutas
+            List<Airport> topAirports = airNetworkService.getTop5AirportsByRouteCount();
+            Map<Integer, Long> routeCounts = airNetworkService.getRouteCountsByAirport();
 
             if (topAirports.isEmpty()) {
                 showAlert(Alert.AlertType.INFORMATION, "Sin Datos", "No hay aeropuertos con rutas disponibles para mostrar.");
                 return;
             }
 
-            // Creamos un nuevo grafo para mostrar solo las rutas de los aeropuertos principales
-            DirectedSinglyLinkedListGraph topRoutesGraph = new DirectedSinglyLinkedListGraph();
-            StringBuilder alertMessage = new StringBuilder("Rutas de los Aeropuertos Más Activos:\n\n");
-            boolean foundRoutes = false;
+            StringBuilder alertMessage = new StringBuilder();
 
-            // Primero, añadimos todos los aeropuertos principales como vértices al nuevo grafo
+            // Sección 1: Mostrar los Top 5 Aeropuertos por Conteo de Rutas
+            alertMessage.append("Top 5 Aeropuertos por Conteo de Rutas:\n");
             for (Airport airport : topAirports) {
-                topRoutesGraph.addVertex(airport.getCode());
-            }
+                long count = routeCounts.getOrDefault(airport.getCode(), 0L);
+                alertMessage.append("- ").append(airport.getName())
+                        .append(" (").append(airport.getCode()).append("): ")
+                        .append(count).append(" routes.\n");
 
-            // Luego, iteramos sobre los aeropuertos principales para encontrar y añadir sus rutas al grafo
-            for (Airport airport : topAirports) {
-                List<Route> routesFromThisAirport = airNetworkService.getAllRoutes().stream()
-                        .filter(route -> route.getOriginAirportCode() == airport.getCode())
-                        .collect(Collectors.toList());
-
-                if (!routesFromThisAirport.isEmpty()) {
-                    alertMessage.append("Aeropuerto: ").append(airport.getName()).append(" (").append(airport.getCode()).append(")\n");
-                    for (Route route : routesFromThisAirport) {
-                        // Aseguramos que el aeropuerto de destino también esté en el grafo, incluso si no es uno de los "top"
-                        if (!topRoutesGraph.containsVertex(route.getDestinationAirportCode())) {
-                            topRoutesGraph.addVertex(route.getDestinationAirportCode());
-                        }
-                        topRoutesGraph.addEdgeWeight(route.getOriginAirportCode(), route.getDestinationAirportCode(), route.getDistanceKm());
-
-                        Airport destinationAirport = airportService.getAirportByCode(route.getDestinationAirportCode());
-                        alertMessage.append("  - Ruta ID: ").append(route.getRouteId())
-                                .append(", Destino: ").append(destinationAirport != null ? destinationAirport.getName() : "Desconocido")
-                                .append(", Distancia: ").append(String.format("%.2f", route.getDistanceKm())).append(" km\n");
-                    }
-                    alertMessage.append("\n");
-                    foundRoutes = true;
+                // Resaltar los aeropuertos principales
+                Circle airportCircle = vertexCircles.get(airport);
+                if (airportCircle != null) {
+                    airportCircle.setStroke(Color.GOLD);
+                    airportCircle.setStrokeWidth(4);
+                    airportCircle.setFill(Color.ORANGE);
                 }
             }
+            alertMessage.append("\n"); // Espacio antes de la siguiente sección
 
+            // Sección 2: Mostrar Rutas Más Cortas entre los Aeropuertos Principales
+            alertMessage.append("Rutas Más Cortas entre Aeropuertos Principales (por Distancia):\n\n");
+            boolean foundAnyShortestRoute = false;
 
-            if (!foundRoutes) {
-                showAlert(Alert.AlertType.INFORMATION, "Sin Rutas", "Los aeropuertos más activos no tienen rutas registradas.");
+            if (topAirports.size() >= 2) {
+                Airport primaryOrigin = topAirports.get(0); // Tomamos el primer aeropuerto como origen principal
+
+                for (int i = 1; i < topAirports.size(); i++) {
+                    Airport currentDestination = topAirports.get(i);
+                    String costType = "distance"; // Puedes cambiar a "duration" o "price"
+
+                    List<Integer> shortestPathCodes = airNetworkService.findShortestRoute(
+                            primaryOrigin.getCode(), currentDestination.getCode(), costType);
+
+                    if (shortestPathCodes != null && !shortestPathCodes.isEmpty()) {
+                        foundAnyShortestRoute = true;
+                        alertMessage.append("Ruta de ").append(primaryOrigin.getName())
+                                .append(" a ").append(currentDestination.getName())
+                                .append(":\n");
+
+                        // Resaltar los aeropuertos y rutas en el grafo existente
+                        for (int j = 0; j < shortestPathCodes.size(); j++) {
+                            Airport pathAirport = airportService.getAirportByCode(shortestPathCodes.get(j));
+                            if (pathAirport != null) {
+                                // Resaltar el círculo del aeropuerto
+                                Circle airportCircle = vertexCircles.get(pathAirport);
+                                if (airportCircle != null) {
+                                    airportCircle.setStroke(Color.RED);
+                                    airportCircle.setStrokeWidth(3);
+                                    airportCircle.setFill(Color.DARKRED);
+                                } else {
+                                    // Si el aeropuerto intermedio no existe en el grafo base, podrías añadirlo aquí,
+                                    // pero eso complica el "des-resaltado". Lo ideal es que el grafo base ya contenga todos
+                                    // los aeropuertos posibles. Por ahora, solo lo ignoramos si no está.
+                                    System.err.println("Advertencia: Aeropuerto intermedio " + pathAirport.getName() + " no encontrado en el grafo base para resaltar.");
+                                }
+
+                                alertMessage.append(pathAirport.getName()).append(" (").append(pathAirport.getCode()).append(")");
+                                if (j < shortestPathCodes.size() - 1) {
+                                    alertMessage.append(" -> ");
+                                    // Resaltar la arista
+                                    Airport segmentOrigin = airportService.getAirportByCode(shortestPathCodes.get(j));
+                                    Airport segmentDest = airportService.getAirportByCode(shortestPathCodes.get(j+1));
+
+                                    String edgeKey = segmentOrigin.getCode() + "->" + segmentDest.getCode();
+                                    Line edgeLine = edgeMap.get(edgeKey);
+                                    if (edgeLine != null) {
+                                        edgeLine.setStroke(Color.RED);
+                                        edgeLine.setStrokeWidth(3);
+                                    } else {
+                                        // Esto es importante: si la ruta no existe en el grafo principal, no se puede resaltar.
+                                        // Deberías asegurarte de que drawAllRoutesGraph() incluya todas las rutas relevantes.
+                                        System.err.println("Advertencia: Ruta " + edgeKey + " no encontrada en el grafo base para resaltar.");
+                                    }
+                                }
+                            }
+                        }
+                        alertMessage.append("\n\n");
+                    } else {
+                        alertMessage.append("No se encontró ruta de ").append(primaryOrigin.getName())
+                                .append(" a ").append(currentDestination.getName()).append(".\n\n");
+                    }
+                }
+            } else if (topAirports.size() == 1) {
+                alertMessage.append("Solo se encontró un aeropuerto principal: ").append(topAirports.get(0).getName()).append(".\nNo hay suficientes aeropuertos para calcular rutas más cortas entre ellos.");
+                // Si solo hay uno, ya está resaltado arriba.
+                foundAnyShortestRoute = true;
             } else {
-                // Renderizamos el grafo con las rutas de los aeropuertos principales y mostramos la información en una alerta
-                renderGraphOnPane(topRoutesGraph, airportService);
+                alertMessage.append("No hay suficientes aeropuertos principales para calcular rutas.");
+            }
+
+            if (!foundAnyShortestRoute && topAirports.size() < 2) {
+                showAlert(Alert.AlertType.INFORMATION, "Aeropuertos Principales", alertMessage.toString());
+            } else if (!foundAnyShortestRoute) {
+                showAlert(Alert.AlertType.INFORMATION, "Rutas de Aeropuertos Principales", alertMessage.toString() + "\nNo se encontraron rutas más cortas entre los aeropuertos más activos.");
+            } else {
                 showAlert(Alert.AlertType.INFORMATION, "Rutas de Aeropuertos Principales", alertMessage.toString());
             }
+
+            // No necesitamos renderGraphOnPane aquí, ya que estamos modificando los elementos existentes.
 
         } catch (Exception e) {
             System.err.println("Error al mostrar las rutas de los aeropuertos principales: " + e.getMessage());
@@ -370,30 +492,60 @@ public class Simulation {
         }
     }
 
+    /**
+     * Restaura el color y grosor de todas las aristas y vértices a su estado original (no resaltado).
+     */
+    private void resetGraphHighlight() {
+        // Restaurar colores y anchos de línea de las aristas
+        for (Map.Entry<String, Line> entry : edgeMap.entrySet()) {
+            String edgeKey = entry.getKey();
+            Line line = entry.getValue();
+            if (originalEdgeColors.containsKey(edgeKey)) {
+                line.setStroke(originalEdgeColors.get(edgeKey));
+            }
+            if (originalEdgeWidths.containsKey(edgeKey)) {
+                line.setStrokeWidth(originalEdgeWidths.get(edgeKey));
+            }
+            // También restaurar el color de las flechas asociadas si es posible
+            // Esto podría ser más complejo si las flechas no tienen un ID único o no se mapean fácilmente.
+            // Por simplicidad, podríamos redibujar las flechas si fuera necesario, o ignorar su reset.
+            // Para un control más fino, podrías guardar referencias a los polígonos de las flechas también.
+        }
+
+        // Restaurar colores y bordes de los círculos de los vértices
+        for (Map.Entry<Object, Circle> entry : vertexCircles.entrySet()) {
+            Object airport = entry.getKey();
+            Circle circle = entry.getValue();
+            if (originalVertexColors.containsKey(airport)) {
+                circle.setFill(originalVertexColors.get(airport));
+            }
+            if (originalVertexStrokeColors.containsKey(airport)) {
+                circle.setStroke(originalVertexStrokeColors.get(airport));
+            }
+            circle.setStrokeWidth(2); // Asegurar que el ancho del borde vuelve a la normalidad
+        }
+    }
+
     // Dibuja una arista dirigida entre dos vértices con un peso
-    private void drawDirectedEdge(Object sourceData, Object destData, Object weight, Map<Object, double[]> vertexPositions) {
-        double[] sourcePos = vertexPositions.get(sourceData); // Obtenemos la posición del vértice origen
-        double[] destPos = vertexPositions.get(destData);     // Obtenemos la posición del vértice destino
+    private void drawDirectedEdge(Airport sourceAirport, Airport destAirport, Object weight, Map<Object, double[]> vertexPositions) {
+        double[] sourcePos = vertexPositions.get(sourceAirport);
+        double[] destPos = vertexPositions.get(destAirport);
 
         if (sourcePos == null || destPos == null) {
-            System.err.println("Error: No se encontraron posiciones para el vértice de origen o destino.");
+            System.err.println("Error: No se encontraron posiciones para el aeropuerto de origen (" + sourceAirport.getCode() + ") o destino (" + destAirport.getCode() + ").");
             return;
         }
 
-        // Si el origen y el destino son el mismo vértice, dibujamos un bucle (self-loop)
-        if (sourceData.equals(destData)) {
-            drawSelfLoop(sourcePos[0], sourcePos[1], vertexCircles.get(sourceData).getRadius(), sourceData, weight);
+        if (sourceAirport.equals(destAirport)) {
+            drawSelfLoop(sourcePos[0], sourcePos[1], vertexCircles.get(sourceAirport).getRadius(), sourceAirport, weight);
             return;
         }
 
-        // Calculamos el ángulo entre los dos vértices para ajustar el inicio y fin de la línea
         double angle = Math.atan2(destPos[1] - sourcePos[1], destPos[0] - sourcePos[0]);
 
-        // Obtenemos el radio real de los círculos de los vértices (o usamos un valor por defecto)
-        double sourceNodeRadius = vertexCircles.get(sourceData) != null ? vertexCircles.get(sourceData).getRadius() : 15;
-        double destNodeRadius = vertexCircles.get(destData) != null ? vertexCircles.get(destData).getRadius() : 15;
+        double sourceNodeRadius = vertexCircles.get(sourceAirport) != null ? vertexCircles.get(sourceAirport).getRadius() : 15;
+        double destNodeRadius = vertexCircles.get(destAirport) != null ? vertexCircles.get(destAirport).getRadius() : 15;
 
-        // Ajustamos los puntos de inicio y fin de la línea para que comiencen/terminen en el borde de los círculos
         double adjustedStartX = sourcePos[0] + sourceNodeRadius * Math.cos(angle);
         double adjustedStartY = sourcePos[1] + sourceNodeRadius * Math.sin(angle);
         double adjustedEndX = destPos[0] - destNodeRadius * Math.cos(angle);
@@ -403,53 +555,56 @@ public class Simulation {
         line.setStroke(Color.LIGHTBLUE);
         line.setStrokeWidth(1.5);
 
-        String edgeKey = sourceData.toString() + "->" + destData.toString();
-        // Evitamos dibujar líneas duplicadas si ya existen en el mapa
+        String edgeKey = sourceAirport.getCode() + "->" + destAirport.getCode();
+        // **NUEVO**: Guardar el estado original de la línea
+        originalEdgeColors.put(edgeKey, (Color) line.getStroke());
+        originalEdgeWidths.put(edgeKey, line.getStrokeWidth());
+
+
         if (edgeMap.containsKey(edgeKey)) {
-            return;
+            return; // Evita redibujar aristas si ya existen
         }
         edgeMap.put(edgeKey, line);
 
-        // Añadimos efectos visuales al pasar el ratón sobre la línea
         line.setOnMouseEntered(e -> {
             line.setStroke(Color.RED);
             line.setStrokeWidth(3);
         });
 
         line.setOnMouseExited(e -> {
-            line.setStroke(Color.LIGHTBLUE);
-            line.setStrokeWidth(1.5);
+            // Usa el color original o un color por defecto si no está en el mapa
+            Color originalColor = originalEdgeColors.getOrDefault(edgeKey, Color.LIGHTBLUE);
+            double originalWidth = originalEdgeWidths.getOrDefault(edgeKey, 1.5);
+            line.setStroke(originalColor);
+            line.setStrokeWidth(originalWidth);
         });
 
-        graph.getChildren().add(line); // Añadimos la línea al panel del grafo
-        addArrow(graph, adjustedStartX, adjustedStartY, adjustedEndX, adjustedEndY, (Color) line.getStroke()); // Añadimos una flecha para indicar dirección
+        graph.getChildren().add(line);
+        addArrow(graph, adjustedStartX, adjustedStartY, adjustedEndX, adjustedEndY, (Color) line.getStroke());
 
-        // Si hay un peso (distancia) y no es cero, lo dibujamos en la mitad de la línea
         if (weight instanceof Double && (Double)weight != 0.0) {
-            double midX = (adjustedStartX + adjustedEndX) / 2;
-            double midY = (adjustedStartY + adjustedEndY) / 2;
-            Text weightText = new Text(String.format("%.1f km", (Double)weight)); // Formateamos el peso
+            Text weightText = new Text(String.format("%.1f km", (Double)weight));
             weightText.setFill(Color.DARKGREEN);
             weightText.setStyle("-fx-font-weight: bold; -fx-font-size: 10px;");
 
-            double offset = 15; // Desplazamiento del texto respecto a la línea
+            double midX = (adjustedStartX + adjustedEndX) / 2;
+            double midY = (adjustedStartY + adjustedEndY) / 2;
+            double offset = 15;
             double angleLine = Math.atan2(adjustedEndY - adjustedStartY, adjustedEndX - adjustedStartX);
 
-            // Posicionamos el texto ligeramente desplazado de la línea para evitar superposiciones
             weightText.setLayoutX(midX + offset * Math.cos(angleLine + Math.PI / 2) - weightText.getBoundsInLocal().getWidth() / 2);
             weightText.setLayoutY(midY + offset * Math.sin(angleLine + Math.PI / 2) + weightText.getBoundsInLocal().getHeight() / 4);
 
-            graph.getChildren().add(weightText); // Añadimos el texto al panel
-            edgeWeightLabels.put(edgeKey, weightText); // Guardamos la referencia al texto
+            graph.getChildren().add(weightText);
+            edgeWeightLabels.put(edgeKey, weightText);
         }
     }
 
     // Dibuja un bucle (self-loop) para aristas que conectan un vértice consigo mismo
-    private void drawSelfLoop(double x, double y, double vertexRadius, Object vertexData, Object weight) {
-        double loopRadius = 25; // Radio del bucle
-        double startAngle = 45; // Ángulo de inicio del arco
+    private void drawSelfLoop(double x, double y, double vertexRadius, Airport vertexAirport, Object weight) {
+        double loopRadius = 25;
+        double startAngle = 45;
 
-        // Calculamos el centro del arco ligeramente desplazado del centro del aeropuerto
         double arcCenterX = x + vertexRadius * Math.cos(Math.toRadians(startAngle + 90));
         double arcCenterY = y + vertexRadius * Math.sin(Math.toRadians(startAngle + 90));
 
@@ -459,79 +614,82 @@ public class Simulation {
         arc.setStrokeWidth(1.5);
         arc.setFill(Color.TRANSPARENT);
 
-        // Añadimos efectos visuales al pasar el ratón sobre el arco
+        String edgeKey = vertexAirport.getCode() + "->" + vertexAirport.getCode();
+        // **NUEVO**: Guardar el estado original del arco
+        originalEdgeColors.put(edgeKey, (Color) arc.getStroke());
+        originalEdgeWidths.put(edgeKey, arc.getStrokeWidth());
+
         arc.setOnMouseEntered(e -> {
             arc.setStroke(Color.RED);
             arc.setStrokeWidth(3);
         });
 
         arc.setOnMouseExited(e -> {
-            arc.setStroke(Color.LIGHTBLUE);
-            arc.setStrokeWidth(1.5);
+            // Usa el color original o un color por defecto si no está en el mapa
+            Color originalColor = originalEdgeColors.getOrDefault(edgeKey, Color.LIGHTBLUE);
+            double originalWidth = originalEdgeWidths.getOrDefault(edgeKey, 1.5);
+            arc.setStroke(originalColor);
+            arc.setStrokeWidth(originalWidth);
         });
 
-        graph.getChildren().add(arc); // Añadimos el arco al panel
+        graph.getChildren().add(arc);
 
-        // Calculamos la posición de la flecha en el extremo del bucle
         double endAngleRad = Math.toRadians(startAngle + arc.getLength());
         double arrowX = arcCenterX + loopRadius * Math.cos(endAngleRad);
         double arrowY = arcCenterY + loopRadius * Math.sin(endAngleRad);
 
-        // Ajustamos el punto de inicio de la flecha para una apariencia más suave
         double arrowStartAngleRad = Math.toRadians(startAngle + arc.getLength() - 10);
         double arrowStartX = arcCenterX + loopRadius * Math.cos(arrowStartAngleRad);
         double arrowStartY = arcCenterY + loopRadius * Math.sin(arrowStartAngleRad);
 
-        addArrow(graph, arrowStartX, arrowStartY, arrowX, arrowY, (Color) arc.getStroke()); // Añadimos la flecha
+        addArrow(graph, arrowStartX, arrowStartY, arrowX, arrowY, (Color) arc.getStroke());
 
-        // Si hay un peso, lo dibujamos junto al bucle
         if (weight instanceof Double && (Double)weight != 0.0) {
             Text weightText = new Text(String.valueOf(String.format("%.1f km", (Double)weight)));
             weightText.setFill(Color.DARKGREEN);
             weightText.setStyle("-fx-font-weight: bold; -fx-font-size: 10px;");
 
-            // Posicionamos el texto para evitar superposiciones con el círculo del aeropuerto
             weightText.setLayoutX(arcCenterX + loopRadius + 5);
             weightText.setLayoutY(arcCenterY - loopRadius - 5);
 
-            graph.getChildren().add(weightText); // Añadimos el texto al panel
-            String edgeKey = vertexData.toString() + "->" + vertexData.toString();
-            edgeWeightLabels.put(edgeKey, weightText); // Guardamos la referencia al texto
+            graph.getChildren().add(weightText);
+            edgeWeightLabels.put(edgeKey, weightText);
         }
     }
 
-    // Dibuja una flecha al final de una línea para indicar la dirección de la arista
     private void addArrow(Pane pane, double startX, double startY, double endX, double endY, Color color) {
-        double arrowLength = 10; // Longitud de la flecha
-        double arrowWidth = 13;  // Ancho de la flecha (ángulo)
+        double arrowLength = 10;
+        double arrowWidth = 13;
 
-        double angle = Math.atan2(endY - startY, endX - startX); // Calculamos el ángulo de la línea
+        double angle = Math.atan2(endY - startY, endX - startX);
 
-        // Calculamos los puntos para la cabeza de la flecha
         double x1 = endX - arrowLength * Math.cos(angle - Math.toRadians(arrowWidth));
         double y1 = endY - arrowLength * Math.sin(angle - Math.toRadians(arrowWidth));
         double x2 = endX - arrowLength * Math.cos(angle + Math.toRadians(arrowWidth));
         double y2 = endY - arrowLength * Math.sin(angle + Math.toRadians(arrowWidth));
 
         Polygon arrowHead = new Polygon(
-                endX, endY, // La punta de la flecha
-                x1, y1,     // Un lado
-                x2, y2      // El otro lado
+                endX, endY,
+                x1, y1,
+                x2, y2
         );
-        arrowHead.setFill(color); // Rellenamos la flecha con el color de la línea
-        pane.getChildren().add(arrowHead); // Añadimos la flecha al panel
+        arrowHead.setFill(color);
+        pane.getChildren().add(arrowHead);
     }
 
-    // Recuperamos todos los vértices de un grafo dado
     private Object[] getGraphVertices(DirectedSinglyLinkedListGraph targetGraph) throws GraphException, ListException {
         try {
-            SinglyLinkedList sll = targetGraph.getVertexList(); // Obtenemos la lista de vértices
-            Object[] vertices = new Object[sll.size()]; // Creamos un arreglo para los vértices
+            SinglyLinkedList sll = targetGraph.getVertexList();
+            Object[] vertices = new Object[sll.size()];
             for (int i = 1; i <= sll.size(); i++) {
                 Node node = sll.getNode(i);
                 if (node != null && node.getData() instanceof Vertex) {
                     Vertex v = (Vertex) node.getData();
-                    vertices[i-1] = v.data; // Almacenamos los datos del vértice
+                    if (v.data instanceof Airport) {
+                        vertices[i - 1] = v.data;
+                    } else {
+                        System.err.println("Advertencia: El dato del vértice no es un Airport. Tipo: " + (v.data != null ? v.data.getClass().getName() : "null"));
+                    }
                 } else {
                     System.err.println("Advertencia: Objeto no válido o nulo encontrado en SinglyLinkedList del grafo en la posición " + i);
                 }
@@ -542,39 +700,34 @@ public class Simulation {
         }
     }
 
-
-    // Configuramos la funcionalidad de zoom con la rueda del ratón
     private void setupMouseZoom() {
         graph.setOnScroll((ScrollEvent event) -> {
-            double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1; // Calculamos el factor de zoom
-            double newScale = scaleTransform.getX() * zoomFactor; // Calculamos la nueva escala
-            // Limitamos el zoom para que no sea excesivo
+            double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1;
+            double newScale = scaleTransform.getX() * zoomFactor;
             if (newScale < 0.2 || newScale > 5) return;
-            scaleTransform.setX(newScale); // Aplicamos la nueva escala a X
-            scaleTransform.setY(newScale); // Aplicamos la nueva escala a Y
-            scaleTransform.setPivotX(event.getX()); // Establecemos el punto de pivote para el zoom (donde está el ratón)
+            scaleTransform.setX(newScale);
+            scaleTransform.setY(newScale);
+            scaleTransform.setPivotX(event.getX());
             scaleTransform.setPivotY(event.getY());
-            event.consume(); // Consumimos el evento para evitar que se propague
+            event.consume();
         });
         image.setOnScroll((ScrollEvent event) -> {
-            double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1; // Calculamos el factor de zoom
-            double newScale = scaleTransform.getX() * zoomFactor; // Calculamos la nueva escala
-            // Limitamos el zoom para que no sea excesivo
+            double zoomFactor = event.getDeltaY() < 0 ? 1 / 1.1 : 1.1;
+            double newScale = scaleTransform.getX() * zoomFactor;
             if (newScale < 0.2 || newScale > 5) return;
-            scaleTransform.setX(newScale); // Aplicamos la nueva escala a X
-            scaleTransform.setY(newScale); // Aplicamos la nueva escala a Y
-            scaleTransform.setPivotX(event.getX()); // Establecemos el punto de pivote para el zoom (donde está el ratón)
+            scaleTransform.setX(newScale);
+            scaleTransform.setY(newScale);
+            scaleTransform.setPivotX(event.getX());
             scaleTransform.setPivotY(event.getY());
-            event.consume(); // Consumimos el evento para evitar que se propague
+            event.consume();
         });
     }
 
-    // Muestra una alerta con el tipo, título y mensaje especificados
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(null); // No mostramos un encabezado adicional
+        alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.showAndWait(); // Mostramos la alerta y esperamos a que el usuario la cierre
+        alert.showAndWait();
     }
 }

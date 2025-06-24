@@ -3,7 +3,11 @@ package domain.service;
 import data.PassengerData;
 import domain.btree.AVL;
 import domain.btree.TreeException;
+import domain.common.Flight;
 import domain.common.Passenger;
+import domain.linkedlist.CircularDoublyLinkedList;
+import domain.linkedlist.ListException;
+import domain.linkedlist.Node;
 import domain.linkedlist.SinglyLinkedList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,7 +22,7 @@ public class PassengerService {
     private PassengerData passengerData;
     private AVL avlTree;
     private ObservableList<Passenger> observablePassengers;
-
+    private FlightService flightService;
     public PassengerService(PassengerData passengerData) {
         this.passengerData = Objects.requireNonNull(passengerData, "PassengerData cannot be null");
         this.avlTree = new AVL();
@@ -224,9 +228,7 @@ public class PassengerService {
             String nationality = nationalities[util.Utility.random(nationalities.length)];
             Passenger passenger = new Passenger(id, name, nationality);
 
-
             if (passenger.getFlightHistory() == null) {
-
                 passenger.setFlightHistory(new SinglyLinkedList());
             }
 

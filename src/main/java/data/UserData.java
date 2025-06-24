@@ -30,8 +30,8 @@ public class UserData {
         this.users = new HashMap<>();
         this.objectMapper = new ObjectMapper();
         //Para que el JSON sea legible
-        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        this.objectMapper.findAndRegisterModules();
+        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);// le dice a Jackson que formatee la salida JSON con una indentación legible
+        this.objectMapper.findAndRegisterModules();//para manejar tiposde datos time
 
         //Carga usuarios al inicializar la clase
         loadUsersFromFile();
