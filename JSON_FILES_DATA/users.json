@@ -2,7 +2,7 @@
   "1" : {
     "id" : 1,
     "name" : "Administrador Supremo",
-    "hashedPassword" : "pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=",
+    "hashedPassword" : "JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=",
     "email" : "admin@sys.com",
     "role" : "ADMINISTRATOR"
   },
@@ -18,6 +18,13 @@
     "name" : "Invitado",
     "hashedPassword" : "bbsC9dzLthRtJIU54wob7Uq1zdJ2HrNx5LxeJqr6TZc=",
     "email" : "guest@sys.com",
+    "role" : "USER"
+  },
+  "4" : {
+    "id" : 4,
+    "name" : "Jose",
+    "hashedPassword" : "lsrjXOipsCRBeL8o5JZsLOG4OFcjqWprg4hYzdbKCh4=",
+    "email" : "jose@sys.com",
     "role" : "USER"
   }
 }

@@ -1,0 +1,478 @@
+{
+  "4682" : {
+    "number" : 4682,
+    "departureTime" : [ 2025, 7, 1, 0, 18, 26, 922328000 ],
+    "capacity" : 150,
+    "occupancy" : 2,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN2921",
+      "model" : "Airbus A350",
+      "totalCapacity" : 150,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R437674",
+      "airline" : "AirlineBQ",
+      "durationHours" : 9.0,
+      "distanceKm" : 1428.0,
+      "price" : 290.0,
+      "departureTime" : [ 0, 38 ],
+      "arrivalTime" : [ 9, 38 ],
+      "originAirportCode" : 17,
+      "destinationAirportCode" : 30
+    },
+    "origin" : "17",
+    "destination" : "30",
+    "pasajeros" : [ 200409266, 138809888 ]
+  },
+  "2124" : {
+    "number" : 2124,
+    "departureTime" : [ 2025, 6, 25, 17, 50, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN1461",
+      "model" : "Boeing 737",
+      "totalCapacity" : 100,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R430459",
+      "airline" : "AirlineRB",
+      "durationHours" : 8.0,
+      "distanceKm" : 2835.0,
+      "price" : 258.0,
+      "departureTime" : [ 16, 6 ],
+      "arrivalTime" : [ 0, 6 ],
+      "originAirportCode" : 23,
+      "destinationAirportCode" : 18
+    },
+    "origin" : "23",
+    "destination" : "18",
+    "pasajeros" : [ ]
+  },
+  "3278" : {
+    "number" : 3278,
+    "departureTime" : [ 2025, 7, 12, 11, 44, 26, 922328000 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN6995",
+      "model" : "Boeing 787",
+      "totalCapacity" : 100,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R304279",
+      "airline" : "AirlineIX",
+      "durationHours" : 5.0,
+      "distanceKm" : 1166.0,
+      "price" : 915.0,
+      "departureTime" : [ 12, 17 ],
+      "arrivalTime" : [ 17, 17 ],
+      "originAirportCode" : 11,
+      "destinationAirportCode" : 21
+    },
+    "origin" : "11",
+    "destination" : "21",
+    "pasajeros" : [ ]
+  },
+  "9999" : {
+    "number" : 9999,
+    "departureTime" : [ 2025, 7, 23, 23, 0 ],
+    "capacity" : 1,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN8683",
+      "model" : "Airbus A320",
+      "totalCapacity" : 150,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R938734",
+      "airline" : "AirlineZT",
+      "durationHours" : 9.0,
+      "distanceKm" : 4969.0,
+      "price" : 118.0,
+      "departureTime" : [ 6, 11 ],
+      "arrivalTime" : [ 15, 11 ],
+      "originAirportCode" : 24,
+      "destinationAirportCode" : 21
+    },
+    "origin" : "24",
+    "destination" : "21",
+    "pasajeros" : [ ]
+  },
+  "1808" : {
+    "number" : 1808,
+    "departureTime" : [ 2025, 7, 21, 9, 37, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 1,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN3185",
+      "model" : "Boeing 737",
+      "totalCapacity" : 150,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R223858",
+      "airline" : "AirlineZB",
+      "durationHours" : 5.0,
+      "distanceKm" : 1853.0,
+      "price" : 440.0,
+      "departureTime" : [ 10, 55 ],
+      "arrivalTime" : [ 15, 55 ],
+      "originAirportCode" : 20,
+      "destinationAirportCode" : 23
+    },
+    "origin" : "20",
+    "destination" : "23",
+    "pasajeros" : [ 999 ]
+  },
+  "10000" : {
+    "number" : 10000,
+    "departureTime" : [ 2025, 6, 26, 12, 0 ],
+    "capacity" : 1,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN2701",
+      "model" : "Embraer E190",
+      "totalCapacity" : 150,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R470213",
+      "airline" : "AirlineTJ",
+      "durationHours" : 10.0,
+      "distanceKm" : 1193.0,
+      "price" : 125.0,
+      "departureTime" : [ 16, 32 ],
+      "arrivalTime" : [ 2, 32 ],
+      "originAirportCode" : 29,
+      "destinationAirportCode" : 23
+    },
+    "origin" : "29",
+    "destination" : "23",
+    "pasajeros" : [ ]
+  },
+  "4115" : {
+    "number" : 4115,
+    "departureTime" : [ 2025, 7, 19, 14, 17, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 4,
+    "completed" : false,
+    "assignedAirplane" : "SN2921",
+    "assignedRoute" : "R437674",
+    "origin" : "17",
+    "destination" : "30",
+    "pasajeros" : [ 138809888, 1111, 203610785, 205235458 ]
+  },
+  "1235" : {
+    "number" : 1235,
+    "departureTime" : [ 2025, 7, 17, 8, 4, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 1,
+    "completed" : false,
+    "assignedAirplane" : "SN3185",
+    "assignedRoute" : "R437674",
+    "origin" : "17",
+    "destination" : "30",
+    "pasajeros" : [ 138809888 ]
+  },
+  "4564" : {
+    "number" : 4564,
+    "departureTime" : [ 2025, 6, 29, 19, 24, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN1461",
+    "assignedRoute" : "R223858",
+    "origin" : "20",
+    "destination" : "23",
+    "pasajeros" : [ ]
+  },
+  "7318" : {
+    "number" : 7318,
+    "departureTime" : [ 2025, 7, 1, 15, 9, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN5846",
+      "model" : "Boeing 737",
+      "totalCapacity" : 200,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : "R430459",
+    "origin" : "23",
+    "destination" : "18",
+    "pasajeros" : [ ]
+  },
+  "8539" : {
+    "number" : 8539,
+    "departureTime" : [ 2025, 6, 24, 2, 46, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN8164",
+      "model" : "Airbus A320",
+      "totalCapacity" : 150,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R495793",
+      "airline" : "AirlineQR",
+      "durationHours" : 5.0,
+      "distanceKm" : 1567.0,
+      "price" : 784.0,
+      "departureTime" : [ 15, 12 ],
+      "arrivalTime" : [ 20, 12 ],
+      "originAirportCode" : 23,
+      "destinationAirportCode" : 11
+    },
+    "origin" : "23",
+    "destination" : "11",
+    "pasajeros" : [ ]
+  },
+  "8162" : {
+    "number" : 8162,
+    "departureTime" : [ 2025, 6, 29, 19, 32, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 2,
+    "completed" : false,
+    "assignedAirplane" : "SN5846",
+    "assignedRoute" : "R437674",
+    "origin" : "17",
+    "destination" : "30",
+    "pasajeros" : [ 1111, 205235458 ]
+  },
+  "1826" : {
+    "number" : 1826,
+    "departureTime" : [ 2025, 7, 18, 11, 48, 26, 922328000 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN3185",
+    "assignedRoute" : "R495793",
+    "origin" : "23",
+    "destination" : "11",
+    "pasajeros" : [ ]
+  },
+  "6308" : {
+    "number" : 6308,
+    "departureTime" : [ 2025, 7, 22, 10, 35, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN6894",
+      "model" : "Boeing 787",
+      "totalCapacity" : 200,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : {
+      "routeId" : "R211783",
+      "airline" : "AirlineNG",
+      "durationHours" : 5.0,
+      "distanceKm" : 4873.0,
+      "price" : 958.0,
+      "departureTime" : [ 11, 6 ],
+      "arrivalTime" : [ 16, 6 ],
+      "originAirportCode" : 17,
+      "destinationAirportCode" : 29
+    },
+    "origin" : "17",
+    "destination" : "29",
+    "pasajeros" : [ ]
+  },
+  "4006" : {
+    "number" : 4006,
+    "departureTime" : [ 2025, 7, 22, 3, 6, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN8164",
+    "assignedRoute" : "R437674",
+    "origin" : "17",
+    "destination" : "30",
+    "pasajeros" : [ ]
+  },
+  "1063" : {
+    "number" : 1063,
+    "departureTime" : [ 2025, 7, 19, 13, 50, 26, 922328000 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN7281",
+      "model" : "Embraer E190",
+      "totalCapacity" : 200,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : "R223858",
+    "origin" : "20",
+    "destination" : "23",
+    "pasajeros" : [ ]
+  },
+  "5480" : {
+    "number" : 5480,
+    "departureTime" : [ 2025, 7, 14, 19, 3, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN2417",
+      "model" : "Airbus A320",
+      "totalCapacity" : 100,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : "R211783",
+    "origin" : "17",
+    "destination" : "29",
+    "pasajeros" : [ ]
+  },
+  "4522" : {
+    "number" : 4522,
+    "departureTime" : [ 2025, 7, 13, 5, 20, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN6894",
+    "assignedRoute" : "R304279",
+    "origin" : "11",
+    "destination" : "21",
+    "pasajeros" : [ ]
+  },
+  "4586" : {
+    "number" : 4586,
+    "departureTime" : [ 2025, 7, 1, 9, 53, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN3185",
+    "assignedRoute" : "R304279",
+    "origin" : "11",
+    "destination" : "21",
+    "pasajeros" : [ ]
+  },
+  "2602" : {
+    "number" : 2602,
+    "departureTime" : [ 2025, 7, 14, 10, 57, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 2,
+    "completed" : false,
+    "assignedAirplane" : "SN2921",
+    "assignedRoute" : "R211783",
+    "origin" : "17",
+    "destination" : "29",
+    "pasajeros" : [ 201957483, 205235458 ]
+  },
+  "6956" : {
+    "number" : 6956,
+    "departureTime" : [ 2025, 7, 11, 21, 37, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN6894",
+    "assignedRoute" : "R304279",
+    "origin" : "11",
+    "destination" : "21",
+    "pasajeros" : [ ]
+  },
+  "1004" : {
+    "number" : 1004,
+    "departureTime" : [ 2025, 7, 15, 3, 18, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN2921",
+    "assignedRoute" : "R223858",
+    "origin" : "20",
+    "destination" : "23",
+    "pasajeros" : [ ]
+  },
+  "2096" : {
+    "number" : 2096,
+    "departureTime" : [ 2025, 6, 26, 5, 48, 26, 922328000 ],
+    "capacity" : 150,
+    "occupancy" : 1,
+    "completed" : false,
+    "assignedAirplane" : "SN7281",
+    "assignedRoute" : "R211783",
+    "origin" : "17",
+    "destination" : "29",
+    "pasajeros" : [ 201957483 ]
+  },
+  "9137" : {
+    "number" : 9137,
+    "departureTime" : [ 2025, 7, 12, 16, 37, 26, 922328000 ],
+    "capacity" : 100,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN6995",
+    "assignedRoute" : "R430459",
+    "origin" : "23",
+    "destination" : "18",
+    "pasajeros" : [ ]
+  },
+  "4209" : {
+    "number" : 4209,
+    "departureTime" : [ 2025, 7, 20, 23, 49, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : {
+      "serialNumber" : "SN4948",
+      "model" : "Airbus A350",
+      "totalCapacity" : 200,
+      "currentStatus" : "In Service",
+      "flightHistory" : [ ]
+    },
+    "assignedRoute" : "R304279",
+    "origin" : "11",
+    "destination" : "21",
+    "pasajeros" : [ ]
+  },
+  "6394" : {
+    "number" : 6394,
+    "departureTime" : [ 2025, 6, 27, 15, 35, 26, 922328000 ],
+    "capacity" : 150,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN3185",
+    "assignedRoute" : "R495793",
+    "origin" : "23",
+    "destination" : "11",
+    "pasajeros" : [ ]
+  },
+  "8059" : {
+    "number" : 8059,
+    "departureTime" : [ 2025, 6, 28, 20, 32, 26, 922328000 ],
+    "capacity" : 200,
+    "occupancy" : 0,
+    "completed" : false,
+    "assignedAirplane" : "SN6894",
+    "assignedRoute" : "R495793",
+    "origin" : "23",
+    "destination" : "11",
+    "pasajeros" : [ ]
+  }
+}

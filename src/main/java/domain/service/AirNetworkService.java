@@ -536,6 +536,24 @@ public class AirNetworkService {
         return topAirports;
     }
 
+    /**
+     * Obtiene el conteo de rutas para cada aeropuerto.
+     * Este método cuenta cuántas veces un aeropuerto aparece como origen o destino en las rutas.
+     * @return Un mapa donde la clave es el código del aeropuerto y el valor es el conteo de rutas asociadas.
+     */
+    public Map<Integer, Long> getRouteCountsByAirport() {
+        Map<Integer, Long> routeCounts = new HashMap<>();
+
+        // Iterar sobre todas las rutas en routesMap
+        for (Route route : routesMap.values()) {
+            // Contar la ruta para el aeropuerto de origen
+            routeCounts.merge(route.getOriginAirportCode(), 1L, Long::sum);
+            // Contar la ruta para el aeropuerto de destino
+            routeCounts.merge(route.getDestinationAirportCode(), 1L, Long::sum);
+        }
+        return routeCounts;
+    }
+
     public void removeAirportFromGraph(int airportCode) throws GraphException, ListException {
         //Obtiiene el aeropuerto a eliminar del servicio de aeropuertos
         Airport airportToRemove = airportService.getAirportByCode(airportCode);
