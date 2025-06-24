@@ -4,6 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import controller.RoutesBetweenAirports;
+import controller.Simulation;
 import controller.ticketscontroller.TicketsController;
 import data.RouteData;
 import domain.common.Airport;
@@ -270,6 +271,7 @@ public class UserHelloController {
 
         doc.close();
 
+        util.FXUtility.alertInfo("SUCCESS", "PDF generated succesfully in your directory.");
         System.out.println("PDF generado: " + new java.io.File(fileName).getAbsolutePath());
     }
 
@@ -279,7 +281,23 @@ public class UserHelloController {
 
     @FXML
     public void simulaciónVuelosOcupaciónOnAction(ActionEvent actionEvent) {
-        loadPage("simulation.fxml");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ucr/flightroutemanagementsystem/simulation.fxml"));
+            Parent root = loader.load();
+
+            //Obtener el controlador real del FXML
+            Simulation simulation = loader.getController();
+
+            //Pasar los servicios al controlador real
+            simulation.setServices(this.passengerService, this.flightService, this.airplaneService, this.airNetworkService,this.airportService);
+
+            // Mostrar la pantalla en el centro del BorderPane
+            this.bp.setCenter(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @FXML

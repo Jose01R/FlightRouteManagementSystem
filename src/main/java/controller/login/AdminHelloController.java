@@ -312,6 +312,7 @@ public class AdminHelloController {
 
         doc.close();
 
+        util.FXUtility.alertInfo("SUCCESS", "PDF generated succesfully in your directory.");
         System.out.println("PDF generado: " + new java.io.File(fileName).getAbsolutePath());
     }
 
